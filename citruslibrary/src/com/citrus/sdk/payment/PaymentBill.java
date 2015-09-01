@@ -52,7 +52,7 @@ public class PaymentBill implements Parcelable {
     @SerializedName("notifyUrl")
     private
     String notifyUrl = null;
-    @SerializedName("dp_signature")
+    @SerializedName("dpSignature")
     private String dpSignature = null;
     @SerializedName("customParameters")
     private

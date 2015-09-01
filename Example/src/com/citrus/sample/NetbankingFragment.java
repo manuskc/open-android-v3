@@ -19,7 +19,7 @@ import com.citrus.sdk.CitrusUser;
 import com.citrus.sdk.TransactionResponse;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusException;
-import com.citrus.sdk.dynamicPricing.DynamicPricingOperation;
+import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.MerchantPaymentOption;
 import com.citrus.sdk.payment.NetbankingOption;
@@ -180,7 +180,8 @@ public final class NetbankingFragment extends Fragment {
                     paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, netbankingOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
                     client.pgPayment((PaymentType.PGPayment) paymentType1, callback);
                 } else if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
-                    client.performDynamicPricing(DynamicPricingOperation.SEARCH_AND_APPLY_RULE, Constants.BILL_URL, amount, netbankingOption, null, new Callback<DynamicPricingResponse>() {
+                    DynamicPricingRequestType dynamicPricingRequestType = new DynamicPricingRequestType.SearchAndApplyRule(amount, netbankingOption, null);
+                    client.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
                         @Override
                         public void success(DynamicPricingResponse dynamicPricingResponse) {
                             showPrompt(dynamicPricingResponse);

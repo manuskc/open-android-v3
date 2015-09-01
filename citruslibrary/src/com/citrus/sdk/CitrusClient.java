@@ -44,8 +44,8 @@ import com.citrus.sdk.classes.CitrusException;
 import com.citrus.sdk.classes.MemberInfo;
 import com.citrus.sdk.classes.PGHealth;
 import com.citrus.sdk.classes.PGHealthResponse;
-import com.citrus.sdk.dynamicPricing.DynamicPricingOperation;
 import com.citrus.sdk.dynamicPricing.DynamicPricingRequest;
+import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.CreditCardOption;
@@ -1201,33 +1201,31 @@ public class CitrusClient {
     // Dynamic Pricing.
 
     /**
-     * Perform Dynamic Pricing. You can specify one the operation to perform Dynamic Pricing.
+     * Perform Dynamic Pricing. You can specify one the dynamicPricingRequestType to perform Dynamic Pricing.
      *
-     * @param operation     - One of the operation from {@link DynamicPricingOperation}
-     * @param billUrl       - billUrl from where we will fetch the bill.
-     * @param paymentOption - PaymentOption selected by the user.
-     * @param citrusUser    - user information. Can be null.
-     * @param callback      - callback
+     * @param dynamicPricingRequestType - One of the dynamicPricingRequestType from {@link DynamicPricingRequestType}
+     * @param billUrl                   - billUrl from where we will fetch the bill.
+     * @param callback                  - callback
      */
-    public synchronized void performDynamicPricing(@NonNull final DynamicPricingOperation operation, @NonNull final String billUrl, @NonNull Amount originalAmount, @NonNull final PaymentOption paymentOption,
-                                                   final CitrusUser citrusUser, @NonNull final Callback<DynamicPricingResponse> callback) {
+    public synchronized void performDynamicPricing(@NonNull final DynamicPricingRequestType dynamicPricingRequestType, @NonNull final String billUrl, @NonNull final Callback<DynamicPricingResponse> callback) {
 
         if (validate()) {
-            if (operation != null && !TextUtils.isEmpty(billUrl) && originalAmount != null && paymentOption != null) {
+            if (dynamicPricingRequestType != null && !TextUtils.isEmpty(billUrl)) {
 
-                String format = "#.00";
+                final Amount originalAmount = dynamicPricingRequestType.getOriginalAmount();
+                final String format = "#.00";
 
                 String url;
                 if (billUrl.contains("?")) {
-                    url = billUrl + "&amount=" + originalAmount.getValueAsFormattedDouble(format);
+                    url = billUrl + "&amount=" + originalAmount.getValueAsFormattedDouble(format) + "&dp_operation=" + dynamicPricingRequestType.getDPOperationName();
                 } else {
-                    url = billUrl + "?amount=" + originalAmount.getValueAsFormattedDouble(format);
+                    url = billUrl + "?amount=" + originalAmount.getValueAsFormattedDouble(format) + "&dp_operation=" + dynamicPricingRequestType.getDPOperationName();
                 }
 
                 getBill(url, originalAmount, new Callback<PaymentBill>() {
                     @Override
                     public void success(PaymentBill paymentBill) {
-                        performDynamicPricing(operation, paymentBill, paymentOption, citrusUser, new Callback<DynamicPricingResponse>() {
+                        performDynamicPricing(dynamicPricingRequestType, paymentBill, new Callback<DynamicPricingResponse>() {
                             @Override
                             public void success(DynamicPricingResponse dynamicPricingResponse) {
                                 sendResponse(callback, dynamicPricingResponse);
@@ -1252,20 +1250,19 @@ public class CitrusClient {
     }
 
     /**
-     * Perform Dynamic Pricing. You can specify one the operation to perform Dynamic Pricing.
+     * Perform Dynamic Pricing. You can specify one the dynamicPricingRequestType to perform Dynamic Pricing.
      *
-     * @param operation     - One of the operation from {@link DynamicPricingOperation}
-     * @param paymentBill   - PaymentBill in case you are fetching bill response from your server.
-     * @param paymentOption - PaymentOption selected by the user.
-     * @param citrusUser    - user information. Can be null.
-     * @param callback      - callback
+     * @param dynamicPricingRequestType - One of the dynamicPricingRequestType from {@link DynamicPricingRequestType}
+     * @param paymentBill               - PaymentBill in case you are fetching bill response from your server.
+     * @param callback                  - callback
      */
-    public synchronized void performDynamicPricing(@NonNull final DynamicPricingOperation operation, @NonNull final PaymentBill paymentBill, @NonNull final PaymentOption paymentOption,
-                                                   final CitrusUser citrusUser, @NonNull final Callback<DynamicPricingResponse> callback) {
+    public synchronized void performDynamicPricing(@NonNull final DynamicPricingRequestType dynamicPricingRequestType, @NonNull final PaymentBill paymentBill, @NonNull final Callback<DynamicPricingResponse> callback) {
 
         if (validate()) {
-            if (operation != null && paymentBill != null && paymentOption != null) {
-                DynamicPricingRequest request = new DynamicPricingRequest(paymentBill.getAmount(), paymentBill.getDpSignature(), paymentBill.getMerchantAccessKey(), paymentBill.getMerchantTransactionId(), citrusUser, paymentOption, operation);
+            if (dynamicPricingRequestType != null && paymentBill != null) {
+                final PaymentOption paymentOption = dynamicPricingRequestType.getPaymentOption();
+                final CitrusUser citrusUser = dynamicPricingRequestType.getCitrusUser();
+                final DynamicPricingRequest request = new DynamicPricingRequest(dynamicPricingRequestType, paymentBill);
 
                 citrusBaseUrlClient.performDynamicPricing(new TypedString(DynamicPricingRequest.toJSON(request)), new retrofit.Callback<DynamicPricingResponse>() {
                     @Override

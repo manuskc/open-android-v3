@@ -21,7 +21,7 @@ import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusException;
 import com.citrus.sdk.classes.Month;
 import com.citrus.sdk.classes.Year;
-import com.citrus.sdk.dynamicPricing.DynamicPricingOperation;
+import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.CreditCardOption;
@@ -137,7 +137,9 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
                 paymentType = new PaymentType.PGPayment(amount, Constants.BILL_URL, cardOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
                 client.pgPayment((PaymentType.PGPayment) paymentType, callback);
             } else if (this.paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
-                client.performDynamicPricing(DynamicPricingOperation.SEARCH_AND_APPLY_RULE, Constants.BILL_URL, amount, cardOption, null, new Callback<DynamicPricingResponse>() {
+                DynamicPricingRequestType dynamicPricingRequestType = new DynamicPricingRequestType.SearchAndApplyRule(amount, cardOption, null);
+
+                client.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
                     @Override
                     public void success(DynamicPricingResponse dynamicPricingResponse) {
                         showPrompt(dynamicPricingResponse);
