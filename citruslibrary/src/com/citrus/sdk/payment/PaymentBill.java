@@ -152,7 +152,7 @@ public class PaymentBill implements Parcelable {
             merchantTransactionId = billObject.optString("merchantTxnId");
             merchantAccessKey = billObject.optString("merchantAccessKey");
             returnUrl = billObject.optString("returnUrl");
-            dpSignature = billObject.optString("dp_signature");
+            dpSignature = billObject.optString("dpSignature");
 
 
             JSONObject customParamsObject = billObject.optJSONObject("customParameters");
