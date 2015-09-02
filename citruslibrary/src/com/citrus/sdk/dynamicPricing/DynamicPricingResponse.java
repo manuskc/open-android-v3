@@ -16,12 +16,14 @@ import java.util.Map;
 public class DynamicPricingResponse implements Parcelable {
 
     public enum Status {
-        SUCCESS, NO_ELIGIBLE_RULE_FOUND, CALCULATE_PRICING_FAILED, RULE_DOES_NOT_EXIST, OPERATION_NOT_PERMITTED, FAILED;
+        SUCCESS, RULE_VALIDATION_FAILED, NO_ELIGIBLE_RULE_FOUND, CALCULATE_PRICING_FAILED, RULE_DOES_NOT_EXIST, OPERATION_NOT_PERMITTED, FAILED;
 
         public static Status getStatus(int responseCode) {
             switch (responseCode) {
                 case 0:
                     return SUCCESS;
+                case 1:
+                    return RULE_VALIDATION_FAILED;
                 case 3:
                     return RULE_DOES_NOT_EXIST;
                 case 5:
@@ -63,6 +65,8 @@ public class DynamicPricingResponse implements Parcelable {
         switch (getStatus()) {
             case SUCCESS:
                 return "Success";
+            case RULE_VALIDATION_FAILED:
+                return "Rule Validation Failed.";
             case NO_ELIGIBLE_RULE_FOUND:
                 return "No Eligible Rule Found.";
             case CALCULATE_PRICING_FAILED:
@@ -73,7 +77,7 @@ public class DynamicPricingResponse implements Parcelable {
                 return "Operation Not Permitted.";
             case FAILED:
             default:
-                return "Failed Apply Dynamic Pricing.";
+                return "Failed To Apply Dynamic Pricing.";
         }
     }
 

@@ -32,9 +32,13 @@ public final class NetbankingFragment extends Fragment {
 
     private ArrayList<NetbankingOption> mNetbankingOptionsList;
     private Utils.PaymentType paymentType = null;
+    private Utils.DPRequestType dpRequestType = null;
     private Amount amount = null;
+    private String couponCode = null;
+    private Amount alteredAmount = null;
     private MerchantPaymentOption mMerchantPaymentOption = null;
     private MerchantPaymentOption mLoadMoneyPaymentOptions = null;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -51,6 +55,19 @@ public final class NetbankingFragment extends Fragment {
         return fragment;
     }
 
+    public static NetbankingFragment newInstance(Utils.DPRequestType dpRequestType, Amount originalAmount, String couponCode, Amount alteredAmount) {
+        NetbankingFragment fragment = new NetbankingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("paymentType", Utils.PaymentType.DYNAMIC_PRICING);
+        bundle.putSerializable("dpRequestType", dpRequestType);
+        bundle.putParcelable("amount", originalAmount);
+        bundle.putParcelable("alteredAmount", alteredAmount);
+        bundle.putString("couponCode", couponCode);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+
     public NetbankingFragment() {
         // Required empty public constructor
     }
@@ -59,8 +76,13 @@ public final class NetbankingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            amount = (Amount) getArguments().getParcelable("amount");
-            paymentType = (Utils.PaymentType) getArguments().getSerializable("paymentType");
+            Bundle bundle = getArguments();
+            amount = (Amount) bundle.getParcelable("amount");
+            paymentType = (Utils.PaymentType) bundle.getSerializable("paymentType");
+            dpRequestType = (Utils.DPRequestType) bundle.getSerializable("dpRequestType");
+            amount = bundle.getParcelable("amount");
+            alteredAmount = bundle.getParcelable("alteredAmount");
+            couponCode = bundle.getString("couponCode");
         }
     }
 
@@ -156,47 +178,57 @@ public final class NetbankingFragment extends Fragment {
         @Override
         public void onItemClick(View childView, int position) {
             NetbankingOption netbankingOption = getItem(position);
-
-            PaymentType paymentType1;
             CitrusClient client = CitrusClient.getInstance(getActivity());
 
-            Callback<TransactionResponse> callback = new Callback<TransactionResponse>() {
-                @Override
-                public void success(TransactionResponse transactionResponse) {
-                    ((UIActivity) getActivity()).onPaymentComplete(transactionResponse);
+            if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                DynamicPricingRequestType dynamicPricingRequestType = null;
+
+                if (dpRequestType == Utils.DPRequestType.SEARCH_AND_APPLY) {
+                    dynamicPricingRequestType = new DynamicPricingRequestType.SearchAndApplyRule(amount, netbankingOption, null);
+                } else if (dpRequestType == Utils.DPRequestType.CALCULATE_PRICING) {
+                    dynamicPricingRequestType = new DynamicPricingRequestType.CalculatePrice(amount, netbankingOption, couponCode, null);
+                } else if (dpRequestType == Utils.DPRequestType.VALIDATE_RULE) {
+                    dynamicPricingRequestType = new DynamicPricingRequestType.ValidateRule(amount, netbankingOption, couponCode, alteredAmount, null);
                 }
+                client.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
+                    @Override
+                    public void success(DynamicPricingResponse dynamicPricingResponse) {
+                        showPrompt(dynamicPricingResponse);
+                    }
 
-                @Override
-                public void error(CitrusError error) {
-                    Utils.showToast(getActivity(), error.getMessage());
+                    @Override
+                    public void error(CitrusError error) {
+                        Utils.showToast(getActivity(), error.getMessage());
+                    }
+                });
+            } else {
+
+                PaymentType paymentType1;
+                Callback<TransactionResponse> callback = new Callback<TransactionResponse>() {
+                    @Override
+                    public void success(TransactionResponse transactionResponse) {
+                        ((UIActivity) getActivity()).onPaymentComplete(transactionResponse);
+                    }
+
+                    @Override
+                    public void error(CitrusError error) {
+                        Utils.showToast(getActivity(), error.getMessage());
+                    }
+                };
+
+                try {
+                    if (paymentType == Utils.PaymentType.LOAD_MONEY) {
+                        paymentType1 = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, netbankingOption);
+                        client.loadMoney((PaymentType.LoadMoney) paymentType1, callback);
+                    } else if (paymentType == Utils.PaymentType.PG_PAYMENT) {
+                        paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, netbankingOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
+                        client.pgPayment((PaymentType.PGPayment) paymentType1, callback);
+                    }
+                } catch (CitrusException e) {
+                    e.printStackTrace();
+
+                    Utils.showToast(getActivity(), e.getMessage());
                 }
-            };
-
-            try {
-                if (paymentType == Utils.PaymentType.LOAD_MONEY) {
-                    paymentType1 = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, netbankingOption);
-                    client.loadMoney((PaymentType.LoadMoney) paymentType1, callback);
-                } else if (paymentType == Utils.PaymentType.PG_PAYMENT) {
-                    paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, netbankingOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
-                    client.pgPayment((PaymentType.PGPayment) paymentType1, callback);
-                } else if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
-                    DynamicPricingRequestType dynamicPricingRequestType = new DynamicPricingRequestType.SearchAndApplyRule(amount, netbankingOption, null);
-                    client.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
-                        @Override
-                        public void success(DynamicPricingResponse dynamicPricingResponse) {
-                            showPrompt(dynamicPricingResponse);
-                        }
-
-                        @Override
-                        public void error(CitrusError error) {
-                            Utils.showToast(getActivity(), error.getMessage());
-                        }
-                    });
-                }
-            } catch (CitrusException e) {
-                e.printStackTrace();
-
-                Utils.showToast(getActivity(), e.getMessage());
             }
         }
     }

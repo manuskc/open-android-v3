@@ -37,6 +37,9 @@ public class PaymentBill implements Parcelable {
     @SerializedName("amount")
     private
     Amount amount = null;
+    @SerializedName("alteredAmount")
+    private
+    Amount alteredAmount = null;
     @SerializedName("requestSignature")
     private
     String requestSignature = null;
@@ -58,8 +61,9 @@ public class PaymentBill implements Parcelable {
     private
     Map<String, String> customParametersMap = null;
 
-    public PaymentBill(Amount amount, String requestSignature, String merchantTransactionId, String merchantAccessKey, String returnUrl, String notifyUrl, String dpSignature, Map<String, String> customParametersMap) {
+    public PaymentBill(Amount amount, Amount alteredAmount, String requestSignature, String merchantTransactionId, String merchantAccessKey, String returnUrl, String notifyUrl, String dpSignature, Map<String, String> customParametersMap) {
         this.amount = amount;
+        this.alteredAmount = alteredAmount;
         this.requestSignature = requestSignature;
         this.merchantTransactionId = merchantTransactionId;
         this.merchantAccessKey = merchantAccessKey;
@@ -138,6 +142,7 @@ public class PaymentBill implements Parcelable {
 
         if (billObject != null) {
             Amount amount = null;
+            Amount alteredAmount = null;
             String requestSignature = null;
             String merchantTransactionId = null; // TODO: Do the validation of the transaction id length
             String merchantAccessKey = null;
@@ -148,12 +153,12 @@ public class PaymentBill implements Parcelable {
 
 
             amount = Amount.fromJSONObject(billObject.optJSONObject("amount"));
+            alteredAmount = Amount.fromJSONObject(billObject.optJSONObject("alteredAmount"));
             requestSignature = billObject.optString("requestSignature");
             merchantTransactionId = billObject.optString("merchantTxnId");
             merchantAccessKey = billObject.optString("merchantAccessKey");
             returnUrl = billObject.optString("returnUrl");
             dpSignature = billObject.optString("dpSignature");
-
 
             JSONObject customParamsObject = billObject.optJSONObject("customParameters");
             if (customParamsObject != null) {
@@ -170,7 +175,7 @@ public class PaymentBill implements Parcelable {
             if (amount != null && requestSignature != null && returnUrl != null
                     && merchantAccessKey != null && merchantTransactionId != null) {
 
-                paymentBill = new PaymentBill(amount, requestSignature, merchantTransactionId,
+                paymentBill = new PaymentBill(amount, alteredAmount, requestSignature, merchantTransactionId,
                         merchantAccessKey, returnUrl, notifyUrl, dpSignature, customParametersMap);
             }
         }

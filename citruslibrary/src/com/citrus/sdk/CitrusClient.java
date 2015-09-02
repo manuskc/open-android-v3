@@ -1217,9 +1217,22 @@ public class CitrusClient {
 
                 String url;
                 if (billUrl.contains("?")) {
-                    url = billUrl + "&amount=" + originalAmount.getValueAsFormattedDouble(format) + "&dp_operation=" + dynamicPricingRequestType.getDPOperationName();
+                    url = billUrl + "&amount=" + originalAmount.getValueAsFormattedDouble(format);
                 } else {
-                    url = billUrl + "?amount=" + originalAmount.getValueAsFormattedDouble(format) + "&dp_operation=" + dynamicPricingRequestType.getDPOperationName();
+                    url = billUrl + "?amount=" + originalAmount.getValueAsFormattedDouble(format);
+                }
+
+                String dpOperation = "&dpOperation=" + dynamicPricingRequestType.getDPOperationName();
+                if (dynamicPricingRequestType instanceof DynamicPricingRequestType.SearchAndApplyRule) {
+                    url = url + dpOperation;
+                } else if (dynamicPricingRequestType instanceof DynamicPricingRequestType.CalculatePrice) {
+                    String ruleName = "&ruleName=" + ((DynamicPricingRequestType.CalculatePrice) dynamicPricingRequestType).getRuleName();
+                    url = url + dpOperation + ruleName;
+                } else if (dynamicPricingRequestType instanceof DynamicPricingRequestType.ValidateRule) {
+                    String ruleName = "&ruleName=" + ((DynamicPricingRequestType.ValidateRule) dynamicPricingRequestType).getRuleName();
+                    Amount alteredAmount = ((DynamicPricingRequestType.ValidateRule) dynamicPricingRequestType).getAlteredAmount();
+                    String alteredAmountValue = "&alteredAmount=" + alteredAmount.getValueAsFormattedDouble(format);
+                    url = url + dpOperation + ruleName + alteredAmountValue;
                 }
 
                 getBill(url, originalAmount, new Callback<PaymentBill>() {

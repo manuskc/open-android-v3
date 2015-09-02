@@ -26,9 +26,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.citrus.sdk.Callback;
@@ -40,7 +42,6 @@ import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.sdk.response.PaymentResponse;
 
 import static com.citrus.sample.Utils.PaymentType.CITRUS_CASH;
-import static com.citrus.sample.Utils.PaymentType.DYNAMIC_PRICING;
 import static com.citrus.sample.Utils.PaymentType.LOAD_MONEY;
 import static com.citrus.sample.Utils.PaymentType.PG_PAYMENT;
 
@@ -220,7 +221,7 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
     }
 
     private void performDP() {
-        showPrompt(DYNAMIC_PRICING);
+        showDynamicPricingPrompt();
     }
 
     private void showPrompt(final Utils.PaymentType paymentType) {
@@ -238,10 +239,6 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
                 positiveButtonText = "Pay";
                 break;
             case PG_PAYMENT:
-                message = "Please enter the transaction amount.";
-                positiveButtonText = "Make Payment";
-                break;
-            case DYNAMIC_PRICING:
                 message = "Please enter the transaction amount.";
                 positiveButtonText = "Make Payment";
                 break;
@@ -430,6 +427,70 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         });
 
         editAmount.requestFocus();
+        alert.show();
+    }
+
+    private void showDynamicPricingPrompt() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        String message = "Apply Dynamic Pricing";
+        String positiveButtonText = "Apply";
+        final Utils.DPRequestType[] dpRequestType = new Utils.DPRequestType[1];
+
+        LinearLayout linearLayout = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.dynamic_pricing_input_layout, null);
+        final EditText editTransactionAmount = (EditText) linearLayout.findViewById(R.id.edit_txn_amount);
+        final EditText editCouponCode = (EditText) linearLayout.findViewById(R.id.edit_coupon_code);
+        final EditText editAlteredAmount = (EditText) linearLayout.findViewById(R.id.edit_altered_amount);
+        Spinner spinner = (Spinner) linearLayout.findViewById(R.id.spinner_dp_request_type);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                switch (position) {
+                    case 0:
+                        dpRequestType[0] = Utils.DPRequestType.SEARCH_AND_APPLY;
+                        break;
+                    case 1:
+                        dpRequestType[0] = Utils.DPRequestType.CALCULATE_PRICING;
+                        break;
+                    case 2:
+                        dpRequestType[0] = Utils.DPRequestType.VALIDATE_RULE;
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        alert.setTitle("Perform Dynamic Pricing");
+        alert.setMessage(message);
+
+        alert.setView(linearLayout);
+        alert.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String amount = editTransactionAmount.getText().toString();
+                String alteredAmount = editAlteredAmount.getText().toString();
+                String couponCode = editCouponCode.getText().toString();
+
+                mListener.onPaymentTypeSelected(dpRequestType[0], new Amount(amount), couponCode, new Amount(alteredAmount));
+
+                // Hide the keyboard.
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(editTransactionAmount.getWindowToken(), 0);
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        });
+
+        editTransactionAmount.requestFocus();
         alert.show();
     }
 }
