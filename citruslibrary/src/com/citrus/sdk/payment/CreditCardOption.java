@@ -14,6 +14,7 @@
 package com.citrus.sdk.payment;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 
 import com.citrus.sdk.classes.Month;
 import com.citrus.sdk.classes.Year;
@@ -78,7 +79,12 @@ public final class CreditCardOption extends CardOption implements android.os.Par
     }
 
     @Override
-    public String getPaymentMode() {
+    public String getDynamicPricingPaymentMode() {
+        // In case of tokenized payments. The payment mode is CITRUS_WALLET
+        if (!TextUtils.isEmpty(token)) {
+            return "CITRUS_WALLET";
+        }
+        
         return "CREDIT_CARD";
     }
 

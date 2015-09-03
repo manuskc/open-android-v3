@@ -440,6 +440,8 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         final EditText editTransactionAmount = (EditText) linearLayout.findViewById(R.id.edit_txn_amount);
         final EditText editCouponCode = (EditText) linearLayout.findViewById(R.id.edit_coupon_code);
         final EditText editAlteredAmount = (EditText) linearLayout.findViewById(R.id.edit_altered_amount);
+        final LinearLayout layoutCouponCode = (LinearLayout) linearLayout.findViewById(R.id.layout_for_coupon_code);
+        final LinearLayout layoutAlteredAmount = (LinearLayout) linearLayout.findViewById(R.id.layout_for_altered_amount);
         Spinner spinner = (Spinner) linearLayout.findViewById(R.id.spinner_dp_request_type);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -448,12 +450,18 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
                 switch (position) {
                     case 0:
                         dpRequestType[0] = Utils.DPRequestType.SEARCH_AND_APPLY;
+                        layoutCouponCode.setVisibility(View.GONE);
+                        layoutAlteredAmount.setVisibility(View.GONE);
                         break;
                     case 1:
                         dpRequestType[0] = Utils.DPRequestType.CALCULATE_PRICING;
+                        layoutCouponCode.setVisibility(View.VISIBLE);
+                        layoutAlteredAmount.setVisibility(View.GONE);
                         break;
                     case 2:
                         dpRequestType[0] = Utils.DPRequestType.VALIDATE_RULE;
+                        layoutCouponCode.setVisibility(View.VISIBLE);
+                        layoutAlteredAmount.setVisibility(View.VISIBLE);
                         break;
                 }
             }

@@ -25,6 +25,7 @@ import com.citrus.sdk.classes.CitrusException;
 import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
+import com.citrus.sdk.payment.CitrusCash;
 import com.citrus.sdk.payment.PaymentOption;
 import com.citrus.sdk.payment.PaymentType;
 import com.citrus.sdk.response.CitrusError;
@@ -78,6 +79,8 @@ public class SavedOptionsFragment extends Fragment {
             amount = bundle.getParcelable("amount");
             alteredAmount = bundle.getParcelable("alteredAmount");
             couponCode = bundle.getString("couponCode");
+
+            walletList = new ArrayList<>();
         }
     }
 
@@ -104,11 +107,32 @@ public class SavedOptionsFragment extends Fragment {
 
         recylerViewNetbanking.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new OnItemClickListener()));
 
+        // In Case of DP show Citrus Cash As a Payment Option
+        if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+            citrusClient.getBalance(new Callback<Amount>() {
+                @Override
+                public void success(Amount amount) {
+                    CitrusCash citrusCash = new CitrusCash(amount.getValue());
+                    walletList.add(0, citrusCash);
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    //NOOP
+                }
+            });
+        }
+
+
         citrusClient.getWallet(new Callback<List<PaymentOption>>() {
             @Override
             public void success(List<PaymentOption> paymentOptionList) {
-                walletList = (ArrayList<PaymentOption>) paymentOptionList;
-
+                // In Case of DP show Citrus Cash As a Payment Option
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    walletList.addAll(1, paymentOptionList);
+                } else {
+                    walletList.addAll(0, paymentOptionList);
+                }
                 savedOptionsAdapter.setWalletList(walletList);
                 savedOptionsAdapter.notifyDataSetChanged();
             }

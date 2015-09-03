@@ -97,7 +97,7 @@ public class DynamicPricingRequest {
                     jsonObject.put("cardType", ((CardOption) paymentOption).getCardScheme().toString());
                 }
 
-                jsonObject.put("paymentMode", paymentOption.getPaymentMode());
+                jsonObject.put("paymentMode", paymentOption.getDynamicPricingPaymentMode());
             }
         } catch (JSONException e) {
             e.printStackTrace();
