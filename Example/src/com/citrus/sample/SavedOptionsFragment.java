@@ -128,7 +128,7 @@ public class SavedOptionsFragment extends Fragment {
             @Override
             public void success(List<PaymentOption> paymentOptionList) {
                 // In Case of DP show Citrus Cash As a Payment Option
-                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING && walletList.size() == 1) {
                     walletList.addAll(1, paymentOptionList);
                 } else {
                     walletList.addAll(0, paymentOptionList);

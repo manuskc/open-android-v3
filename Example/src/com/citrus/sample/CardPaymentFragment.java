@@ -112,14 +112,30 @@ public class CardPaymentFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return SavedOptionsFragment.newInstance(dpRequestType, amount, couponCode, alteredAmount);
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    return SavedOptionsFragment.newInstance(dpRequestType, amount, couponCode, alteredAmount);
+                } else {
+                    return SavedOptionsFragment.newInstance(paymentType, amount);
+                }
             } else if (position == 1) {
-                return CreditDebitCardFragment.newInstance(dpRequestType, CType.CREDIT, amount, couponCode, alteredAmount);
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    return CreditDebitCardFragment.newInstance(dpRequestType, CType.CREDIT, amount, couponCode, alteredAmount);
+                } else {
+                    return CreditDebitCardFragment.newInstance(paymentType, CType.CREDIT, amount);
+                }
             }
             if (position == 2) {
-                return CreditDebitCardFragment.newInstance(dpRequestType, CType.DEBIT, amount, couponCode, alteredAmount);
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    return CreditDebitCardFragment.newInstance(dpRequestType, CType.DEBIT, amount, couponCode, alteredAmount);
+                } else {
+                    return CreditDebitCardFragment.newInstance(paymentType, CType.DEBIT, amount);
+                }
             } else {
-                return NetbankingFragment.newInstance(dpRequestType, amount, couponCode, alteredAmount);
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    return NetbankingFragment.newInstance(dpRequestType, amount, couponCode, alteredAmount);
+                } else {
+                    return NetbankingFragment.newInstance(paymentType, amount);
+                }
             }
         }
 
