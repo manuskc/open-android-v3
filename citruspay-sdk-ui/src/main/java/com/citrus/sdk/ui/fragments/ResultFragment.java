@@ -74,6 +74,7 @@ public class ResultFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        mListener.toggleAmountVisibility(View.GONE);
         View layout = inflater.inflate(R.layout.fragment_result, container, false);
         paymentResultImage = (ImageView) layout.findViewById(R.id.payment_result_image);
         paymentResultText = (CitrusTextView) layout.findViewById(R.id.payment_result_text);
@@ -110,7 +111,7 @@ public class ResultFragment extends Fragment {
                     paymentFailureActions.setVisibility(View.GONE);
                     noWalletLayout.setVisibility(View.VISIBLE);
                     walletAvailableLayout.setVisibility(View.GONE);
-                    amountPaidText.setText(resultModel.getTransactionResponse().getTransactionAmount()
+                    amountPaidText.setText(getString(R.string.rs)+resultModel.getTransactionResponse().getTransactionAmount()
                             .getValue());
                     transactionIdText.setText(resultModel.getTransactionResponse().getTransactionDetails
                             ().getTransactionId());
@@ -120,6 +121,7 @@ public class ResultFragment extends Fragment {
                     paymentResultText.setText(getString(R.string.text_payment_failure));
                     transactionIdLabel.setText(getString(R.string.text_error_transaction_id));
                     amountPaidLabel.setText(getString(R.string.text_error_message));
+                    amountPaidLabel.setVisibility(View.GONE);
                     paymentFailureActions.setVisibility(View.VISIBLE);
                     noWalletLayout.setVisibility(View.GONE);
                     walletAvailableLayout.setVisibility(View.GONE);

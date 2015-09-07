@@ -1,10 +1,12 @@
 package com.citrus.sdk.ui.fragments;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -39,6 +41,7 @@ public class OTPConfirmationFragment extends Fragment {
     private android.widget.EditText citrusPassEt;
     private android.widget.TextView secondaryText;
     private android.widget.TextView primaryText;
+    private android.widget.TextView forgotPasswordView;
     private android.widget.LinearLayout emailOtpContainer;
     View root;
     private FragmentCallbacks mListener;
@@ -77,6 +80,7 @@ public class OTPConfirmationFragment extends Fragment {
         this.mobileOtpContainer = (LinearLayout) root.findViewById(R.id.mobile_otp_container);
         this.mobileOtpEt = (EditText) root.findViewById(R.id.mobile_otp_et);
         this.primaryText = (TextView) root.findViewById(R.id.primary_text);
+        this.forgotPasswordView = (TextView) root.findViewById(R.id.forgot_password_view);
         this.secondaryText = (TextView) root.findViewById(R.id.secondary_text);
         mobileOtpContainer.setVisibility(View.GONE);
         primaryText.setText(userEmail);
@@ -132,13 +136,44 @@ public class OTPConfirmationFragment extends Fragment {
                 return false;
             }
         });
+        forgotPasswordView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.showProgressDialog(false,getString(R.string.text_processing));
+                CitrusClient.getInstance(getActivity()).resetPassword(userEmail, new Callback<CitrusResponse>() {
+
+
+                    @Override
+                    public void success(CitrusResponse citrusResponse) {
+                        mListener.dismissProgressDialog();
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.text_password_reset_title)
+                                .setMessage(String.format(getString(R.string.text_password_reset_link),userEmail ))
+                                .setPositiveButton(R.string.ok_got_it, new DialogInterface
+                                        .OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // continue with delete
+                                    }
+                                })
+                                .show();
+                    }
+
+                    @Override
+                    public void error(CitrusError error) {
+                        mListener.dismissProgressDialog();
+                        Snackbar.make(root, error.getMessage(), Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                });
+            }
+        });
         Utils.openKeyboard(citrusPassEt);
         return root;
     }
 
     private void signin() {
         if (validate()) {
-            mListener.showProgressDialog(false, "Signing in..");
+            mListener.showProgressDialog(false, getString(R.string.text_signing_in));
             CitrusClient.getInstance(getActivity()).signIn(userEmail, citrusPassEt
                     .getText().toString().trim(), new
                     Callback<CitrusResponse>() {

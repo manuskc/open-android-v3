@@ -109,6 +109,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <com.citrus.sdk.ui.widgets.CitrusButton
                 android:id="@+id/button_withdraw_money"
                 android:layout_width="match_parent"
@@ -121,6 +122,13 @@
                 android:textColor="@color/citrus_white"
                 android:textSize="14sp"
                 app:textStyle="@integer/OPENSANS_REGULAR"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp16"
+                android:layout_centerHorizontal="true"
+                android:layout_above="@id/button_withdraw_money"
+                android:src="@drawable/img_powered_by"/>
         </RelativeLayout>
     </LinearLayout>
 

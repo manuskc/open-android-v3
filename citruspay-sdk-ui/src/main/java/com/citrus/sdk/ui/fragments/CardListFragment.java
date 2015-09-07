@@ -83,7 +83,7 @@ public class CardListFragment extends Fragment implements CardListAdapter.Delete
 
     private void getCardList() {
         Logger.d(TAG + " Getting card list");
-        mListener.showProgressDialog(false,"Loading saved cards..");
+        mListener.showProgressDialog(false, getString(R.string.loading_saved_cards));
         CitrusClient.getInstance(getActivity()).getWallet(new com.citrus.sdk.Callback<List<PaymentOption>>() {
             @Override
             public void success(List<PaymentOption> paymentOptions) {
@@ -157,7 +157,7 @@ public class CardListFragment extends Fragment implements CardListAdapter.Delete
     @Override
     public void deleteItem(final int position) {
         if(savedCardListComplete !=null && !savedCardListComplete.isEmpty()&&isAdded()){
-            mListener.showProgressDialog(false,"Deleting card...");
+            mListener.showProgressDialog(false,getString(R.string.deleting_cards));
             CitrusClient.getInstance(getActivity()).deletePaymentOption(savedCardListComplete.get(position), new Callback<CitrusResponse>() {
 
 

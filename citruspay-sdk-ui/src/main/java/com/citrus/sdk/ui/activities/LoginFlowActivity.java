@@ -59,4 +59,10 @@ public class LoginFlowActivity extends BaseActivity {
     public void showWalletBalance(String amount) {
 
     }
+    @Override
+    public void toggleAmountVisibility(int visibility) {
+
+    }
+
+
 }

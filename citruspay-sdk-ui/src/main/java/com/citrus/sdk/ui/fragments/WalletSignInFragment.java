@@ -45,6 +45,7 @@ public class WalletSignInFragment extends Fragment {
     private final String password = "Citrus@123";
     private FragmentCallbacks mListener;
     private CitrusClient citrusClient;
+    private Callback<Boolean> signinCallback;
 
 
     public WalletSignInFragment() {
@@ -102,7 +103,7 @@ public class WalletSignInFragment extends Fragment {
                 return false;
             }
         });
-                    setPhoneNumPrefix(UIConstants.PHONE_NUM_PREFIX_UI_FORMATTED);
+        setPhoneNumPrefix(UIConstants.PHONE_NUM_PREFIX_UI_FORMATTED);
         phoneNoET.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -139,31 +140,11 @@ public class WalletSignInFragment extends Fragment {
 
     private void signIn() {
         if (validateDetails()) {
-            final String email = emailAddressET.getText().toString().trim();
-            final String mobile = phoneNoET.getText().toString().trim();
-            mListener.showProgressDialog(false,getString(R.string.text_searching_user));
-            citrusClient.isCitrusMember(email, mobile, new Callback<Boolean>() {
-                @Override
-                public void success(Boolean success) {
-                    if (success) {
-                        Logger.d(TAG + " User already exists");
-                        mListener.dismissProgressDialog();
-                        mListener.navigateTo(OTPConfirmationFragment.newInstance(email,
-                                        Utils.formatPhoneNumber(mobile)),
-                                UIConstants.SCREEN_OTP_CONFIRMATION);
-                    } else {
-                        Logger.d(TAG + " New user");
-                        mListener.dismissProgressDialog();
-                        mListener.navigateTo(SignUpFragment.newInstance(email,
-                                mobile), UIConstants.SCREEN_SIGNUP);
-                    }
-                }
-
-                @Override
-                public void error(CitrusError error) {
-
-                }
-            });
+            String email = emailAddressET.getText().toString().trim();
+            String mobile = phoneNoET.getText().toString().trim();
+//            mobile = mobile.replace(UIConstants.PHONE_NUM_PREFIX_UI_FORMATTED,"");
+            mListener.showProgressDialog(false, getString(R.string.text_searching_user));
+            citrusClient.isCitrusMember(email, mobile, getSigninCallback(email,mobile));
         }
     }
 
@@ -192,7 +173,8 @@ public class WalletSignInFragment extends Fragment {
             Snackbar.make(root, "Phone number is required", Snackbar.LENGTH_SHORT).show();
             phoneNoET.requestFocus();
             return false;
-        } else if (mobile.length() < (UIConstants.PHONE_NUM_MIN_LENGTH_INDIA +UIConstants.PHONE_NUM_PREFIX_UI_FORMATTED.length())) {
+        } else if (mobile.length() < (UIConstants.PHONE_NUM_MIN_LENGTH_INDIA + UIConstants
+                .PHONE_NUM_PREFIX_UI_FORMATTED.length())) {
             Snackbar.make(root, "Please enter correct phone number", Snackbar.LENGTH_SHORT).show();
             phoneNoET.requestFocus();
             return false;
@@ -223,10 +205,36 @@ public class WalletSignInFragment extends Fragment {
             spannable = new SpannableString(UIConstants.PHONE_NUM_PREFIX_UI_FORMATTED);
         }
         spannable.setSpan(new ForegroundColorSpan(getResources().getColor(R.color
-                .citrus_label_color)), 0, UIConstants.PHONE_NUM_PREFIX_UI_FORMATTED.length(), Spannable
+                .citrus_label_color)), 0, UIConstants.PHONE_NUM_PREFIX_UI_FORMATTED.length(),
+                Spannable
                 .SPAN_EXCLUSIVE_EXCLUSIVE);
         Selection.setSelection(phoneNoET.getText(), phoneNoET.getText().length());
         phoneNoET.setText(spannable);
     }
 
+    public Callback<Boolean> getSigninCallback(final String email, final String mobile) {
+
+        return new Callback<Boolean>() {
+            @Override
+            public void success(Boolean success) {
+                if (success) {
+                    Logger.d(TAG + " User already exists");
+                    mListener.dismissProgressDialog();
+                    mListener.navigateTo(OTPConfirmationFragment.newInstance(email,
+                                    Utils.formatPhoneNumber(mobile)),
+                            UIConstants.SCREEN_OTP_CONFIRMATION);
+                } else {
+                    Logger.d(TAG + " New user");
+                    mListener.dismissProgressDialog();
+                    mListener.navigateTo(SignUpFragment.newInstance(email,
+                            mobile), UIConstants.SCREEN_SIGNUP);
+                }
+            }
+
+            @Override
+            public void error(CitrusError error) {
+
+            }
+        };
+    }
 }

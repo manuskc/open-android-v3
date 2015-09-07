@@ -5,6 +5,7 @@
           android:layout_height="match_parent"
           android:divider="@null"
           android:dividerHeight="0dp"
+          android:background="@color/citrus_white"
           tools:context="com.citrus.sdk.ui.fragments.BankListFragment">
 
 

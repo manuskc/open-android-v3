@@ -72,6 +72,7 @@ public class QuickPayFragment extends Fragment {
     LinearLayout payWithBank,payWithNew;
     LinearLayout paymentModeList;
     LinearLayout layoutPayWithCard;
+    LinearLayout brandingLayout;
     Button setupWalletButton, payNowButton, addMoneyNPay;
     FragmentCallbacks mListener;
     boolean walletPaymentComplete = false;
@@ -130,6 +131,7 @@ public class QuickPayFragment extends Fragment {
         payNowButton = (Button) layout.findViewById(R.id.pay_now);
         addMoneyNPay = (Button) layout.findViewById(R.id.add_money_pay);
         layoutPayWithCard = (LinearLayout) layout.findViewById(R.id.pay_with_card);
+        brandingLayout = (LinearLayout) layout.findViewById(R.id.branding_layout);
         citrusClient = CitrusClient.getInstance(getActivity());
 //        payNowButton.setBackground(getButtonDrawableColor());
 //        setupWalletButton.setBackground(getButtonDrawableColor());
@@ -425,7 +427,7 @@ public class QuickPayFragment extends Fragment {
     private void getWallet(final boolean showLoading) {
         if (isAdded()) {
             if (showLoading) {
-                showDialog(getString(R.string.text_loading_wallet), false);
+                showDialog(getString(R.string.load_wallet_details), false);
             }
             citrusClient.getWallet(new com.citrus.sdk.Callback<List<PaymentOption>>() {
                 @Override
@@ -575,11 +577,12 @@ public class QuickPayFragment extends Fragment {
             payWithNew.setVisibility(View.VISIBLE);
             otherBanksText.setText(getString(R.string.text_select_bank));
         }
+        brandingLayout.setVisibility(View.VISIBLE);
     }
 
     private void linkUser() {
         Logger.d(TAG + " linkUser");
-        showDialog("Linking User", false);
+        showDialog(getString(R.string.linking_user), false);
         citrusClient.isCitrusMember(email, mobile, new com.citrus.sdk.Callback<Boolean>() {
 
             @Override
@@ -588,7 +591,7 @@ public class QuickPayFragment extends Fragment {
                     dismissDialog();
                     Logger.d(TAG + " Link User success " + aBoolean);
                     getWallet(true);
-                    ((BaseActivity)getActivity()).isNewUser = false;
+                    ((BaseActivity) getActivity()).isNewUser = false;
                 }
             }
 
@@ -596,19 +599,38 @@ public class QuickPayFragment extends Fragment {
             public void error(CitrusError citrusError) {
                 if (isAdded()) {
                     dismissDialog();
-                    ((BaseActivity)getActivity()).isNewUser = false;
+                    ((BaseActivity) getActivity()).isNewUser = false;
                     Logger.d(TAG + " Link User failure " + citrusError.getMessage());
-                    Snackbar.make(layout,"Link User failure " + citrusError.getMessage(),Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(layout, "Link User failure " + citrusError.getMessage(),
+                            Snackbar.LENGTH_LONG).show();
                 }
             }
         });
     }
 
     private void getBalance() {
-        if (isAdded()) {
-            showDialog("Getting Wallet balance", false);
-            Utils.getBalance(getActivity());
-        }
+
+        citrusClient.isUserSignedIn(new Callback<Boolean>() {
+            @Override
+            public void success(Boolean success) {
+
+                if (success) {
+
+                    if (isAdded()) {
+                        showDialog(getString(R.string.load_wallet_balance), false);
+                        Utils.getBalance(getActivity());
+                    }
+                }else{
+                    walletDetailsContainer.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void error(CitrusError error) {
+                Snackbar.make(layout, "could not get login status " + error
+                        .getMessage(), Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showWalletDetails(Amount amount) {

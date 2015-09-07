@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
@@ -50,6 +51,7 @@ public class GetCVVFragment extends Fragment {
     private TextView cardHolderName;
     private TextView cardExpiry;
     FragmentCallbacks mListener;
+    ImageView checkView;
     String transactionType =UIConstants.TRANS_QUICK_PAY;
     String addMoneyAmount;
     boolean walletPaymentComplete = false;
@@ -86,6 +88,8 @@ public class GetCVVFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the parentLayout for this fragment
+
+        mListener.toggleAmountVisibility(View.GONE);
         View layout =  inflater.inflate(R.layout.fragment_get_cvv, container, false);
         cvvEditText = (CustomEditText)layout.findViewById(R.id.cvv_edit_text);
         checkboxContainer = (LinearLayout)layout.findViewById(R.id.checkbox_container);
@@ -93,6 +97,7 @@ public class GetCVVFragment extends Fragment {
         textCardNumber = (TextView) layout.findViewById(R.id.card_number_text);
         cardHolderName = (TextView)layout.findViewById(R.id.text_card_holder_name);
         cardExpiry = (TextView)layout.findViewById(R.id.text_card_validity);
+        checkView = (ImageView)layout.findViewById(R.id.check_view);
         cvvEditText.requestFocus();
         checkboxContainer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,18 +153,29 @@ public class GetCVVFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int textCount = s.length();
-                Logger.d(TAG + " new =  " + textCount);
-                Logger.d(TAG + " previous =  " + previousTextCount);
-                if (textCount <= cvvLength) {
-                    if (previousTextCount == textCount - 1) {
-                        ((RadioButton) checkboxContainer.getChildAt(textCount - 1)).setChecked
-                                (true);
-                    } else if (previousTextCount == textCount + 1) {
-                        ((RadioButton) checkboxContainer.getChildAt(previousTextCount - 1))
-                                .setChecked(false);
+
+                if(textCount >cvvLength){
+                    cvvEditText.setText(s.subSequence(0,cvvLength));
+                }else {
+                    Logger.d(TAG + " new =  " + textCount);
+                    Logger.d(TAG + " previous =  " + previousTextCount);
+                    if (textCount <= cvvLength) {
+                        if (previousTextCount == textCount - 1) {
+                            ((RadioButton) checkboxContainer.getChildAt(textCount - 1)).setChecked
+                                    (true);
+                        } else if (previousTextCount == textCount + 1) {
+                            ((RadioButton) checkboxContainer.getChildAt(previousTextCount - 1))
+                                    .setChecked(false);
+                        }
                     }
+
+                    if (textCount == cvvLength) {
+                        checkView.setVisibility(View.VISIBLE);
+                    } else {
+                        checkView.setVisibility(View.GONE);
+                    }
+                    previousTextCount = textCount;
                 }
-                previousTextCount = textCount;
 
             }
 

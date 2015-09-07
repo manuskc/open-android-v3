@@ -177,7 +177,7 @@ public class AddMoneyOptionsFragment extends Fragment {
 
     private void getWallet() {
         if (isAdded()) {
-            mListener.showProgressDialog(false, "getting Wallet details");
+            mListener.showProgressDialog(false, getString(R.string.load_wallet_details));
             CitrusClient.getInstance(getActivity()).getWallet(new com.citrus.sdk
                     .Callback<List<PaymentOption>>
                     () {
@@ -243,7 +243,7 @@ public class AddMoneyOptionsFragment extends Fragment {
                     } else {
                         bankItem.findViewById(R.id.separator).setVisibility(View.VISIBLE);
                     }
-                    if (netbankingOption.getPgHealth()!=null) {
+                    if (netbankingOption.getPgHealth()!= null) {
                         if (netbankingOption.getPgHealth().equals(PGHealth.BAD)) {
                             warnIcon.setVisibility(View.VISIBLE);
                         } else {

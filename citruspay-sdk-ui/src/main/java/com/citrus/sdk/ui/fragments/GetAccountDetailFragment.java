@@ -128,7 +128,7 @@ public class GetAccountDetailFragment extends Fragment {
     private void saveAccountInfo() {
         Logger.d(TAG+" saving Account Info");
         cashoutInfo =  new CashoutInfo(new Amount(withdrawAmount),accountNumber,ownerName, ifscCode);
-        mListener.showProgressDialog(false,"Saving...");
+        mListener.showProgressDialog(false,getString(R.string.saving_account_info));
         CitrusClient.getInstance(getActivity()).saveCashoutInfo(cashoutInfo, new
                 Callback<CitrusResponse>() {
 

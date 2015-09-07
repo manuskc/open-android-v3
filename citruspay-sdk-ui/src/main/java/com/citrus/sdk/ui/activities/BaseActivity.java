@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.PaymentOption;
@@ -186,7 +187,8 @@ public abstract class BaseActivity extends AppCompatActivity  implements Fragmen
     }
 
     protected void setActionBarTitle(int screenShopping) {
-        Logger.d(TAG+" setActionBarTitle" + screenShopping);
+        Logger.d(TAG + " setActionBarTitle" + screenShopping);
+        toggleAmountVisibility(View.VISIBLE);
         switch (screenShopping){
             case UIConstants.SCREEN_SHOPPING:
                 setSpannableTitle(getString(R.string.text_shopmatic_tores));
@@ -194,6 +196,7 @@ public abstract class BaseActivity extends AppCompatActivity  implements Fragmen
             case UIConstants.SCREEN_CVV:
                 setSpannableTitle("");
                 animateActionbarColor(AnimationType.ANIM_PLAY);
+                toggleAmountVisibility(View.GONE);
                 break;
             case UIConstants.SCREEN_ADD_CARD:
                 setSpannableTitle(getString(R.string.text_add_card));
@@ -212,6 +215,7 @@ public abstract class BaseActivity extends AppCompatActivity  implements Fragmen
                 break;
             case UIConstants.SCREEN_ADD_MONEY:
                 setSpannableTitle(getString(R.string.text_my_wallet));
+                toggleAmountVisibility(View.GONE);
                 break;
             case UIConstants.SCREEN_WALLET:
                 setSpannableTitle(getString(R.string.text_my_wallet));

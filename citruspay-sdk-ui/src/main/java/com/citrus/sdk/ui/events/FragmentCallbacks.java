@@ -24,4 +24,5 @@ public interface FragmentCallbacks {
     public String getMobile();
     public String getAmount();
     public int getStyle();
+    public void toggleAmountVisibility(int visibility);
 }

@@ -171,7 +171,7 @@ public class AddMoneyFragment extends Fragment {
 
     private void getBalance() {
         if (isAdded()) {
-            mListener.showProgressDialog(false, "Getting Wallet balance");
+            mListener.showProgressDialog(false, getString(R.string.load_wallet_balance));
             Utils.getBalance(getActivity());
         }
     }

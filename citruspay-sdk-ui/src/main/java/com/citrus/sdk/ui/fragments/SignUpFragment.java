@@ -77,7 +77,7 @@ public class SignUpFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (validate()) {
-                    mListener.showProgressDialog(false, "Signing up User...");
+                    mListener.showProgressDialog(false, getString(R.string.text_signing_up));
                     CitrusClient.getInstance(getActivity()).signUp(userEmail, userMobile,
                             citrusPassEt.getText().toString().trim(), new
                                     Callback<CitrusResponse>() {

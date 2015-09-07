@@ -41,12 +41,12 @@
     <string name="text_error_message">Error Message</string>
     <string name="text_wallet_switch">
         <![CDATA[You can try our wallet for cashless payments & get exciting offers]]></string>
-    <string name="thanks_text">Thanks! We\’d love to see you again :)</string>
-    <string name="text_go_to_my_wallet">GOTO MY WALLET</string>
+    <string name="thanks_text">Thank you for using citrus checkout.</string>
+    <string name="text_go_to_my_wallet">GO TO MY WALLET</string>
     <string name="text_retry_transaction">Retry Transaction</string>
     <string name="text_dismiss">Dismiss</string>
-    <string name="text_error">Error</string>
-    <string name="text_all_done">All Done</string>
+    <string name="text_error">Error!</string>
+    <string name="text_all_done">All Done!</string>
     <string name="text_make_payment">Make Payment</string>
     <string name="app_title">Citrus Pay SDK UI</string>
     <string name="text_credit_card">Credit Card</string>
@@ -57,8 +57,8 @@
     <string name="err_select_month_future">Please select an expiry month in the future.</string>
     <string name="err_select_year">Please select an expiry year</string>
     <string name="text_bank_list">Net banking options</string>
-    <string name="text_getting_bank_list">Loading bank list</string>
-    <string name="text_saving_card">Saving your card</string>
+    <string name="text_getting_bank_list">Loading bank list&#8230;</string>
+    <string name="text_saving_card">Saving your card&#8230;</string>
     <string name="text_wallet_signin">
         <![CDATA[Go Cashless with Citrus & Make Payments in a Jiffy!]]></string>
     <string name="hint_email">EMAIL ADDRESS</string>
@@ -117,7 +117,6 @@
     <string name="text_my_banks">My Banks</string>
     <string name="text_no_saved_cards">You have no saved Cards.</string>
     <string name="text_manage_cards">Manage Cards</string>
-    <string name="text_loading_wallet">Getting wallet details</string>
     <string name="err_card_no">Card number you entered is not correct.</string>
     <string name="string_alphabets_with_space">"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
         "
@@ -143,7 +142,7 @@
             withdrawals.
         </a>
     </string>
-    <string name="getting_account_info">Getting account info</string>
+    <string name="getting_account_info">Getting account info&#8230;</string>
     <string name="text_saved_options">My Saved Options</string>
     <string name="err_invalid_card">The card number you entered is invalid.</string>
     <string name="transaction_complete">Your trasaction has been completed, please start a fresh
@@ -157,5 +156,21 @@
     <string name="text_searching_user">Searching User&#8230;</string>
     <string name="hint_create_citrus_pass">CREATE CITRUS PASSWORD</string>
     <string name="terms_and_conditions">Terms &amp; Conditions</string>
+    <string name="load_wallet_balance">Getting wallet balance&#8230;</string>
+    <string name="load_wallet_details">Getting wallet details&#8230;</string>
+    <string name="loading_saved_cards">Loading saved cards&#8230;</string>
+    <string name="deleting_cards">Deleting Cards&#8230;</string>
+    <string name="saving_account_info">Saving&#8230;</string>
+    <string name="text_signing_in">Signing In&#8230;</string>
+    <string name="text_signing_up">Signing Up&#8230;</string>
+    <string name="linking_user">Linking user&#8230;</string>
+    <string name="text_add">Add</string>
+    <string name="text_pay_with_net_banking">Pay with Net Banking</string>
+    <string name="text_forgot_password">Forgot Password ?</string>
+    <string name="text_processing">Processing&#8230;</string>
+    <string name="text_password_reset_link">A password reset link has been sent to you on %1$s, please
+        login to your email account and reset your password.
+    </string>
+    <string name="text_password_reset_title">Password Reset</string>
 
 </resources>

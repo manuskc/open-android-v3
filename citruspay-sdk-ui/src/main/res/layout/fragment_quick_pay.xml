@@ -31,7 +31,7 @@
                 android:id="@+id/label_my_cash"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/text_my_cash"
+                android:text="@string/text_my_wallet"
                 android:textAllCaps="true"
                 android:textColor="@color/citrus_label_color"
                 android:textSize="14sp"
@@ -140,7 +140,13 @@
                  layout="@layout/layout_pay_with_bank"/>
         <include android:id="@+id/pay_with_new"
                  layout="@layout/layout_pay_new"/>
-
+        <include
+            android:id="@+id/branding_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility ="gone"
+            android:layout_below="@id/pay_with_new"
+            layout="@layout/layout_citrus_trust_powered"/>
 
     </LinearLayout>
 </ScrollView>

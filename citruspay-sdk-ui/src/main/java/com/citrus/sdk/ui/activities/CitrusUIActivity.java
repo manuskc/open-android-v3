@@ -43,7 +43,8 @@ import com.orhanobut.logger.Logger;
 
 public class CitrusUIActivity extends BaseActivity  {
     private int flow = 0;
-    public TextView amountText, balanceAmount;
+    private TextView amountText;
+    public TextView balanceAmount;
     public LinearLayout balanceContainer;
     public static final String TAG = "CitrusActivity$";
     Activity context;
@@ -221,6 +222,13 @@ public class CitrusUIActivity extends BaseActivity  {
         amountText.setVisibility(View.GONE);
         balanceAmount.setText(getString(R.string.rs)+" "+ amount);
         balanceContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void toggleAmountVisibility(int visibility) {
+        if (amountText!=null) {
+            amountText.setVisibility(visibility);
+        }
     }
 
     public String getPayAmount() {

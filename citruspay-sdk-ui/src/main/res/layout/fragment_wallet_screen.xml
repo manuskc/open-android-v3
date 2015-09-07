@@ -90,23 +90,8 @@
             android:layout_marginLeft="16dp"
             android:background="@color/citrus_separator_color"/>
 
-        <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@drawable/selector_list_item"-->
-        <!--android:drawableLeft="@drawable/hdfc_bank"-->
-        <!--android:drawablePadding="16dp"-->
-        <!--android:padding="16dp"-->
-        <!--android:text="@string/text_FAQ"-->
-        <!--android:textColor="@color/citrus_text_color"-->
-        <!--android:textSize="16sp"-->
-        <!--/>-->
-        <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="1dp"-->
-        <!--android:layout_marginLeft="16dp"-->
-        <!--android:background="@color/citrus_separator_color"/>-->
-
+        <include
+            layout="@layout/layout_citrus_trust_powered"/>
     </LinearLayout>
 </ScrollView>
 

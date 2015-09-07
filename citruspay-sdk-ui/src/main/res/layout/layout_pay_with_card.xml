@@ -11,19 +11,10 @@
               android:paddingTop="@dimen/dp16"
               android:layout_marginTop="8dp"
     >
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:textAllCaps="true"
-        android:text="@string/text_credit_debit"
-        android:textColor="@color/citrus_label_color"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:layout_marginTop="8dp"
         android:textAllCaps="true"
         android:text="@string/text_credit_debit_promotion"
         android:textColor="?attr/colorPrimary"/>
