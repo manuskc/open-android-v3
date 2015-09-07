@@ -81,7 +81,7 @@ public class EventsManager {
             citrusBaseURLClient.getMerchantName(Config.getVanity(), new Callback<String>() {
                 @Override
                 public void success(String s, Response response) {
-                    Logger.d("Merchant Name is ****" + s);
+                   // Logger.d("Merchant Name is ****" + s);
 
                     Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
                     t.send(new HitBuilders.EventBuilder().setCategory(s)
@@ -91,7 +91,7 @@ public class EventsManager {
 
                 @Override
                 public void failure(RetrofitError error) {
-                    Logger.d("Failed to get Merchant name *****");
+                    //Logger.d("Failed to get Merchant name *****");
                     Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
                     t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
                             .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
