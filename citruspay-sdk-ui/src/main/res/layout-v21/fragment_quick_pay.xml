@@ -31,7 +31,7 @@
                 android:id="@+id/label_my_cash"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/text_my_cash"
+                android:text="@string/text_my_wallet"
                 android:textAllCaps="true"
                 android:textColor="@color/citrus_label_color"
                 android:textSize="14sp"
@@ -85,7 +85,7 @@
             <Button
                 android:id="@+id/setup_wallet_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp56"
                 android:layout_below="@id/wallet_image"
                 android:layout_marginTop="@dimen/dp20"
                 android:paddingBottom="@dimen/dp10"
@@ -95,12 +95,11 @@
                 android:textSize="12sp"
                 android:text="@string/text_setup_your_wallet"
                 android:textAllCaps="true"
-                android:background="@drawable/selector_button"
                 android:textColor="@color/citrus_white"/>
             <Button
                 android:id="@+id/pay_now"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp56"
                 android:layout_below="@id/wallet_image"
                 android:layout_marginTop="@dimen/dp20"
                 android:paddingBottom="@dimen/dp10"
@@ -110,7 +109,6 @@
                 android:visibility="gone"
                 android:layout_marginRight="16dp"
                 android:text="@string/text_pay_now"
-                android:background="@drawable/selector_button"
                 android:textAllCaps="true"
                 android:textSize="12sp"
                 android:textColor="@color/citrus_white"/>
@@ -120,7 +118,7 @@
                 android:layout_toRightOf="@id/pay_now"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/wallet_image"
-                android:layout_marginTop="@dimen/dp20"
+                android:layout_marginTop="@dimen/dp24"
                 android:background="@drawable/selector_button_secondary"
                 android:paddingBottom="@dimen/dp10"
                 android:paddingLeft="@dimen/dp20"
@@ -141,8 +139,14 @@
         <include android:id="@+id/pay_with_bank"
                  layout="@layout/layout_pay_with_bank"/>
         <include android:id="@+id/pay_with_new"
-            layout="@layout/layout_pay_new"/>
-
+                 layout="@layout/layout_pay_new"/>
+        <include
+            android:id="@+id/branding_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility ="gone"
+            android:layout_below="@id/pay_with_new"
+            layout="@layout/layout_citrus_trust_powered"/>
 
     </LinearLayout>
 </ScrollView>

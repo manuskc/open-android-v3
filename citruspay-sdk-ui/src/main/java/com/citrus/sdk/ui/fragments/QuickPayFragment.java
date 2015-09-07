@@ -577,7 +577,14 @@ public class QuickPayFragment extends Fragment {
             payWithNew.setVisibility(View.VISIBLE);
             otherBanksText.setText(getString(R.string.text_select_bank));
         }
-        brandingLayout.setVisibility(View.VISIBLE);
+        if (brandingLayout != null) {
+            brandingLayout.setVisibility(View.VISIBLE);
+        }else{
+            brandingLayout = (LinearLayout) layout.findViewById(R.id.branding_layout);
+            if(brandingLayout !=null){
+                brandingLayout.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void linkUser() {

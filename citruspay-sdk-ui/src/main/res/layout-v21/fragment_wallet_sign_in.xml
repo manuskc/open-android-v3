@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
+        android:clickable="true"
         android:orientation="vertical"
         android:padding="@dimen/dp16">
         <ImageView
@@ -87,12 +88,11 @@
             <com.citrus.sdk.ui.widgets.CitrusButton
                 android:id="@+id/button_get_started"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/dp56"
                 android:layout_alignParentBottom="true"
                 android:padding="@dimen/dp15"
                 android:text="@string/text_get_started"
                 android:textColor="@color/citrus_white"
-                android:background="@drawable/selector_button"
                 android:textSize="14sp"
                 app:textStyle="@integer/OPENSANS_REGULAR"/>
             <ImageView

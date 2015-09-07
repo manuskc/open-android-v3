@@ -136,37 +136,41 @@ public class OTPConfirmationFragment extends Fragment {
                 return false;
             }
         });
-        forgotPasswordView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.showProgressDialog(false,getString(R.string.text_processing));
-                CitrusClient.getInstance(getActivity()).resetPassword(userEmail, new Callback<CitrusResponse>() {
+        if (forgotPasswordView != null) {
+            this.forgotPasswordView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!TextUtils.isEmpty(userEmail)) {
+                        mListener.showProgressDialog(false,getString(R.string.text_processing));
+                        CitrusClient.getInstance(getActivity()).resetPassword(userEmail, new Callback<CitrusResponse>() {
 
 
-                    @Override
-                    public void success(CitrusResponse citrusResponse) {
-                        mListener.dismissProgressDialog();
-                        new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.text_password_reset_title)
-                                .setMessage(String.format(getString(R.string.text_password_reset_link),userEmail ))
-                                .setPositiveButton(R.string.ok_got_it, new DialogInterface
-                                        .OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // continue with delete
-                                    }
-                                })
-                                .show();
+                            @Override
+                            public void success(CitrusResponse citrusResponse) {
+                                mListener.dismissProgressDialog();
+                                new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.text_password_reset_title)
+                                        .setMessage(String.format(getString(R.string.text_password_reset_link),userEmail ))
+                                        .setPositiveButton(R.string.ok_got_it, new DialogInterface
+                                                .OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // continue with delete
+                                            }
+                                        })
+                                        .show();
+                            }
+
+                            @Override
+                            public void error(CitrusError error) {
+                                mListener.dismissProgressDialog();
+                                Snackbar.make(root, error.getMessage(), Snackbar.LENGTH_SHORT)
+                                        .show();
+                            }
+                        });
                     }
-
-                    @Override
-                    public void error(CitrusError error) {
-                        mListener.dismissProgressDialog();
-                        Snackbar.make(root, error.getMessage(), Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                });
-            }
-        });
+                }
+            });
+        }
         Utils.openKeyboard(citrusPassEt);
         return root;
     }

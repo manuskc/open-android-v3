@@ -4,15 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
     android:clipToPadding="false"
+    android:isScrollContainer="false"
     android:overScrollMode="never"
     android:layout_width="match_parent"
-    android:isScrollContainer="false"
     android:layout_height="match_parent"
     tools:context="com.citrus.sdk.ui.fragments.SignUpFragment">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/citrus_app_background_color"
+        android:clickable="true"
         android:orientation="vertical"
         >
 
@@ -73,6 +74,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="false"
             android:padding="16dp">
             <com.citrus.sdk.ui.widgets.CitrusButton
                 android:id="@+id/button_sign_up"
@@ -82,7 +84,6 @@
                 android:padding="@dimen/dp15"
                 android:text="@string/text_sign_up"
                 android:textAllCaps="true"
-                android:background="@drawable/selector_button"
                 android:textColor="@color/citrus_white"
                 android:textSize="14sp"
                 app:textStyle="@integer/OPENSANS_REGULAR"/>
