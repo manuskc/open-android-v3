@@ -70,6 +70,11 @@ public final class CreditCardOption extends CardOption implements android.os.Par
      * Returns the type of the card i.e. CREDIT OR DEBIT
      */
     public String getCardType() {
+        // In case of Maestro card the card type is always debit, hence hardcoding the value.
+        if (cardScheme == CardScheme.MAESTRO) {
+            return CardType.DEBIT.getCardType();
+        }
+
         return CardType.CREDIT.getCardType();
     }
 
@@ -84,7 +89,7 @@ public final class CreditCardOption extends CardOption implements android.os.Par
         if (!TextUtils.isEmpty(token)) {
             return "CITRUS_WALLET";
         }
-        
+
         return "CREDIT_CARD";
     }
 

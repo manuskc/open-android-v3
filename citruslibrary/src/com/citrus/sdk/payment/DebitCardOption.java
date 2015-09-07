@@ -97,6 +97,11 @@ public final class DebitCardOption extends CardOption implements Parcelable {
 
     @Override
     public String getCardType() {
+        // In case of AMEX card the card type is always credit, hence hardcoding the value.
+        if (cardScheme == CardScheme.AMEX) {
+            return CardType.CREDIT.getCardType();
+        }
+
         return CardType.DEBIT.getCardType();
     }
 
