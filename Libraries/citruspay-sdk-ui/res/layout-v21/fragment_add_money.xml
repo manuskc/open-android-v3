@@ -1,0 +1,117 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    tools:context="com.citrus.sdk.ui.fragments.AddMoneyFragment">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/citrus_white"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <!--<include android:id="@+id/wallet_header"-->
+        <!--layout="@layout/layout_wallet_header"/>-->
+
+
+        <TextView
+            android:id="@+id/add_money_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="28dp"
+            android:layout_marginRight="28dp"
+            android:layout_marginTop="18dp"
+            android:text="@string/text_add_money_wallet"
+            android:textAllCaps="true"
+            android:textColor="@color/citrus_label_color"
+            android:textSize="12sp"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="26dp"
+            android:layout_marginRight="26dp"
+            android:id="@+id/amount_til"
+            android:layout_below="@id/add_money_label"
+            android:layout_marginTop="@dimen/dp15">
+            <EditText
+                android:id="@+id/amount_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_enter_amount"
+                android:inputType="numberDecimal"
+                android:singleLine="true"
+                android:textColor="@color/citrus_text_color"
+                android:textColorHint="@color/citrus_label_color"
+                android:textSize="17sp"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:id="@+id/amount_button_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="28dp"
+            android:layout_marginRight="28dp"
+            android:layout_marginTop="18dp"
+            android:orientation="horizontal"
+            android:layout_below="@+id/amount_til"
+            android:weightSum="3">
+
+            <Button
+                android:id="@+id/button_add_100"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/selector_button_secondary"
+                android:text="@string/plus_100"
+                android:textColor="@color/citrus_text_color"/>
+            <Button
+                android:id="@+id/button_add_500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/selector_button_secondary"
+                android:text="@string/plus_500"
+                android:textColor="@color/citrus_text_color"/>
+            <Button
+                android:id="@+id/button_add_1000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/selector_button_secondary"
+                android:text="@string/plus_1000"
+                android:textColor="@color/citrus_text_color"/>
+
+        </LinearLayout>
+        <Button
+            android:id="@+id/button_add_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp20"
+            android:paddingBottom="@dimen/dp10"
+            android:paddingLeft="@dimen/dp20"
+            android:layout_below="@id/add_money_label"
+            android:paddingRight="@dimen/dp20"
+            android:layout_marginRight="26dp"
+            android:paddingTop="11dp"
+            android:layout_alignParentRight="true"
+            android:text="@string/text_add"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:textColor="@color/citrus_white"/>
+        <include
+            layout="@layout/layout_citrus_trust_powered"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_below="@id/amount_button_container"/>
+    </RelativeLayout>
+</ScrollView>
+
+

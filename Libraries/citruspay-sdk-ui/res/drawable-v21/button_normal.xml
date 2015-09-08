@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Bottom 2dp Shadow -->
+    <item>
+        <inset android:drawable="@drawable/shadowlayout"></inset>
+    </item>
+
+    <!-- White Top color -->
+    <item
+        android:id="@+id/normal_foreground"
+        android:bottom="3dp"
+        android:drawable="@drawable/button_foreground"
+        android:left="2dp"
+        android:right="2dp"
+        android:top="1dp">
+
+    </item>
+
+
+</layer-list>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="8dp"
+              android:background="@drawable/citrus_card_background"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/dp8"
+              android:paddingRight="2dp"
+              android:paddingTop="@dimen/dp16"
+              android:visibility="gone">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/dp18"
+        android:text="@string/text_saved_options"
+        android:textAllCaps="true"
+        android:textColor="@color/citrus_label_color"
+        android:textSize="14sp"/>
+
+    <LinearLayout
+        android:id="@+id/payment_mode_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="2dp">
+    </LinearLayout>
+    <TextView
+        android:id="@+id/show_more_text"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_gravity="left|start"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:background="@drawable/selector_list_item"
+        android:gravity="left|start"
+        android:paddingBottom="@dimen/dp8"
+        android:paddingLeft="@dimen/dp16"
+        android:paddingTop="@dimen/dp8"
+        android:text="@string/text_show_more"
+        android:textAllCaps="true"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="14sp"/>
+
+</LinearLayout>

@@ -1,0 +1,27 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:background="@color/citrus_app_background_color"
+    tools:context="com.citrus.sdk.ui.fragments.AddMoneyOptionsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <include android:id="@+id/payment_mode_container"
+                 layout="@layout/layout_saved_cards"/>
+        <include android:id="@+id/pay_with_card"
+                 layout="@layout/layout_pay_with_card"/>
+        <include android:id="@+id/pay_with_bank"
+                 layout="@layout/layout_pay_with_bank"/>
+
+    </LinearLayout>
+
+</ScrollView>

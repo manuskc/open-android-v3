@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/selector_list_item"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="15dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:gravity="center"
+        android:paddingTop="15dp">
+
+        <ImageView
+            android:id="@+id/bank_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="30dp"
+            android:scaleType="centerInside"/>
+        <TextView
+            android:id="@+id/bank_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/citrus_text_color"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:maxLines="2"/>
+        <ImageView
+            android:id="@+id/warn_icon"
+            android:visibility="gone"
+            android:padding="@dimen/dp10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dp18"
+            android:src="@drawable/ic_bank_alert"/>
+
+    </LinearLayout>
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/citrus_separator_color"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"/>
+
+</LinearLayout>

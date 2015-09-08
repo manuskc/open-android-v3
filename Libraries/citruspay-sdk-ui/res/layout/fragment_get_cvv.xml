@@ -1,0 +1,138 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/citrus_cvv_color"
+    android:paddingRight="@dimen/dp8"
+    android:paddingLeft="@dimen/dp8"
+    android:paddingTop="@dimen/dp8"
+    android:paddingBottom="@dimen/dp8"
+    android:clickable="true"
+    tools:context="com.citrus.sdk.ui.fragments.GetCVVFragment">
+
+    <com.citrus.sdk.ui.widgets.CustomEditText
+        android:id="@+id/cvv_edit_text"
+        android:layout_marginTop="10dp"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:singleLine="true"
+        android:inputType="numberDecimal"
+        android:digits="@string/number_digits"
+        android:textSelectHandle="@drawable/handle"
+        android:layout_centerHorizontal="true"
+        android:focusable = "true"
+        android:imeOptions="actionDone"
+        android:focusableInTouchMode = "true"/>
+
+    <RelativeLayout
+        android:id="@+id/card_details_container"
+        android:layout_width="258dp"
+        android:layout_height="165dp"
+        android:layout_marginTop="8dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/credit_card_bg">
+
+        <TextView
+            android:id="@+id/card_number_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="73dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/citrus_white"
+            android:textSize="19sp"
+            android:text="XXXX XXXX XXXX 8001"
+            android:shadowColor="@color/citrus_black"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="4"/>
+
+        <TextView
+            android:id="@+id/card_name_lable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/citrus_white"
+            android:layout_marginTop="112dp"
+            android:layout_marginLeft="29dp"
+            android:textSize="10sp"
+            android:text="@string/text_card_holder"
+            />
+        <TextView
+            android:id="@+id/text_card_holder_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/citrus_white"
+            android:layout_below="@id/card_name_lable"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="29dp"
+            android:textSize="12sp"
+            android:text="@string/text_card_holder"
+            android:shadowColor="@color/citrus_black"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            />
+
+        <TextView
+            android:id="@+id/validity_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/citrus_white"
+            android:layout_marginTop="112dp"
+            android:layout_marginLeft="176dp"
+            android:textSize="10sp"
+            android:text="@string/text_valid_lable"
+            />
+        <TextView
+            android:id="@+id/text_card_validity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/citrus_white"
+            android:layout_below="@id/validity_label"
+            android:layout_marginLeft="176dp"
+            android:layout_marginTop="2dp"
+            android:textSize="12sp"
+            android:text="09/15"
+            android:shadowColor="@color/citrus_black"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/cvv_lable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/citrus_white"
+        android:textAllCaps="true"
+        android:layout_marginTop="@dimen/dp20"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/card_details_container"
+        android:text="@string/text_enter_cvv"
+        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/cvv_lable">
+        <LinearLayout
+            android:id="@+id/checkbox_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/check_view"
+            android:layout_marginLeft="10dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:visibility="gone"
+            android:src="@drawable/img_checkmark_green"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

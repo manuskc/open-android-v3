@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="202dp"
+    android:background="@drawable/citrus_card_background"
+    android:gravity="center"
+    android:padding="@dimen/dp16">
+
+    <ImageView
+        android:id="@+id/wallet_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_wallet_big"/>
+    <TextView
+        android:id="@+id/your_balance_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp10"
+        android:layout_marginTop="@dimen/dp15"
+        android:layout_toRightOf="@id/wallet_image"
+        android:text="@string/text_your_balance"
+        android:textColor="@color/citrus_text_color_light"
+        android:textSize="14sp"/>
+    <TextView
+        android:id="@+id/text_balance_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/your_balance_label"
+        android:layout_marginLeft="@dimen/dp10"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/wallet_image"
+        android:text="₹0.00"
+        android:textColor="@color/citrus_amount_color"
+        android:textSize="30sp"/>
+    <Button
+        android:id="@+id/info_button"
+        android:layout_width="31dp"
+        android:layout_height="31dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="@dimen/dp8"
+        android:layout_toRightOf="@id/your_balance_label"
+        android:background="@drawable/selector_info_button"
+        android:text="@string/text_i"
+        android:visibility="gone"
+        android:textAllCaps="false"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="14sp"
+        />
+
+</RelativeLayout>

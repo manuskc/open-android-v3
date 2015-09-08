@@ -1,0 +1,80 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    tools:context="com.citrus.sdk.ui.fragments.VerifyPhoneFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/citrus_app_background_color"
+        android:orientation="vertical"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_shadow_bg"
+            android:padding="@dimen/dp16">
+            <TextView
+                android:id="@+id/verify_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_verify_mobile"
+                android:textColor="@color/citrus_text_color_light"
+                android:textSize="14sp"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="31dp"
+                android:layout_below="@id/verify_text"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="18dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="20sp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/citrus_text_color"
+                    android:text="+91-9595257150"/>
+                <ImageView
+                    android:id="@+id/edit_button"
+                    android:layout_width="31dp"
+                    android:layout_height="31dp"
+                    android:background="@drawable/selector_info_button"
+                    android:src="@drawable/ic_edit"
+                    android:layout_marginLeft="12dp"
+                    android:textAllCaps="false"
+                    android:textColor="?attr/colorPrimary"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <include android:id="@+id/mobile_otp_container"
+                 layout="@layout/layout_mobile_otp"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+            <Button
+                android:id="@+id/button_verify"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp56"
+                android:layout_alignParentBottom="true"
+                android:padding="@dimen/dp15"
+                android:text="@string/text_verify"
+                android:textAllCaps="true"
+                android:textColor="@color/citrus_white"
+                android:textSize="14sp"
+                app:textStyle="@integer/OPENSANS_REGULAR"/>
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

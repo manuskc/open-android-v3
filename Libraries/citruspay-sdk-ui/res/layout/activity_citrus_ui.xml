@@ -1,0 +1,54 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/custom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary">
+
+        <TextView
+            android:id="@+id/amount_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|right|center_vertical"
+            android:layout_marginRight="12dp"
+            android:textColor="@color/citrus_white"
+            android:textSize="16sp"
+            />
+        <LinearLayout
+            android:id="@+id/balance_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="end|right|center_vertical"
+            android:layout_marginRight="12dp" android:gravity="right"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/citrus_white"
+                android:textAllCaps="true"
+                android:gravity="end|right|center_vertical"
+                android:text="@string/text_balance"
+                android:textSize="12sp"
+                />
+            <TextView
+                android:id="@+id/balance_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end|right|center_vertical"
+                android:textColor="@color/citrus_white"
+                android:textSize="16sp"
+                />
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>
+

@@ -1,0 +1,73 @@
+<resources>
+
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="AppTheme.Base" parent="CitrusAppTheme">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorButtonNormal">@color/primary</item>
+    </style>
+
+    <style name="AppTheme.Green" parent="CitrusAppTheme">
+        <item name="colorPrimary">@color/persian_green_primary</item>
+        <item name="colorPrimaryDark">@color/persian_green_dark</item>
+        <item name="colorAccent">@color/persian_green_accent</item>
+        <item name="colorButtonNormal">@color/persian_green_primary</item>
+        <item name="alertDialogTheme">@style/AlertDialogStyle_pink</item>
+    </style>
+
+
+    <style name="AlertDialogStyle_green" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/persian_green_accent</item>
+        <item name="android:textColorPrimary">@color/citrus_text_color</item>
+    </style>
+
+    <style name="AppTheme.pink" parent="CitrusAppTheme">
+        <item name="colorPrimary">@color/pink_primary</item>
+        <item name="colorPrimaryDark">@color/pink_dark</item>
+        <item name="colorAccent">@color/pink_accent</item>
+        <item name="colorButtonNormal">@color/pink_primary</item>
+        <item name="alertDialogTheme">@style/AlertDialogStyle_pink</item>
+    </style>
+
+
+    <style name="AlertDialogStyle_pink" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/pink_accent</item>
+        <item name="android:textColorPrimary">@color/citrus_text_color</item>
+    </style>
+
+    <style name="AppTheme.blue" parent="CitrusAppTheme">
+        <item name="colorPrimary">@color/royal_blue_primary</item>
+        <item name="colorPrimaryDark">@color/royal_blue_dark</item>
+        <item name="colorAccent">@color/royal_blue_accent</item>
+        <item name="colorButtonNormal">@color/royal_blue_primary</item><item name="alertDialogTheme">@style/AlertDialogStyle_blue</item>
+    </style>
+
+
+    <style name="AlertDialogStyle_blue" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/royal_blue_accent</item>
+        <item name="android:textColorPrimary">@color/citrus_text_color</item>
+    </style>
+
+    <style name="AppTheme.purple" parent="CitrusAppTheme">
+        <item name="colorPrimary">@color/purple_primary</item>
+        <item name="colorPrimaryDark">@color/purple_dark</item>
+        <item name="colorAccent">@color/purple_accent</item>
+        <item name="colorButtonNormal">@color/purple_primary</item>
+        <item name="alertDialogTheme">@style/AlertDialogStyle_purple</item>
+    </style>
+
+
+    <style name="AlertDialogStyle_purple" parent="CitrusAppTheme">
+        <item name="colorAccent">@color/purple_accent</item>
+        <item name="android:textColorPrimary">@color/citrus_text_color</item>
+    </style>
+
+
+
+    </resources>

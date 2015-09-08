@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".MainActivity">
+    <include layout="@layout/toolbar"
+             android:id="@+id/toolbar"></include>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/email_til"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp">
+        <EditText
+            android:id="@+id/email_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:textAllCaps="true"
+            android:nextFocusDown="@+id/card_name_et"
+            android:singleLine="true"
+            android:textSize="16sp"
+            />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/mobile_til"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp">
+        <EditText
+            android:id="@+id/mobile_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:hint="Mobile"
+            android:inputType="phone"
+            android:maxLength="10"
+            android:textAllCaps="true"
+            android:nextFocusDown="@+id/card_name_et"
+            android:singleLine="true"
+            android:textSize="16sp"
+            />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/quick_pay"
+        android:text="@string/text_start_quickpay"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:layout_margin="16dp"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/wallet_button"
+        android:text="@string/text_start_wallet"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:layout_margin="16dp"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

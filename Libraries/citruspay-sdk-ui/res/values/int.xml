@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="OPENSANS_REGULAR">0</integer>
+    <integer name="ROBOTO_CONDENSED_REGULAR">1</integer>
+    <integer name="ROBOTO_MEDIUM">2</integer>
+</resources>

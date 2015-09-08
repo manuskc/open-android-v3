@@ -1,0 +1,87 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    tools:context="com.citrus.sdk.ui.fragments.OTPConfirmationFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/citrus_app_background_color"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_shadow_bg"
+            android:orientation="vertical"
+            android:padding="@dimen/dp16">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_email_match_found"
+                android:textColor="@color/citrus_text_color"
+                android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/primary_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/citrus_text_color"
+                android:textSize="20sp"/>
+            <TextView
+                android:id="@+id/secondary_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/citrus_text_color_light"
+                android:textSize="15sp"/>
+        </LinearLayout>
+
+        <include android:id="@+id/mobile_otp_container"
+                 layout="@layout/layout_mobile_otp"/>
+
+        <include
+            android:id="@+id/email_otp_container"
+            layout="@layout/layout_otp_password"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp">
+            <Button
+                android:id="@+id/button_sign_in"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp56"
+                android:layout_alignParentBottom="true"
+                android:padding="@dimen/dp15"
+                android:text="@string/text_sign_in"
+                android:textAllCaps="true"
+                android:textColor="@color/citrus_white"
+                android:textSize="14sp"
+                app:textStyle="@integer/OPENSANS_REGULAR"/>
+            <TextView
+                android:id="@+id/forgot_password_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/selector_transparent_surface"
+                android:duplicateParentState="false"
+                android:padding="@dimen/dp10"
+                android:text="@string/text_forgot_password"
+                android:textColor="@color/citrus_text_color"
+                android:textSize="14sp"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
+

@@ -1,0 +1,13 @@
+<ListView android:id="@+id/list_view"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@color/citrus_white"
+          android:divider="@null"
+          android:dividerHeight="0dp"
+          android:listSelector="@drawable/selector_list_item"
+          tools:context="com.citrus.sdk.ui.fragments.BankListFragment">
+
+
+</ListView>

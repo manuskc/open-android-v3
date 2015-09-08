@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Citrus sample</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="text_start_quickpay">Start QuickPay Flow</string>
+    <string name="title_activity_custom_details">CustomDetailsActivity</string>
+    <string name="add_custom">Add Custom Details</string>
+    <string name="text_start_wallet">Start wallet flow</string>
+    <string name="log_out_user">Log out user</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="citrus_primary">#F3A62E</color>
+    <color name="citrus_primary_dark">#E19928</color>
+    <color name="citrus_accent">#7AA4D5</color>
+    <color name="citrus_white">#FFFFFF</color>
+    <color name="citrus_black">#000000</color>
+    <color name="citrus_app_background_color">#EEEEEE</color>
+    <color name="citrus_label_color">#909090</color>
+    <color name="citrus_text_color">#575757</color>
+    <color name="citrus_text_color_light">#818181</color>
+    <color name="citrus_amount_color">#77C83E</color>
+    <color name="citrus_button_shadow_color">#80000000</color>
+    <color name="citrus_separator_color">#F3F2F2</color>
+    <color name="citrus_cvv_color">#414A5A</color>
+    <color name="citrus_warn_color">#F05E5E</color>
+</resources>
