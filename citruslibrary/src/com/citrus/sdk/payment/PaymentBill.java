@@ -56,6 +56,8 @@ public class PaymentBill implements Parcelable {
     @SerializedName("notifyUrl")
     private
     String notifyUrl = null;
+    @SerializedName("dpSignature")
+    private String dpSignature = null;
     @SerializedName("customParameters")
     private
     Map<String, String> customParametersMap = null;
@@ -353,16 +355,4 @@ public class PaymentBill implements Parcelable {
         }
     };
 
-    @Override
-    public String toString() {
-        return "PaymentBill{" +
-                "amount=" + amount +
-                ", requestSignature='" + requestSignature + '\'' +
-                ", merchantTxnId='" + merchantTransactionId + '\'' +
-                ", merchantAccessKey='" + merchantAccessKey + '\'' +
-                ", returnUrl='" + returnUrl + '\'' +
-                ", notifyUrl='" + notifyUrl + '\'' +
-                ", customParametersMap=" + customParametersMap +
-                '}';
-    }
 }
