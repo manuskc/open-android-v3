@@ -120,6 +120,8 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
                 });
             } catch (Exception e) {
                 e.printStackTrace();
+
+                Utils.showToast(UIActivity.this, e.getMessage());
             }
         } else {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()

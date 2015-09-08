@@ -30,6 +30,10 @@ public class Amount implements Parcelable {
     }
 
     public String getValue() {
+        if (!TextUtils.isEmpty(value)) {
+            return value.replaceFirst("^0+(?!$)", "");
+        }
+
         return value;
     }
 
