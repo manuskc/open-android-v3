@@ -137,16 +137,6 @@ public class PaymentBill implements Parcelable {
         }
     }
 
-    /**
-     * @param amount
-     * @param requestSignature
-     * @param merchantTransactionId
-     * @param merchantAccessKey
-     * @param returnUrl
-     * @param notifyUrl
-     * @param customParametersMap
-     * @throws CitrusException <p> when either transaction amount or transactionId or merchantAccessKey or requestSignature or returnUrl is null or transactionId is more than 24 characters. </p>
-     */
     public PaymentBill(Amount amount, String requestSignature, String merchantTransactionId,
                        String merchantAccessKey, String returnUrl, String notifyUrl,
                        Map<String, String> customParametersMap) throws CitrusException {
@@ -364,4 +354,5 @@ public class PaymentBill implements Parcelable {
             return new PaymentBill[size];
         }
     };
+
 }
