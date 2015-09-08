@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.citrus.sdk.Callback;
 import com.citrus.sdk.CitrusClient;
@@ -20,7 +22,10 @@ import com.citrus.sdk.CitrusUser;
 import com.citrus.sdk.TransactionResponse;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusException;
+import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
+import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
+import com.citrus.sdk.payment.CitrusCash;
 import com.citrus.sdk.payment.PaymentOption;
 import com.citrus.sdk.payment.PaymentType;
 import com.citrus.sdk.response.CitrusError;
@@ -31,7 +36,10 @@ import java.util.List;
 public class SavedOptionsFragment extends Fragment {
 
     private Utils.PaymentType paymentType = null;
+    private Utils.DPRequestType dpRequestType = null;
     private Amount amount = null;
+    private String couponCode = null;
+    private Amount alteredAmount = null;
     private ArrayList<PaymentOption> walletList = null;
     private CitrusClient citrusClient = null;
 
@@ -48,6 +56,18 @@ public class SavedOptionsFragment extends Fragment {
         return fragment;
     }
 
+    public static SavedOptionsFragment newInstance(Utils.DPRequestType dpRequestType, Amount originalAmount, String couponCode, Amount alteredAmount) {
+        SavedOptionsFragment fragment = new SavedOptionsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("paymentType", Utils.PaymentType.DYNAMIC_PRICING);
+        bundle.putSerializable("dpRequestType", dpRequestType);
+        bundle.putParcelable("amount", originalAmount);
+        bundle.putParcelable("alteredAmount", alteredAmount);
+        bundle.putString("couponCode", couponCode);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +75,12 @@ public class SavedOptionsFragment extends Fragment {
         if (getArguments() != null) {
             Bundle bundle = getArguments();
             paymentType = (Utils.PaymentType) bundle.getSerializable("paymentType");
+            dpRequestType = (Utils.DPRequestType) bundle.getSerializable("dpRequestType");
             amount = bundle.getParcelable("amount");
+            alteredAmount = bundle.getParcelable("alteredAmount");
+            couponCode = bundle.getString("couponCode");
+
+            walletList = new ArrayList<>();
         }
     }
 
@@ -82,11 +107,32 @@ public class SavedOptionsFragment extends Fragment {
 
         recylerViewNetbanking.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new OnItemClickListener()));
 
+        // In Case of DP show Citrus Cash As a Payment Option
+        if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+            citrusClient.getBalance(new Callback<Amount>() {
+                @Override
+                public void success(Amount amount) {
+                    CitrusCash citrusCash = new CitrusCash(amount.getValue());
+                    walletList.add(0, citrusCash);
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    //NOOP
+                }
+            });
+        }
+
+
         citrusClient.getWallet(new Callback<List<PaymentOption>>() {
             @Override
             public void success(List<PaymentOption> paymentOptionList) {
-                walletList = (ArrayList<PaymentOption>) paymentOptionList;
-
+                // In Case of DP show Citrus Cash As a Payment Option
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING && walletList.size() == 1) {
+                    walletList.addAll(1, paymentOptionList);
+                } else {
+                    walletList.addAll(0, paymentOptionList);
+                }
                 savedOptionsAdapter.setWalletList(walletList);
                 savedOptionsAdapter.notifyDataSetChanged();
             }
@@ -127,32 +173,57 @@ public class SavedOptionsFragment extends Fragment {
 
     private void proceedToPayment(Utils.PaymentType paymentType, PaymentOption paymentOption) {
 
-        PaymentType paymentType1;
+        if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+            DynamicPricingRequestType dynamicPricingRequestType = null;
 
-        Callback<TransactionResponse> callback = new Callback<TransactionResponse>() {
-            @Override
-            public void success(TransactionResponse transactionResponse) {
-                ((UIActivity) getActivity()).onPaymentComplete(transactionResponse);
+            if (dpRequestType == Utils.DPRequestType.SEARCH_AND_APPLY) {
+                dynamicPricingRequestType = new DynamicPricingRequestType.SearchAndApplyRule(amount, paymentOption, null);
+            } else if (dpRequestType == Utils.DPRequestType.CALCULATE_PRICING) {
+                dynamicPricingRequestType = new DynamicPricingRequestType.CalculatePrice(amount, paymentOption, couponCode, null);
+            } else if (dpRequestType == Utils.DPRequestType.VALIDATE_RULE) {
+                dynamicPricingRequestType = new DynamicPricingRequestType.ValidateRule(amount, paymentOption, couponCode, alteredAmount, null);
             }
 
-            @Override
-            public void error(CitrusError error) {
-                Utils.showToast(getActivity(), error.getMessage());
-            }
-        };
+            citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
+                @Override
+                public void success(DynamicPricingResponse dynamicPricingResponse) {
+                    showPrompt(dynamicPricingResponse);
+                }
 
-        try {
-            if (paymentType == Utils.PaymentType.LOAD_MONEY) {
-                paymentType1 = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, paymentOption);
-                citrusClient.loadMoney((PaymentType.LoadMoney) paymentType1, callback);
-            } else if (paymentType == Utils.PaymentType.PG_PAYMENT) {
-                paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, paymentOption, new CitrusUser(citrusClient.getUserEmailId(), citrusClient.getUserMobileNumber()));
-                citrusClient.pgPayment((PaymentType.PGPayment) paymentType1, callback);
-            }
-        } catch (CitrusException e) {
-            e.printStackTrace();
+                @Override
+                public void error(CitrusError error) {
+                    Utils.showToast(getActivity(), error.getMessage());
+                }
+            });
+        } else {
 
-            Utils.showToast(getActivity(), e.getMessage());
+            PaymentType paymentType1;
+
+            Callback<TransactionResponse> callback = new Callback<TransactionResponse>() {
+                @Override
+                public void success(TransactionResponse transactionResponse) {
+                    ((UIActivity) getActivity()).onPaymentComplete(transactionResponse);
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    Utils.showToast(getActivity(), error.getMessage());
+                }
+            };
+
+            try {
+                if (paymentType == Utils.PaymentType.LOAD_MONEY) {
+                    paymentType1 = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, paymentOption);
+                    citrusClient.loadMoney((PaymentType.LoadMoney) paymentType1, callback);
+                } else if (paymentType == Utils.PaymentType.PG_PAYMENT) {
+                    paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, paymentOption, new CitrusUser(citrusClient.getUserEmailId(), citrusClient.getUserMobileNumber()));
+                    citrusClient.pgPayment((PaymentType.PGPayment) paymentType1, callback);
+                }
+            } catch (CitrusException e) {
+                e.printStackTrace();
+
+                Utils.showToast(getActivity(), e.getMessage());
+            }
         }
     }
 
@@ -189,6 +260,58 @@ public class SavedOptionsFragment extends Fragment {
         });
 
         input.requestFocus();
+        alert.show();
+    }
+
+    private void showPrompt(final DynamicPricingResponse dynamicPricingResponse) {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        String message = dynamicPricingResponse.getMessage();
+        String positiveButtonText = "Pay";
+
+        LinearLayout linearLayout = new LinearLayout(getActivity());
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        final TextView originalAmount = new TextView(getActivity());
+        final TextView alteredAmount = new TextView(getActivity());
+        final TextView txtMessage = new TextView(getActivity());
+
+        linearLayout.addView(originalAmount);
+        linearLayout.addView(alteredAmount);
+        linearLayout.addView(txtMessage);
+
+        originalAmount.setText("Original Amount : " + (dynamicPricingResponse.getOriginalAmount() != null ? dynamicPricingResponse.getOriginalAmount().getValue() : ""));
+        alteredAmount.setText("Altered Amount : " + (dynamicPricingResponse.getAlteredAmount() != null ? dynamicPricingResponse.getAlteredAmount().getValue() : ""));
+        txtMessage.setText("Message : " + dynamicPricingResponse.getMessage());
+
+        alert.setTitle("Dynamic Pricing Response");
+        alert.setMessage(message);
+        alert.setView(linearLayout);
+        if (dynamicPricingResponse.getStatus() == DynamicPricingResponse.Status.SUCCESS) {
+            alert.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    CitrusClient.getInstance(getActivity()).pgPayment(dynamicPricingResponse, new Callback<TransactionResponse>() {
+                        @Override
+                        public void success(TransactionResponse transactionResponse) {
+                            Utils.showToast(getActivity(), transactionResponse.getMessage());
+                        }
+
+                        @Override
+                        public void error(CitrusError error) {
+                            Utils.showToast(getActivity(), error.getMessage());
+                        }
+                    });
+
+                    dialog.dismiss();
+                }
+            });
+        }
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        });
+
         alert.show();
     }
 }

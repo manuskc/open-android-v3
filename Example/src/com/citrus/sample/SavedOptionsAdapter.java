@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.citrus.sdk.payment.CardOption;
+import com.citrus.sdk.payment.CitrusCash;
 import com.citrus.sdk.payment.NetbankingOption;
 import com.citrus.sdk.payment.PaymentOption;
 
@@ -52,6 +53,10 @@ final class SavedOptionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             } else if (paymentOption instanceof CardOption) {
                 itemHolder.paymentOptionName.setText(((CardOption) paymentOption).getCardNumber());
                 itemHolder.paymentOptionBankName.setText(paymentOption.getName());
+            }
+            if (paymentOption instanceof CitrusCash) {
+                itemHolder.paymentOptionName.setText(paymentOption.getName());
+                itemHolder.paymentOptionBankName.setVisibility(View.GONE);
             }
         }
     }

@@ -25,7 +25,7 @@ import org.json.JSONObject;
  */
 public final class CitrusUser implements Parcelable {
 
-    public static final CitrusUser DEFAULT_USER = new CitrusUser();
+    public static final CitrusUser DEFAULT_USER = new CitrusUser("developercitrus@gmail.com", "9876543210", "Developer", "Citrus", Address.DEFAULT_ADDRESS);
 
     public static final Creator<CitrusUser> CREATOR = new Creator<CitrusUser>() {
         public CitrusUser createFromParcel(Parcel source) {
@@ -226,6 +226,8 @@ public final class CitrusUser implements Parcelable {
     }
 
     public static class Address implements Parcelable {
+
+        public static Address DEFAULT_ADDRESS = new Address("Street1", "Street2", "Pune", "Maharashtra", "India", "411045");
 
         public static final Creator<Address> CREATOR = new Creator<Address>() {
             public Address createFromParcel(Parcel source) {
