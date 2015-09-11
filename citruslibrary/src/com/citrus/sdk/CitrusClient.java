@@ -232,7 +232,7 @@ public class CitrusClient {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Logger.e("Error while fetching the health");
+                       // Logger.e("Error while fetching the health");
                     }
                 }
         );
