@@ -146,13 +146,14 @@ public class CitrusActivity extends ActionBarActivity {
 
         // Set the citrusUser.
         // Use details from the token in case of load money
-        if (mPaymentType instanceof PaymentType.LoadMoney) {
+        if (mPaymentType instanceof PaymentType.LoadMoney || mPaymentType instanceof PaymentType.CitrusCash) {
             if (mCitrusClient.getCitrusUser() != null) {
                 mCitrusUser = mCitrusClient.getCitrusUser();
             } else if (mCitrusUser == null) {
                 mCitrusUser = new CitrusUser(emailId, mobileNo);
             }
         } else {
+            // In case of PG Payment, send the merchant values.
             if (mCitrusUser == null) {
                 mCitrusUser = new CitrusUser(emailId, mobileNo);
             }
