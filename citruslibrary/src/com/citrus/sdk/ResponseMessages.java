@@ -66,4 +66,13 @@ public interface ResponseMessages {
 
     String ERROR_MESSAGE_INVALID_PASSWORD = "Invalid Credentials!!! Please check your passsword.";
 
+    String ERROR_MEMBER_INFO = "Failed to create Parameter JSON for MemeberINFO API";
+
+    String ERROR_UPDATE_MEMBER_INFO = "Failed to update Profile Info";
+
+    String ERROR_SIGN_UP = "Failed to SignUp user!!!";
+
+    String ERROR_SEND_OTP = "Failed to Send OTP !!!";
+
+    String ERROR_INVALID_CARD_NUMBER = "Invalid Card Number";
 }

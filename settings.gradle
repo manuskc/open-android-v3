@@ -1,1 +1,1 @@
-include ':Example', ':citruslibrary'
+include ':Example', ':citruslibrary', ':testsdkapp'

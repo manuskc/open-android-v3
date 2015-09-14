@@ -51,6 +51,9 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
         this.bankCID = bankCID;
     }
 
+    public void setName(String bankName) {
+        super.name = bankName;
+    }
     /**
      * Use this constructor for tokenized payments.
      *
