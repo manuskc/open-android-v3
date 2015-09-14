@@ -50,20 +50,20 @@ public enum Environment {
             return "OOPS";
         }
     },
-    STG4 {
+    STG5 {
         @Override
         public String getBaseUrl() {
-            return "https://stg4admin.citruspay.com";
+            return "https://stgadmin5.citruspay.com/";
         }
 
         @Override
         public String getBaseCitrusUrl() {
-            return "https://stg4admin.citruspay.com";
+            return "https://stgadmin5.citruspay.com/";
         }
 
         @Override
         public String toString() {
-            return "STG4";
+            return "STG5";
         }
     },NONE {
         @Override
