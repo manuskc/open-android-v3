@@ -57,7 +57,7 @@ public final class CitrusCash extends PaymentOption {
 
     @Override
     public String getDynamicPricingPaymentMode() {
-        return "PREPAID";
+        return "PREPAID_CARD";
     }
 
     @Override
