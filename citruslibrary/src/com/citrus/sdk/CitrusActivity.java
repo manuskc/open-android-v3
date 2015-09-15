@@ -594,6 +594,7 @@ public class CitrusActivity extends ActionBarActivity {
 
             public void onClick(DialogInterface dialog, int whichButton) {
                 String password = input.getText().toString();
+                input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
                 if (!TextUtils.isEmpty(password)) {
                     mPaymentWebview.loadUrl("javascript:(function() { " +

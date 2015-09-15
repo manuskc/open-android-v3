@@ -140,7 +140,8 @@ public interface API {
 
     // Get the prepaid balance of the user. this is new method to get Balance
     @POST("/service/v2/mycard/balance")
-    void getBalance(@Header("Authorization") String header, Callback<Amount> callback);
+    @FormUrlEncoded
+    void getBalance(@Header("Authorization") String header, @Field("dummy") String dummyObject, Callback<Amount> callback);
 
     //bill generator response
     @GET("/{path}")

@@ -176,6 +176,10 @@ public class CitrusClient {
             Config.setSigninSecret(signinSecret);
             Config.setVanity(vanity);
             switch (environment) {
+                case STAGING:
+                    Config.setEnv("staging");
+                    break;
+
                 case SANDBOX:
                     Config.setEnv("sandbox");
                     break;
@@ -1271,48 +1275,26 @@ public class CitrusClient {
 
     /**
      * Get the balance of the user.
-     *
+     * POST method - we are passing empty parameter
      * @param callback
      */
     public synchronized void getBalance(final Callback<Amount> callback) {
         if (validate()) {
-//            oauthToken.getSignInToken(new Callback<AccessToken>() {
-//                @Override
-//                public void success(AccessToken accessToken) {
-//
-//                    retrofitClient.getBalance(accessToken.getHeaderAccessToken(), new retrofit.Callback<Amount>() {
-//                        @Override
-//                        public void success(Amount amount, Response response) {
-//                            sendResponse(callback, amount);
-//                        }
-//
-//                        @Override
-//                        public void failure(RetrofitError error) {
-//                            sendError(callback, error);
-//                        }
-//                    });
-//                }
-//
-//                @Override
-//                public void error(CitrusError error) {
-//                    sendError(callback, error);
-//                }
-//            });
-
             oauthToken.getSignInToken(new Callback<AccessToken>() {
                 @Override
                 public void success(AccessToken accessToken) {
-                    new GetBalanceAsync(accessToken.getHeaderAccessToken(), new GetBalanceListener() {
+
+                    retrofitClient.getBalance(accessToken.getHeaderAccessToken(), "", new retrofit.Callback<Amount>() {
                         @Override
-                        public void success(Amount amount) {
+                        public void success(Amount amount, Response response) {
                             sendResponse(callback, amount);
                         }
 
                         @Override
-                        public void error(CitrusError error) {
+                        public void failure(RetrofitError error) {
                             sendError(callback, error);
                         }
-                    }).execute();
+                    });
                 }
 
                 @Override
@@ -1981,7 +1963,8 @@ public class CitrusClient {
                     if (transactionStatus == TransactionResponse.TransactionStatus.SUCCESSFUL) {
                         sendResponse(callback, transactionResponse);
                     } else {
-                        sendError(callback, new CitrusError(transactionResponse.getMessage(), status));
+                        //error will also have not failed raw response
+                        sendError(callback, new CitrusError(transactionResponse.getMessage(), transactionResponse.getJsonResponse(), status));
                     }
                 }
             }
