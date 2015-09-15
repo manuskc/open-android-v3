@@ -76,6 +76,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1126,7 +1127,6 @@ public class CitrusClient {
      *
      * @param callback - callback
      */
-
     public synchronized void getWallet(final Callback<List<PaymentOption>> callback) {
         /*
          * Get the saved payment options of the user.
@@ -1180,6 +1180,121 @@ public class CitrusClient {
                                         }
                                     }
 
+                                    sendResponse(callback, walletList);
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+
+                                    sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INVALID_JSON, Status.FAILED));
+                                }
+                            } else {
+                                sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INVALID_JSON, Status.FAILED));
+                            }
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            sendError(callback, new CitrusError(error.getMessage(), Status.FAILED));
+                        }
+                    });
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    sendError(callback, error);
+                }
+            });
+        }
+    }
+
+
+
+
+    /**
+     * Get the user saved payment options. If you want any specific bank at 0th position pass BankCID
+     *
+     * @param callback - callback
+     */
+    public synchronized void getWalletWithDefaultBank(final Callback<List<PaymentOption>> callback, final BankCID bankCID) {
+        /*
+         * Get the saved payment options of the user.
+         */
+        if (validate()) {
+
+            oauthToken.getSignInToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+//18004252069
+                    retrofitClient.getWallet(accessToken.getHeaderAccessToken(), new retrofit.Callback<JsonElement>() {
+                        @Override
+                        public void success(JsonElement element, Response response) {
+                            if (element != null) {
+                                ArrayList<PaymentOption> walletList = new ArrayList<>();
+                                try {
+
+                                    JSONObject jsonObject = new JSONObject(element.toString());
+                                    JSONArray paymentOptions = jsonObject.optJSONArray("paymentOptions");
+                                    String  defaultOption =  null;
+                                    if (jsonObject.has("defaultOption")) {
+                                        defaultOption = jsonObject.getString("defaultOption");
+                                    }
+                                    if (paymentOptions != null) {
+                                        for (int i = 0; i < paymentOptions.length(); i++) {
+                                            PaymentOption option = PaymentOption.fromJSONObject(paymentOptions.getJSONObject(i));
+
+                                            // Check whether the merchant supports the user's payment option and then only add this payment option.
+                                            if (merchantPaymentOption != null) {
+                                                Set<CardOption.CardScheme> creditCardSchemeSet = merchantPaymentOption.getCreditCardSchemeSet();
+                                                Set<CardOption.CardScheme> debitCardSchemeSet = merchantPaymentOption.getDebitCardSchemeSet();
+                                                List<NetbankingOption> netbankingOptionList = merchantPaymentOption.getNetbankingOptionList();
+
+                                                if (option instanceof CreditCardOption && creditCardSchemeSet != null &&
+                                                        creditCardSchemeSet.contains(((CreditCardOption) option).getCardScheme())) {
+                                                    walletList.add(option);
+                                                } else if (option instanceof DebitCardOption && debitCardSchemeSet != null &&
+                                                        debitCardSchemeSet.contains(((DebitCardOption) option).getCardScheme())) {
+                                                    walletList.add(option);
+                                                } else if (option instanceof NetbankingOption && netbankingOptionList != null &&
+                                                        netbankingOptionList.contains(option)) {
+                                                    NetbankingOption netbankingOption = (NetbankingOption) option;
+
+                                                    if (pgHealthMap != null) {
+                                                        netbankingOption.setPgHealth(pgHealthMap.get(netbankingOption.getBankCID()));
+                                                    }
+
+                                                    walletList.add(netbankingOption);
+                                                }
+                                            } else {
+                                                // If the merchant payment options are not found, save all the options.
+                                                walletList.add(option);
+                                            }
+                                        }
+                                    }
+                                    if(defaultOption!= null && !TextUtils.isEmpty(defaultOption)) { //if Default is Set
+                                        Iterator<PaymentOption> paymentOptionIterator = walletList.iterator();
+                                        PaymentOption iteratorPaymentOption = null;
+                                        while(paymentOptionIterator.hasNext()) {
+                                            iteratorPaymentOption = paymentOptionIterator.next();
+                                            if(iteratorPaymentOption.getName().equalsIgnoreCase(defaultOption)) {
+                                                Logger.d("FOUND DEFAUT AT ***" + walletList.indexOf(iteratorPaymentOption));
+                                                Collections.swap(walletList, 0, walletList.indexOf(iteratorPaymentOption));
+                                                break;//we found default option in WalletList
+                                            }
+                                        }
+                                    }
+                                    if(bankCID !=null) {
+                                        NetbankingOption  netbankingOption =  new NetbankingOption(bankCID.getName(), bankCID.getCID());
+                                        netbankingOption.setName("Net Banking - " + bankCID.getName());
+                                        walletList.add(0, netbankingOption);
+
+                                        int length = walletList.size();
+                                        for(int i=1; i<length; i++) {
+                                            if(walletList.get(i).getName().equalsIgnoreCase(netbankingOption.getName())) {
+                                                walletList.remove(i);
+                                                break;
+                                            }
+                                        } //remove duplicate bank if exists
+                                    }
                                     sendResponse(callback, walletList);
 
                                 } catch (JSONException e) {
@@ -2033,6 +2148,27 @@ public class CitrusClient {
             }
 
             sendError(callback, citrusError);
+        }
+    }
+
+    /*
+    NEW APIS for Cube starts here
+     */
+
+    public synchronized void getSignUPToken(final Callback<AccessToken> callback) {
+
+        if (validate()) {
+            retrofitClient.getSignUpToken(signupId, signupSecret, OAuth2GrantType.implicit.toString(), new retrofit.Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken, Response response) {
+                    callback.success(accessToken);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    sendError(callback, error);
+                }
+            });
         }
     }
 
