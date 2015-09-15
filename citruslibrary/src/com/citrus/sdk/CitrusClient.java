@@ -223,7 +223,7 @@ public class CitrusClient {
 
                     @Override
                     public void failure(RetrofitError error) {
-                       // Logger.e("Error while fetching the health");
+                        // Logger.e("Error while fetching the health");
                     }
                 }
         );
@@ -1514,17 +1514,38 @@ public class CitrusClient {
                     public void success(AccessToken accessToken) {
                         Amount amount = paymentBill.getAmount();
 
-                        retrofitClient.payUsingCitrusCash(accessToken.getHeaderAccessToken(), amount.getValue(), amount.getCurrency(), paymentBill.getMerchantAccessKey(), paymentBill.getMerchantTransactionId(), "aadddvvcc", "Pay Using Citrus Cash", new retrofit.Callback<PaymentResponse>() {
-                            @Override
-                            public void success(PaymentResponse paymentResponse, Response response) {
-                                sendResponse(callback, paymentResponse);
-                            }
+//                        retrofitClient.payUsingCitrusCash(accessToken.getHeaderAccessToken(), amount.getValue(), amount.getCurrency(), paymentBill.getMerchantAccessKey(), paymentBill.getMerchantTransactionId(), "aadddvvcc", "Pay Using Citrus Cash", new retrofit.Callback<PaymentResponse>() {
+//                            @Override
+//                            public void success(PaymentResponse paymentResponse, Response response) {
+//                                sendResponse(callback, paymentResponse);
+//                            }
+//
+//                            @Override
+//                            public void failure(RetrofitError error) {
+//                                sendError(callback, error);
+//                            }
+//                        });
 
-                            @Override
-                            public void failure(RetrofitError error) {
-                                sendError(callback, error);
-                            }
-                        });
+                        JSONObject jsonObject = PaymentBill.toJSONObject(paymentBill);
+                        if (jsonObject != null) {
+                            jsonObject.remove("returnUrl");
+
+                            Logger.d("jsonobject :: " + jsonObject.toString());
+
+                            retrofitClient.payUsingCitrusCash(accessToken.getHeaderAccessToken(), new TypedString(jsonObject.toString()), new retrofit.Callback<PaymentResponse>() {
+                                @Override
+                                public void success(PaymentResponse paymentResponse, Response response) {
+                                    sendResponse(callback, paymentResponse);
+                                }
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    sendError(callback, error);
+                                }
+                            });
+                        } else {
+                            sendError(callback, new CitrusError("Unable to get the bill", Status.FAILED));
+                        }
                     }
 
                     @Override

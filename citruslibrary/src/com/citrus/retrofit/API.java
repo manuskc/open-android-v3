@@ -103,9 +103,9 @@ public interface API {
     void resetPassword(@Header("Authorization") String header, @Field("username") String username, Callback<JsonElement> callback);
 
     //Pay Using Citrus Cash API call
-    @FormUrlEncoded
+    @Headers("Content-Type: application/json")
     @POST("/service/v2/prepayment/prepaid_pay")
-    void payUsingCitrusCash(@Header("Authorization") String header, @Field("amount") String amount, @Field("currency") String currency, @Field("accessKey") String accessKey, @Field("merchantTransactionId") String merchantTransactionId, @Field("signature") String signature, @Field("comment") String comment, Callback<PaymentResponse> callback);
+    void payUsingCitrusCash(@Header("Authorization") String header, @Body TypedString body, Callback<PaymentResponse> callback);
 
     //return url from citrus
     @Headers("Content-Type: application/json")
