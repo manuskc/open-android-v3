@@ -27,6 +27,7 @@ import com.google.gson.JsonElement;
 
 import retrofit.Callback;
 import retrofit.ResponseCallback;
+import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.Field;
@@ -157,7 +158,7 @@ public interface API {
 
     //get merchant name by vanity  --     //"utility/nagama/merchantName";
     @GET("/utility/{path}/merchantName")
-    void getMerchantName(@Path("path") String path, Callback<String> callback);
+    void getMerchantName(@Path("path") String path, Callback<Response> callback);
 
     // Cashout APIs.
     @FormUrlEncoded

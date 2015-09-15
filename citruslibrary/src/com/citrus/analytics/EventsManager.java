@@ -16,6 +16,7 @@ import com.orhanobut.logger.Logger;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 /**
  * Created by MANGESH KADAM on 4/24/2015.
@@ -78,24 +79,26 @@ public class EventsManager {
         Environment environment = client.getEnvironment();
         if (environment != null) {
             API citrusBaseURLClient = RetroFitClient.getCitrusBaseUrlClient(client.getEnvironment().getBaseCitrusUrl());
-            citrusBaseURLClient.getMerchantName(Config.getVanity(), new Callback<String>() {
+            citrusBaseURLClient.getMerchantName(Config.getVanity(), new Callback<Response>() {
                 @Override
-                public void success(String s, Response response) {
-                    Logger.d("Merchant Name is ****" + s);
+                public void success(Response s, Response response) {
 
+                    String merchantName = new String(((TypedByteArray) response.getBody()).getBytes());
                     Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
-                    t.send(new HitBuilders.EventBuilder().setCategory(s)
+                    t.send(new HitBuilders.EventBuilder().setCategory(merchantName)
                             .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
                             .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
+                    
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
-                    Logger.d("Failed to get Merchant name *****");
+
                     Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
                     t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
                             .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
                             .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
+                    
                 }
             });
         }
