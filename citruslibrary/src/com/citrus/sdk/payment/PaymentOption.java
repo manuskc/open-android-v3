@@ -109,6 +109,8 @@ public abstract class PaymentOption implements Parcelable {
 
     public abstract String getSavePaymentOptionObject();
 
+    public abstract String getSaveDefaultPaymentOptionObject();
+
     public abstract Drawable getOptionIcon(Context context);
 
     public abstract com.citrus.analytics.PaymentType getAnalyticsPaymentType();

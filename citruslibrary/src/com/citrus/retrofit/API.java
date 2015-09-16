@@ -19,6 +19,7 @@ import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.BindPOJO;
 import com.citrus.sdk.classes.CitrusPrepaidBill;
+import com.citrus.sdk.classes.CitrusUMResponse;
 import com.citrus.sdk.classes.LinkUserResponse;
 import com.citrus.sdk.classes.PGHealthResponse;
 import com.citrus.sdk.classes.StructResponsePOJO;
@@ -202,4 +203,23 @@ public interface API {
 
     @GET("/service/um/profile/profileInfo")
     void getProfileInfo(@Header("Authorization") String token, Callback<JsonElement> callback);
+
+
+    //NEW UM APIS from here
+
+    // Save payment option
+    @Headers("Content-Type: application/json")
+    @PUT("/service/v2/profile/me/payment")
+    void setDefaultPaymentOption(@Header("Authorization") String header, @Body TypedString body, Callback<CitrusResponse> callback);
+
+
+    /**
+     * Reset Password API -- UM implementation
+     * @param header signup token
+     * @param username email ID of user
+     * @param resetPasswordResponseCallback
+     */
+    @FormUrlEncoded
+    @POST("/service/um/user/reset/password")
+    void resetUMPassword(@Header("Authorization") String header, @Field("username") String username, Callback<CitrusUMResponse> resetPasswordResponseCallback);
 }

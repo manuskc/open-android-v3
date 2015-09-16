@@ -40,6 +40,7 @@ import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.BindPOJO;
 import com.citrus.sdk.classes.CashoutInfo;
+import com.citrus.sdk.classes.CitrusUMResponse;
 import com.citrus.sdk.classes.LinkUserResponse;
 import com.citrus.sdk.classes.MemberInfo;
 import com.citrus.sdk.classes.PGHealth;
@@ -1234,7 +1235,7 @@ public class CitrusClient {
 
                                     JSONObject jsonObject = new JSONObject(element.toString());
                                     JSONArray paymentOptions = jsonObject.optJSONArray("paymentOptions");
-                                    String  defaultOption =  null;
+                                    String defaultOption = null;
                                     if (jsonObject.has("defaultOption")) {
                                         defaultOption = jsonObject.getString("defaultOption");
                                     }
@@ -1270,26 +1271,26 @@ public class CitrusClient {
                                             }
                                         }
                                     }
-                                    if(defaultOption!= null && !TextUtils.isEmpty(defaultOption)) { //if Default is Set
+                                    if (defaultOption != null && !TextUtils.isEmpty(defaultOption)) { //if Default is Set
                                         Iterator<PaymentOption> paymentOptionIterator = walletList.iterator();
                                         PaymentOption iteratorPaymentOption = null;
-                                        while(paymentOptionIterator.hasNext()) {
+                                        while (paymentOptionIterator.hasNext()) {
                                             iteratorPaymentOption = paymentOptionIterator.next();
-                                            if(iteratorPaymentOption.getName().equalsIgnoreCase(defaultOption)) {
+                                            if (iteratorPaymentOption.getName().equalsIgnoreCase(defaultOption)) {
                                                 Logger.d("FOUND DEFAUT AT ***" + walletList.indexOf(iteratorPaymentOption));
                                                 Collections.swap(walletList, 0, walletList.indexOf(iteratorPaymentOption));
                                                 break;//we found default option in WalletList
                                             }
                                         }
                                     }
-                                    if(bankCID !=null) {
-                                        NetbankingOption  netbankingOption =  new NetbankingOption(bankCID.getName(), bankCID.getCID());
+                                    if (bankCID != null) {
+                                        NetbankingOption netbankingOption = new NetbankingOption(bankCID.getName(), bankCID.getCID());
                                         netbankingOption.setName("Net Banking - " + bankCID.getName());
                                         walletList.add(0, netbankingOption);
 
                                         int length = walletList.size();
-                                        for(int i=1; i<length; i++) {
-                                            if(walletList.get(i).getName().equalsIgnoreCase(netbankingOption.getName())) {
+                                        for (int i = 1; i < length; i++) {
+                                            if (walletList.get(i).getName().equalsIgnoreCase(netbankingOption.getName())) {
                                                 walletList.remove(i);
                                                 break;
                                             }
@@ -2166,6 +2167,66 @@ public class CitrusClient {
 
                 @Override
                 public void failure(RetrofitError error) {
+                    sendError(callback, error);
+                }
+            });
+        }
+    }
+
+
+    /**
+     * Reset the user password. The password reset link will be sent to the user. UM implementation
+     *
+     * @param emailId
+     * @param callback
+     */
+    public synchronized void resetUserPassword(final String emailId, @NonNull final Callback<CitrusUMResponse> callback) {
+        if (validate()) {
+            getSignUPToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+                    retrofitClient.resetUMPassword(accessToken.getHeaderAccessToken(), emailId, new retrofit.Callback<CitrusUMResponse>() {
+                        @Override
+                        public void success(CitrusUMResponse resetPasswordResponse, Response response) {
+                            callback.success(resetPasswordResponse);
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            callback.error(new CitrusError(error.getMessage(), Status.FAILED));
+                        }
+                    });
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    callback.error(error);
+                }
+            });
+        }
+    }
+
+    public synchronized void setDefaultPaymentOption(final PaymentOption defaultPaymentOption, final Callback<CitrusResponse> callback) {
+        if(validate()) {
+            oauthToken.getSignInToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+
+                    retrofitClient.setDefaultPaymentOption(accessToken.getHeaderAccessToken(), new TypedString(defaultPaymentOption.getSaveDefaultPaymentOptionObject()), new retrofit.Callback<CitrusResponse>() {
+                        @Override
+                        public void success(CitrusResponse citrusResponse, Response response) {
+                            sendResponse(callback, new CitrusResponse(ResponseMessages.SUCCESS_MESSAGE_SAVED_PAYMENT_OPTIONS, Status.SUCCESSFUL));
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            sendError(callback, error);
+                        }
+                    });
+                }
+
+                @Override
+                public void error(CitrusError error) {
                     sendError(callback, error);
                 }
             });
