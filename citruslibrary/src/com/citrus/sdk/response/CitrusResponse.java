@@ -43,19 +43,10 @@ public class CitrusResponse implements Parcelable {
         dest.writeInt(this.status == null ? -1 : this.status.ordinal());
     }
 
-    private CitrusResponse(Parcel in) {
+    protected CitrusResponse(Parcel in) {
         this.message = in.readString();
         int tmpStatus = in.readInt();
         this.status = tmpStatus == -1 ? null : Status.values()[tmpStatus];
     }
 
-    public static final Parcelable.Creator<CitrusResponse> CREATOR = new Parcelable.Creator<CitrusResponse>() {
-        public CitrusResponse createFromParcel(Parcel source) {
-            return new CitrusResponse(source);
-        }
-
-        public CitrusResponse[] newArray(int size) {
-            return new CitrusResponse[size];
-        }
-    };
 }

@@ -105,7 +105,7 @@ public interface API {
     //Pay Using Citrus Cash API call
     @Headers("Content-Type: application/json")
     @POST("/service/v2/prepayment/prepaid_pay")
-    void payUsingCitrusCash(@Header("Authorization") String header, @Body TypedString body, Callback<PaymentResponse> callback);
+    void payUsingCitrusCash(@Header("Authorization") String header, @Body TypedString body, Callback<JsonElement> callback);
 
     //return url from citrus
     @Headers("Content-Type: application/json")

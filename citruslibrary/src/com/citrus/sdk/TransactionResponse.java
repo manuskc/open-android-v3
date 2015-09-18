@@ -106,67 +106,15 @@ public final class TransactionResponse implements Parcelable {
 
     public static TransactionResponse fromJSON(String response, Map<String, String> customParamsOriginalMap) {
         TransactionResponse transactionResponse = null;
-
         try {
-            if (response != null) {
-                JSONObject jsonObject = new JSONObject(response);
 
-                // If there is an error.
-                if (jsonObject.optString("Error", null) != null) {
-                    String reason = jsonObject.optString("Reason", "Transaction Failed");
-                    transactionResponse = new TransactionResponse(TransactionStatus.FAILED, reason, null);
-                } else {
-                    PaymentMode paymentMode = PaymentMode.getPaymentMode(jsonObject.optString("paymentMode"));
-                    TransactionStatus transactionStatus = TransactionStatus.getTransactionStatus(jsonObject.optString("TxStatus"));
-                    String currency = jsonObject.optString("currency");
-                    String amount = jsonObject.optString("amount");
-                    String responseCode = jsonObject.optString("pgRespCode");
-                    String message;
-                    // If the transaction is cancelled by the user, change the message.
-                    if (transactionStatus == TransactionStatus.CANCELLED) {
-                        message = "Transaction Cancelled.";
-                    } else {
-                        message = jsonObject.optString("TxMsg");
-                    }
-
-                    String isCOD = jsonObject.optString("isCOD");
-                    String signature = jsonObject.optString("signature");
-                    String issuerCode = jsonObject.optString("issuerCode");
-                    String impsMmid = jsonObject.optString("impsMmid");
-                    String impsMobileNumber = jsonObject.optString("impsMobileNumber");
-                    String authIdCode = jsonObject.optString("authIdCode");
-                    String maskedcardNumber = jsonObject.optString("maskedcardNumber");
-                    // TODO Need to parse custom parameters
-                    Map<String, String> customParamsMap = null;
-
-                    if (customParamsOriginalMap != null) {
-                        Set<String> keys = customParamsOriginalMap.keySet();
-                        for (String key : keys) {
-                            if (customParamsMap == null) {
-                                customParamsMap = new HashMap<>();
-                            }
-
-                            customParamsMap.put(key, jsonObject.optString(key));
-                        }
-                    }
-
-                    TransactionDetails transactionDetails = TransactionDetails.fromJSONObject(jsonObject);
-                    CitrusUser citrusUser = CitrusUser.fromJSONObject(jsonObject);
-                    boolean cod = "true".equalsIgnoreCase(isCOD);
-
-                    Amount transactionAmount = new Amount(amount, currency);
-
-                    transactionResponse = new TransactionResponse(transactionAmount, message, responseCode, transactionStatus, transactionDetails, citrusUser, paymentMode, issuerCode, impsMobileNumber, impsMmid, authIdCode, signature, cod, maskedcardNumber, customParamsMap);
-                    transactionResponse.setJsonResponse(jsonObject.toString());
-
-                }
-            }
+            JSONObject jsonObject = new JSONObject(response);
+            transactionResponse = fromJSONObject(jsonObject, customParamsOriginalMap);
         } catch (JSONException ex) {
             ex.printStackTrace();
             transactionResponse = new TransactionResponse();
             transactionResponse.setJsonResponse(response);
         }
-
         return transactionResponse;
     }
 
@@ -174,8 +122,74 @@ public final class TransactionResponse implements Parcelable {
         return fromJSON(response, null);
     }
 
+    public static TransactionResponse fromJSONObject(JSONObject jsonObject, Map<String, String> customParamsOriginalMap) {
+        TransactionResponse transactionResponse = null;
+
+        if (jsonObject != null) {
+            // If there is an error.
+            if (jsonObject.optString("Error", null) != null) {
+                String reason = jsonObject.optString("Reason", "Transaction Failed");
+                transactionResponse = new TransactionResponse(TransactionStatus.FAILED, reason, null);
+            } else {
+                PaymentMode paymentMode = PaymentMode.getPaymentMode(jsonObject.optString("paymentMode"));
+                TransactionStatus transactionStatus = TransactionStatus.getTransactionStatus(jsonObject.optString("TxStatus"));
+                String currency = jsonObject.optString("currency");
+                String amount = jsonObject.optString("amount");
+                String responseCode = jsonObject.optString("pgRespCode");
+                String message;
+                // If the transaction is cancelled by the user, change the message.
+                if (transactionStatus == TransactionStatus.CANCELLED) {
+                    message = "Transaction Cancelled.";
+                } else {
+                    message = jsonObject.optString("TxMsg");
+                }
+
+                String isCOD = jsonObject.optString("isCOD");
+                String signature = jsonObject.optString("signature");
+                String issuerCode = jsonObject.optString("issuerCode");
+                String impsMmid = jsonObject.optString("impsMmid");
+                String impsMobileNumber = jsonObject.optString("impsMobileNumber");
+                String authIdCode = jsonObject.optString("authIdCode");
+                String maskedcardNumber = jsonObject.optString("maskedcardNumber");
+                // TODO Need to parse custom parameters
+                Map<String, String> customParamsMap = null;
+
+                if (customParamsOriginalMap != null) {
+                    Set<String> keys = customParamsOriginalMap.keySet();
+                    for (String key : keys) {
+                        if (customParamsMap == null) {
+                            customParamsMap = new HashMap<>();
+                        }
+
+                        customParamsMap.put(key, jsonObject.optString(key));
+                    }
+                }
+
+                TransactionDetails transactionDetails = TransactionDetails.fromJSONObject(jsonObject);
+                CitrusUser citrusUser = CitrusUser.fromJSONObject(jsonObject);
+                boolean cod = "true".equalsIgnoreCase(isCOD);
+
+                Amount transactionAmount = new Amount(amount, currency);
+
+                transactionResponse = new TransactionResponse(transactionAmount, message, responseCode, transactionStatus, transactionDetails, citrusUser, paymentMode, issuerCode, impsMobileNumber, impsMmid, authIdCode, signature, cod, maskedcardNumber, customParamsMap);
+                transactionResponse.setJsonResponse(jsonObject.toString());
+
+            }
+        }
+
+        return transactionResponse;
+    }
+
     public TransactionStatus getTransactionStatus() {
         return transactionStatus;
+    }
+
+    public String getTransactionId() {
+        if (transactionDetails != null) {
+            return transactionDetails.getTransactionId();
+        }
+
+        return null;
     }
 
     public CitrusUser getCitrusUser() {
@@ -298,7 +312,7 @@ public final class TransactionResponse implements Parcelable {
 
         public static TransactionStatus getTransactionStatus(String transactionStatus) {
             TransactionStatus status = UNKNOWN;
-            if (TextUtils.equals(transactionStatus, "SUCCESS")) {
+            if (TextUtils.equals(transactionStatus, "SUCCESS") || TextUtils.equals(transactionStatus, "SUCCESSFUL")) {
                 status = SUCCESSFUL;
             } else if (TextUtils.equals(transactionStatus, "FAIL")) {
                 status = FAILED;
