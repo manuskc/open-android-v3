@@ -1499,6 +1499,11 @@ public class CitrusClient {
         startCitrusActivity(pgPayment);
     }
 
+    /**
+     * @param citrusCash
+     * @param callback
+     * @deprecated Please use {@link CitrusClient#prepaidPay(PaymentType.CitrusCash, Callback)} instead.
+     */
     public synchronized void payUsingCitrusCash(final PaymentType.CitrusCash citrusCash, final Callback<TransactionResponse> callback) {
 
         String cookieExpiryDate = "";
@@ -1592,9 +1597,11 @@ public class CitrusClient {
                         public void success(final PaymentBill paymentBill) {
                             final String returnUrl = paymentBill.getReturnUrl();
 
-                            oauthToken.getPayUsingCitrusCashToken(new Callback<AccessToken>() {
+                            oauthToken.getPrepaidToken(new Callback<AccessToken>() {
                                 @Override
                                 public void success(AccessToken accessToken) {
+
+                                    Logger.d("Access token json :: " + accessToken.getJSON());
 
                                     citrusCash.setPaymentBill(paymentBill);
 
@@ -1608,7 +1615,7 @@ public class CitrusClient {
                                         citrusCash.setCitrusUser(citrusUser);
                                     }
 
-                                    retrofitClient.payUsingCitrusCash(accessToken.getHeaderAccessToken(), new TypedString(citrusCash.getPaymentJSON()), new retrofit.Callback<JsonElement>() {
+                                    retrofitClient.payUsingCitrusCash(accessToken.getPrepaidPayToken().getHeaderAccessToken(), new TypedString(citrusCash.getPaymentJSON()), new retrofit.Callback<JsonElement>() {
                                         @Override
                                         public void success(JsonElement jsonElement, Response response) {
 
