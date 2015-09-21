@@ -552,20 +552,6 @@ public class CitrusClient {
                                         RetroFitClient.setInterCeptor();
                                         EventBus.getDefault().register(CitrusClient.this);
 
-                                        // Fetch PayUsingCitrusCash token
-                                        getPayUsingCitrusCashToken(emailId, password, new Callback<AccessToken>() {
-                                            @Override
-                                            public void success(AccessToken accessToken) {
-                                                OauthToken token = new OauthToken(mContext, Constants.PAY_USING_CITRUS_CASH_TOKEN);
-                                                token.createToken(accessToken.getJSON());///grant Type username token saved
-                                            }
-
-                                            @Override
-                                            public void error(CitrusError error) {
-                                                // NOOP
-                                            }
-                                        });
-
                                         retrofitClient.getCookie(emailId, password, "true", new retrofit.Callback<String>() {
                                             @Override
                                             public void success(String s, Response response) {
@@ -610,7 +596,6 @@ public class CitrusClient {
                             sendError(callback, error);
                         }
                     });
-
                 }
             }
 
@@ -675,20 +660,6 @@ public class CitrusClient {
                                         RetroFitClient.setInterCeptor();
                                         EventBus.getDefault().register(CitrusClient.this);
 
-                                        // Fetch PayUsingCitrusCash token
-                                        getPayUsingCitrusCashToken(mobileNo, password, new Callback<AccessToken>() {
-                                            @Override
-                                            public void success(AccessToken accessToken) {
-                                                OauthToken token = new OauthToken(mContext, Constants.PAY_USING_CITRUS_CASH_TOKEN);
-                                                token.createToken(accessToken.getJSON());///grant Type username token saved
-                                            }
-
-                                            @Override
-                                            public void error(CitrusError error) {
-                                                // NOOP
-                                            }
-                                        });
-
                                         retrofitClient.getCookie(mobileNo, password, "true", new retrofit.Callback<String>() {
                                             @Override
                                             public void success(String s, Response response) {
@@ -733,20 +704,6 @@ public class CitrusClient {
                     });
 
                 }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                sendError(callback, error);
-            }
-        });
-    }
-
-    private void getPayUsingCitrusCashToken(String username, String password, final Callback<AccessToken> callback) {
-        retrofitClient.getPayUsingCitrusCashToken(signinId, signinSecret, username, password, OAuth2GrantType.password.toString(), "prepaid_merchant_pay", new retrofit.Callback<AccessToken>() {
-            @Override
-            public void success(AccessToken accessToken, Response response) {
-                sendResponse(callback, accessToken);
             }
 
             @Override
@@ -1600,9 +1557,6 @@ public class CitrusClient {
                             oauthToken.getPrepaidToken(new Callback<AccessToken>() {
                                 @Override
                                 public void success(AccessToken accessToken) {
-
-                                    Logger.d("Access token json :: " + accessToken.getJSON());
-
                                     citrusCash.setPaymentBill(paymentBill);
 
                                     // Use the user details sent by the merchant, else use the user details from the token.
