@@ -16,7 +16,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by salil on 29/4/15.
@@ -104,11 +103,13 @@ public class PaymentResponse extends CitrusResponse implements Parcelable {
             while (keys.hasNext()) {
                 String key = keys.next();
                 buffer.append(key);
+                buffer.append("=");
                 try {
                     buffer.append(URLEncoder.encode(responseParams.optString(key), "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+                buffer.append("&");
             }
         }
 
@@ -127,6 +128,8 @@ public class PaymentResponse extends CitrusResponse implements Parcelable {
             String merchantName = jsonObject.optString("merchant");
             Amount transactionAmount = Amount.fromJSONObject(jsonObject.optJSONObject("amount"));
             Amount balanceAmount = Amount.fromJSONObject(jsonObject.optJSONObject("balance"));
+            CitrusUser citrusUser = CitrusUser.fromJSONObject(jsonObject);
+
             Map<String, String> customParamsMap = null;
             JSONObject customParamsObject = jsonObject.optJSONObject("customParams");
             if (customParamsObject != null) {
@@ -144,7 +147,9 @@ public class PaymentResponse extends CitrusResponse implements Parcelable {
 
             TransactionResponse transactionResponse = TransactionResponse.fromJSONObject(responseParams, customParamsMap);
             String transactionId = ((transactionResponse != null) ? transactionResponse.getTransactionId() : null);
-            paymentResponse = new PaymentResponse(message, status, transactionId, transactionAmount, balanceAmount, new CitrusUser(customer, ""), merchantName, date, transactionResponse);
+            paymentResponse = new PaymentResponse(message, status, transactionId, transactionAmount, balanceAmount, citrusUser, merchantName, date, transactionResponse);
+
+            paymentResponse.setResponseParams(responseParams);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -22,6 +22,9 @@ import com.citrus.sdk.Constants;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by salil on 24/4/15.
  */
@@ -194,6 +197,32 @@ public abstract class PaymentType implements Parcelable {
          */
         public CitrusCash(PaymentBill paymentBill) {
             super(paymentBill);
+        }
+
+        public final void setPaymentBill(PaymentBill paymentBill) {
+            this.paymentBill = paymentBill;
+        }
+
+        public final void setCitrusUser(CitrusUser citrusUser) {
+            this.citrusUser = citrusUser;
+        }
+
+        public final String getPaymentJSON() {
+            String json = "";
+
+            JSONObject jsonObject = PaymentBill.toJSONObject(paymentBill);
+            if (jsonObject != null) {
+                try {
+                    jsonObject.put("userDetails", CitrusUser.toJSONObject(citrusUser));
+                    jsonObject.put("requestOrigin", "MSDKW");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                json = jsonObject.toString();
+            }
+
+            return json;
         }
 
         @Override

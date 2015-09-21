@@ -1596,7 +1596,19 @@ public class CitrusClient {
                                 @Override
                                 public void success(AccessToken accessToken) {
 
-                                    retrofitClient.payUsingCitrusCash(accessToken.getHeaderAccessToken(), new TypedString(PaymentBill.toJSON(paymentBill)), new retrofit.Callback<JsonElement>() {
+                                    citrusCash.setPaymentBill(paymentBill);
+
+                                    // Use the user details sent by the merchant, else use the user details from the token.
+                                    CitrusUser citrusUser = getCitrusUser();
+                                    if (citrusCash.getCitrusUser() == null) {
+                                        if (citrusUser == null) {
+                                            citrusUser = new CitrusUser(getUserEmailId(), getUserMobileNumber());
+                                        }
+
+                                        citrusCash.setCitrusUser(citrusUser);
+                                    }
+
+                                    retrofitClient.payUsingCitrusCash(accessToken.getHeaderAccessToken(), new TypedString(citrusCash.getPaymentJSON()), new retrofit.Callback<JsonElement>() {
                                         @Override
                                         public void success(JsonElement jsonElement, Response response) {
 

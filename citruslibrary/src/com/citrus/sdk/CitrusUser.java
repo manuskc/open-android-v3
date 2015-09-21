@@ -265,12 +265,12 @@ public final class CitrusUser implements Parcelable {
             Address address = null;
 
             if (response != null) {
-                String addressCountry = response.optString("addressCountry");
-                String addressState = response.optString("addressState");
-                String addressCity = response.optString("addressCity");
-                String addressStreet1 = response.optString("addressStreet1");
-                String addressStreet2 = response.optString("addressStreet2");
-                String addressZip = response.optString("addressZip");
+                String addressCountry = response.optString("addressCountry", response.optString("country"));
+                String addressState = response.optString("addressState", response.optString("state"));
+                String addressCity = response.optString("addressCity", response.optString("city"));
+                String addressStreet1 = response.optString("addressStreet1", response.optString("street1"));
+                String addressStreet2 = response.optString("addressStreet2", response.optString("street2"));
+                String addressZip = response.optString("addressZip", response.optString("zip"));
 
                 address = new Address(addressStreet1, addressStreet2, addressCity, addressState, addressCountry, addressZip);
             }
