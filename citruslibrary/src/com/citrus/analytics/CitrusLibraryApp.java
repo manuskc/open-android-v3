@@ -17,7 +17,7 @@ package com.citrus.analytics;
 
 import android.content.Context;
 
-import com.citrus.mobile.Config;
+import com.citrus.sdk.CitrusClient;
 import com.citrus.sdk.response.CitrusLogger;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;
@@ -50,7 +50,7 @@ public class CitrusLibraryApp  {
                 analytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
             }
 
-            Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(Config.getAnalyticsID()):null;
+            Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(CitrusClient.getInstance(context).getEnvironment().getAnalyticsID()):null;
             mTrackers.put(trackerId, t);
         }
         return mTrackers.get(trackerId);

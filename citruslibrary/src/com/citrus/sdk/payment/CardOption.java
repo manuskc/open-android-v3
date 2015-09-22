@@ -400,6 +400,8 @@ public abstract class CardOption extends PaymentOption {
         return object.toString();
     }
 
+
+
     private boolean isValidLuhnNumber(String number) {
         boolean isOdd = true;
         int sum = 0;

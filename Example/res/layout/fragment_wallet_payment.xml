@@ -62,6 +62,21 @@
         android:layout_margin="@dimen/button_margin"
         android:text="Withdraw Money To Your Account" />
 
+<Button
+        android:id="@+id/btn_update_mobile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/button_margin"
+        android:text="Update Mobile No." />
+
+    <Button
+        android:id="@+id/btn_verify_mobile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/button_margin"
+        android:text="Verify Mobile using Verification Code" />
+
+
     <Button
         android:id="@+id/btn_send_money"
         android:layout_width="match_parent"
