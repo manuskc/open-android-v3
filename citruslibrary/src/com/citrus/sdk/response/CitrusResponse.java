@@ -16,18 +16,10 @@ public class CitrusResponse implements Parcelable {
     @SerializedName("status")
     protected Status status = null;
 
-    protected String transactionResponse = null;
-
     CitrusResponse() {}
 
     public CitrusResponse(String message, Status status) {
         this.message = message;
-        this.status = status;
-    }
-
-    public CitrusResponse(String message, String transactionResponse, Status status) {
-        this.message = message;
-        this.transactionResponse = transactionResponse;
         this.status = status;
     }
 
@@ -39,8 +31,6 @@ public class CitrusResponse implements Parcelable {
         return status;
     }
 
-    public String getTransactionResponse() { return transactionResponse; }
-
 
     @Override
     public int describeContents() {
@@ -51,17 +41,15 @@ public class CitrusResponse implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.message);
         dest.writeInt(this.status == null ? -1 : this.status.ordinal());
-        dest.writeString(this.transactionResponse);
     }
 
-    protected CitrusResponse(Parcel in) {
+    private CitrusResponse(Parcel in) {
         this.message = in.readString();
         int tmpStatus = in.readInt();
         this.status = tmpStatus == -1 ? null : Status.values()[tmpStatus];
-        this.transactionResponse = in.readString();
     }
 
-    public static final Creator<CitrusResponse> CREATOR = new Creator<CitrusResponse>() {
+    public static final Parcelable.Creator<CitrusResponse> CREATOR = new Parcelable.Creator<CitrusResponse>() {
         public CitrusResponse createFromParcel(Parcel source) {
             return new CitrusResponse(source);
         }

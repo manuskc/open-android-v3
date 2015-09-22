@@ -22,7 +22,4 @@ public class CitrusError extends CitrusResponse {
     public CitrusError(String message, Status status) {
         super(message, status);
     }
-    public CitrusError(String message, String transactionResponse, Status status) {
-        super(message, transactionResponse, status);
-    }
 }

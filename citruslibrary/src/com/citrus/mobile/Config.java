@@ -84,7 +84,7 @@ public class Config {
 
 
     public static String getAnalyticsID() {
-        if (env.equalsIgnoreCase("sandbox") || env.equalsIgnoreCase("staging"))
+        if (env.equalsIgnoreCase("sandbox"))
             return GA_SANDBOX_ID;
         else
             return GA_PRODUCTION_ID;

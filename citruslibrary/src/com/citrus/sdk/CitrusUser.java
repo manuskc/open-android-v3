@@ -42,9 +42,6 @@ public final class CitrusUser implements Parcelable {
     private String mobileNo = null;
     private Address address = null;
 
-
-
-
     private CitrusUser() {
 
     }

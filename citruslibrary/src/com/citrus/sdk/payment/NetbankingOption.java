@@ -51,9 +51,6 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
         this.bankCID = bankCID;
     }
 
-    public void setName(String bankName) {
-        super.name = bankName;
-    }
     /**
      * Use this constructor for tokenized payments.
      *
@@ -208,33 +205,6 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
             e.printStackTrace();
         }
 
-        return object.toString();
-    }
-
-    @Override
-    public String getSaveDefaultPaymentOptionObject() {
-
-        JSONObject object = null;
-        try {
-            object = new JSONObject();
-            JSONArray paymentOptions = new JSONArray();
-
-            JSONObject option = new JSONObject();
-            option.put("owner", "");
-            option.put("bank", bankName);
-            option.put("type", "netbanking");
-            option.put("number", "null");
-            option.put("scheme", "null");
-            option.put("expiryDate", "null");
-            option.put("name", super.getName());
-            paymentOptions.put(option);
-
-            object.put("paymentOptions", paymentOptions);
-            object.put("type", "payment");
-            object.put("defaultOption", super.getName());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         return object.toString();
     }
 

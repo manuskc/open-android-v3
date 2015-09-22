@@ -35,8 +35,7 @@ public interface ResponseMessages {
     String ERROR_MESSAGE_RESET_PASSWORD = "Error: Reset password failed";
 
     String ERROR_MESSAGE_BLANK_EMAIL_ID_MOBILE_NO = "Please enter emaild id or the mobile no of your friend to send the money";
-    String ERROR_MESSAGE_BLANK_MOBILE_NO = "Mobile No can not be blank";
-    String ERROR_MESSAGE_BLANK_VERIFICATION_CODE = "Verification Code can not be blank.";
+    String ERROR_MESSAGE_BLANK_MOBILE_NO = "Please enter the mobile no of your friend to send the money";
     String ERROR_MESSAGE_BLANK_AMOUNT = "Please enter the amount to be sent.";
     String ERROR_MESSAGE_INVALID_JSON = "ERROR: Invlid json received.";
     String ERROR_MESSAGE_FAILED_MERCHANT_PAYMENT_OPTIONS = "ERROR: Unable to fetch merchant payment options";
@@ -48,8 +47,6 @@ public interface ResponseMessages {
 
     String ERROR_MESSAGE_LINK_USER = "ERROR: Unable to Link User";
     String ERROR_MESSAGE_SIGNUP_TOKEN = "ERROR: Unable to fetch Signup token.";
-    String ERROR_MESSAGE_UPDATE_MOBILE = "Updating mobile failed. Please try again.";
-    String ERROR_MESSAGE_VERIFY_MOBILE = "Mobile verification failed. Please try again.";
 
     String SUCCESS_MESSAGE_SAVED_PAYMENT_OPTIONS = "Payment Option Saved Successfully.";
     String SUCCESS_MESSAGE_SAVED_CASHOUT_OPTIONS = "Cashout Information Saved Successfully.";
@@ -66,13 +63,4 @@ public interface ResponseMessages {
 
     String ERROR_MESSAGE_INVALID_PASSWORD = "Invalid Credentials!!! Please check your passsword.";
 
-    String ERROR_MEMBER_INFO = "Failed to create Parameter JSON for MemeberINFO API";
-
-    String ERROR_UPDATE_MEMBER_INFO = "Failed to update Profile Info";
-
-    String ERROR_SIGN_UP = "Failed to SignUp user!!!";
-
-    String ERROR_SEND_OTP = "Failed to Send OTP !!!";
-
-    String ERROR_INVALID_CARD_NUMBER = "Invalid Card Number";
 }
