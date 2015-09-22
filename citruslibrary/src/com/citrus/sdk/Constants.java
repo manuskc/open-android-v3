@@ -62,7 +62,6 @@ public interface Constants {
     String ACTION_PG_PAYMENT = "ACTION_PG_PAYMENT";
 
     String PREPAID_VANITY = "prepaid";
-    String SIGNUP_SUCCESS_CODE = "R-201-00";
 }
 
 

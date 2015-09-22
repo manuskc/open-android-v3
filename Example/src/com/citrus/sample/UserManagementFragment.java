@@ -29,7 +29,6 @@ import android.widget.TextView;
 
 import com.citrus.sdk.Callback;
 import com.citrus.sdk.CitrusClient;
-import com.citrus.sdk.classes.LinkUserResponse;
 import com.citrus.sdk.response.CitrusError;
 import com.citrus.sdk.response.CitrusResponse;
 
@@ -110,35 +109,18 @@ public class UserManagementFragment extends Fragment implements View.OnClickList
         String emailId = editEmailId.getText().toString();
         String mobileNo = editMobileNo.getText().toString();
 
-//        citrusClient.isCitrusMember(emailId, mobileNo, new Callback<Boolean>() {
-//            @Override
-//            public void success(Boolean isMember) {
-//                if (isMember) {
-//                    btnSignIn.setVisibility(View.VISIBLE);
-//                    btnSignUp.setVisibility(View.GONE);
-//                    textMessage.setText("User is already a Citrus Member. Please Sign In the user.");
-//                } else {
-//                    btnSignUp.setVisibility(View.VISIBLE);
-//                    btnSignIn.setVisibility(View.GONE);
-//                    textMessage.setText("User is not a Citrus Member. Please Sign Up the user.");
-//                }
-//
-//                btnLinkUser.setVisibility(View.GONE);
-//                editPassword.setVisibility(View.VISIBLE);
-//            }
-//
-//            @Override
-//            public void error(CitrusError error) {
-//                textMessage.setText(error.getMessage());
-//            }
-//        });
-
-        citrusClient.linkUserWithOTP(emailId, mobileNo, true, new Callback<LinkUserResponse>() {
+        citrusClient.isCitrusMember(emailId, mobileNo, new Callback<Boolean>() {
             @Override
-            public void success(LinkUserResponse linkUserResponse) {
-                textMessage.setText(linkUserResponse.getResponseMessage());
-                btnSignIn.setVisibility(View.VISIBLE);
-                btnSignUp.setVisibility(View.GONE);
+            public void success(Boolean isMember) {
+                if (isMember) {
+                    btnSignIn.setVisibility(View.VISIBLE);
+                    btnSignUp.setVisibility(View.GONE);
+                    textMessage.setText("User is already a Citrus Member. Please Sign In the user.");
+                } else {
+                    btnSignUp.setVisibility(View.VISIBLE);
+                    btnSignIn.setVisibility(View.GONE);
+                    textMessage.setText("User is not a Citrus Member. Please Sign Up the user.");
+                }
 
                 btnLinkUser.setVisibility(View.GONE);
                 editPassword.setVisibility(View.VISIBLE);
@@ -155,7 +137,7 @@ public class UserManagementFragment extends Fragment implements View.OnClickList
         String emailId = editEmailId.getText().toString();
         String password = editPassword.getText().toString();
 
-        citrusClient.signInWithOTP(emailId, password, new Callback<CitrusResponse>() {
+        citrusClient.signIn(emailId, password, new Callback<CitrusResponse>() {
             @Override
             public void success(CitrusResponse citrusResponse) {
                 Utils.showToast(context, citrusResponse.getMessage());
@@ -214,6 +196,7 @@ public class UserManagementFragment extends Fragment implements View.OnClickList
             }
         });
     }
+
 
     @Override
     public void onAttach(Activity activity) {

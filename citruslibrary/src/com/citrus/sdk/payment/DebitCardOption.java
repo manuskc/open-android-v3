@@ -19,10 +19,6 @@ import android.os.Parcelable;
 import com.citrus.sdk.classes.Month;
 import com.citrus.sdk.classes.Year;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Created by salil on 13/2/15.
  */
@@ -98,8 +94,6 @@ public final class DebitCardOption extends CardOption implements Parcelable {
         this.savePaymentOption = in.readByte() != 0;
     }
 
-
-
     @Override
     public String getCardType() {
         // In case of AMEX card the card type is always credit, hence hardcoding the value.
@@ -132,33 +126,5 @@ public final class DebitCardOption extends CardOption implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.token);
         dest.writeByte(savePaymentOption ? (byte) 1 : (byte) 0);
-    }
-
-
-    @Override
-    public String getSaveDefaultPaymentOptionObject() {
-
-        JSONObject object = null;
-        try {
-            object = new JSONObject();
-            JSONArray paymentOptions = new JSONArray();
-
-            JSONObject option = new JSONObject();
-            option.put("owner", cardHolderName);
-            option.put("bank", "null");
-            option.put("type", "debit");
-            option.put("number", cardNumber);
-            option.put("scheme", cardScheme);
-            option.put("expiryDate", cardExpiry);
-            option.put("name", super.getName());
-            paymentOptions.put(option);
-
-            object.put("paymentOptions", paymentOptions);
-            object.put("type", "payment");
-            object.put("defaultOption", super.getName());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return object.toString();
     }
 }

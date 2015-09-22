@@ -58,11 +58,6 @@ public final class CitrusCash extends PaymentOption {
     }
 
     @Override
-    public String getSaveDefaultPaymentOptionObject() {
-        return null;
-    }
-
-    @Override
     public com.citrus.analytics.PaymentType getAnalyticsPaymentType() {
         return com.citrus.analytics.PaymentType.CITRUS_CASH;
     }

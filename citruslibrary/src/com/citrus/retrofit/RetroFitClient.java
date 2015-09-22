@@ -65,17 +65,6 @@ public class
         return citrusBaseUrlClient;
     }
 
-
-    public static API getCardBinServiceClient(String baseHost){
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(baseHost)
-                .setClient(new OkClient(new OkHttpClient()))
-                .setLogLevel(CitrusLogger.isEnableLogs()? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
-                .build();
-        API citrusBaseUrlClient = restAdapter.create(API.class);
-        return citrusBaseUrlClient;
-    }
-
     public static void  setInterCeptor() {
         okHttpClient.interceptors().add(new ReceivedCookiesInterceptor());
     }

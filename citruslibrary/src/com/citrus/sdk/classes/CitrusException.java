@@ -5,8 +5,6 @@ package com.citrus.sdk.classes;
  */
 public class CitrusException extends Exception {
 
-    public CitrusException() {
-    }
     public CitrusException(String detailMessage) {
         super(detailMessage);
     }
