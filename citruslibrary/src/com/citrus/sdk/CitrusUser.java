@@ -247,12 +247,12 @@ public final class CitrusUser implements Parcelable {
         private String zip = null;
 
         public Address(String street1, String street2, String city, String state, String country, String zip) {
-            this.street1 = street1;
-            this.street2 = street2;
-            this.city = city;
-            this.state = state;
-            this.country = country;
-            this.zip = zip;
+            this.street1 = normalizeString(street1);
+            this.street2 = normalizeString(street2);
+            this.city = normalizeString(city);
+            this.state = normalizeString(state);
+            this.country = normalizeString(country);
+            this.zip = normalizeString(zip);
         }
 
         private Address(Parcel in) {
@@ -331,5 +331,9 @@ public final class CitrusUser implements Parcelable {
             dest.writeString(this.country);
             dest.writeString(this.zip);
         }
+    }
+
+    private static String normalizeString(String input) {
+        return (!TextUtils.isEmpty(input) ? input.replaceAll("[\\p{Cntrl}^\r\n\t]+", "") : null);
     }
 }
