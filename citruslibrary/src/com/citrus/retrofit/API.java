@@ -222,4 +222,27 @@ public interface API {
     @FormUrlEncoded
     @POST("/service/um/user/reset/password")
     void resetUMPassword(@Header("Authorization") String header, @Field("username") String username, Callback<CitrusUMResponse> resetPasswordResponseCallback);
+
+
+    @FormUrlEncoded
+    @POST("/service/um/user/signup")
+    void signUpUser(@Header("Authorization") String header,@Field("email") String email, @Field("mobile") String mobile, @Field("password") String password, @Field("firstName") String firstName, @Field("lastName") String lastName, @Field("sourceType") String sourceType, @Field("markMobileVerified") String markMobileVerified, @Field("markEmailVerified") String markEmailVerified, Callback<CitrusUMResponse> responseCallback);
+
+    @FormUrlEncoded
+    @PUT("/service/um/user/change/password")
+    void changePassword(@Header("Authorization") String header,@Field("old") String oldPassword, @Field("new") String newPassword, Callback<CitrusUMResponse> changePasswordResponseCallback);
+
+    @Headers("Content-Type: application/json")
+    @PUT("/service/um/profile/update")
+    void updateUserProfileDetails(@Header("Authorization") String header, @Body TypedString body, Callback<CitrusUMResponse> responseCallback);
+
+
+    @Headers("Content-Type: application/json")
+    @POST("/service/um/otp/generate")
+    void sendOneTimePassword(@Body TypedString body, Callback<CitrusUMResponse> responseCallback);
+
+
+    @GET("/binservice/v2/bin/{first6Digits}")
+    void getCardType(@Path("first6Digits") String first6Digits, Callback<JsonElement> cardBinDetailsCallback);
+
 }

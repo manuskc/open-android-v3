@@ -1,5 +1,10 @@
 package com.citrus.sdk.classes;
 
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by salil on 16/7/15.
  */
@@ -28,5 +33,16 @@ public abstract class UMResponse {
 
     public String getResponseMessage() {
         return responseMessage;
+    }
+
+
+    public JSONObject getJSON() {
+        final Gson gson = new Gson();
+        String json = gson.toJson(this);
+        try {
+            return new JSONObject(json);
+        } catch (JSONException e) {
+            return null;
+        }
     }
 }
