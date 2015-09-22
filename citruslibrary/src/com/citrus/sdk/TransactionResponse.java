@@ -52,6 +52,11 @@ public final class TransactionResponse implements Parcelable {
     private boolean COD = false; // Cash On Delivery
     private Map<String, String> customParamsMap = null;
     private String jsonResponse = null;
+    private Amount originalAmount = null;
+    private Amount adjustedAmount = null;
+    private String dpRuleName = null;
+    private String couponCode = null;
+    private String dpRuleType = null;
 
     private TransactionResponse() {
 
@@ -104,6 +109,30 @@ public final class TransactionResponse implements Parcelable {
         this.customParamsMap = customParamsMap;
     }
 
+
+    private TransactionResponse(Amount transactionAmount, String message, String responseCode, TransactionStatus transactionStatus, TransactionDetails transactionDetails, CitrusUser citrusUser, PaymentMode paymentMode, String issuerCode, String impsMobileNumber, String impsMmid, String authIdCode, String signature, boolean COD, String maskedCardNumber, Map<String, String> customParamsMap, Amount originalAmount, Amount adjustedAmount, String dpRuleName, String couponCode, String dpRuleType) {
+        this.transactionAmount = transactionAmount;
+        this.message = message;
+        this.responseCode = responseCode;
+        this.transactionStatus = transactionStatus;
+        this.transactionDetails = transactionDetails;
+        this.citrusUser = citrusUser;
+        this.paymentMode = paymentMode;
+        this.issuerCode = issuerCode;
+        this.impsMobileNumber = impsMobileNumber;
+        this.impsMmid = impsMmid;
+        this.authIdCode = authIdCode;
+        this.signature = signature;
+        this.maskedCardNumber = maskedCardNumber;
+        this.COD = COD;
+        this.customParamsMap = customParamsMap;
+        this.originalAmount = originalAmount;
+        this.adjustedAmount = adjustedAmount;
+        this.dpRuleName = dpRuleName;
+        this.couponCode = couponCode;
+        this.dpRuleType = dpRuleType;
+    }
+
     public static TransactionResponse fromJSON(String response, Map<String, String> customParamsOriginalMap) {
         TransactionResponse transactionResponse = null;
 
@@ -122,6 +151,12 @@ public final class TransactionResponse implements Parcelable {
                     String amount = jsonObject.optString("amount");
                     String responseCode = jsonObject.optString("pgRespCode");
                     String message;
+                    String originalAmountStr = jsonObject.optString("originalAmount");
+                    String adjustedAmountStr = jsonObject.optString("adjustedAmount");
+                    String dpRuleName = jsonObject.optString("dpRuleName");
+                    String couponCode = jsonObject.optString("couponCode");
+                    String dpRuleType = jsonObject.optString("dpRuleType");
+
                     // If the transaction is cancelled by the user, change the message.
                     if (transactionStatus == TransactionStatus.CANCELLED) {
                         message = "Transaction Cancelled.";
@@ -155,8 +190,11 @@ public final class TransactionResponse implements Parcelable {
                     boolean cod = "true".equalsIgnoreCase(isCOD);
 
                     Amount transactionAmount = new Amount(amount, currency);
+                    Amount originalAmount = new Amount(originalAmountStr);
+                    Amount adjustedAmount = new Amount(adjustedAmountStr);
 
-                    transactionResponse = new TransactionResponse(transactionAmount, message, responseCode, transactionStatus, transactionDetails, citrusUser, paymentMode, issuerCode, impsMobileNumber, impsMmid, authIdCode, signature, cod, maskedcardNumber, customParamsMap);
+
+                    transactionResponse = new TransactionResponse(transactionAmount, message, responseCode, transactionStatus, transactionDetails, citrusUser, paymentMode, issuerCode, impsMobileNumber, impsMmid, authIdCode, signature, cod, maskedcardNumber, customParamsMap, originalAmount, adjustedAmount, dpRuleName, couponCode, dpRuleType);
                     transactionResponse.setJsonResponse(jsonObject.toString());
 
                 }
@@ -230,6 +268,30 @@ public final class TransactionResponse implements Parcelable {
         return signature;
     }
 
+    public String getMaskedCardNumber() {
+        return maskedCardNumber;
+    }
+
+    public Amount getOriginalAmount() {
+        return originalAmount;
+    }
+
+    public Amount getAdjustedAmount() {
+        return adjustedAmount;
+    }
+
+    public String getDpRuleName() {
+        return dpRuleName;
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public String getDpRuleType() {
+        return dpRuleType;
+    }
+
     public Map<String, String> getCustomParamsMap() {
         return customParamsMap;
     }
@@ -256,10 +318,9 @@ public final class TransactionResponse implements Parcelable {
 
     @Override
     public String toString() {
-        return "CitrusTransactionResponse{" +
-                "transactionAmount='" + (transactionAmount != null ? transactionAmount.toString() : "") + '\'' +
-
-                "balanceAmount='" + (balanceAmount != null ? balanceAmount.toString() : "") + '\'' +
+        return "TransactionResponse{" +
+                "balanceAmount=" + balanceAmount +
+                ", transactionAmount=" + transactionAmount +
                 ", message='" + message + '\'' +
                 ", responseCode='" + responseCode + '\'' +
                 ", transactionStatus=" + transactionStatus +
@@ -271,13 +332,20 @@ public final class TransactionResponse implements Parcelable {
                 ", impsMmid='" + impsMmid + '\'' +
                 ", authIdCode='" + authIdCode + '\'' +
                 ", signature='" + signature + '\'' +
+                ", maskedCardNumber='" + maskedCardNumber + '\'' +
                 ", COD=" + COD +
                 ", customParamsMap=" + customParamsMap +
+                ", jsonResponse='" + jsonResponse + '\'' +
+                ", originalAmount=" + originalAmount +
+                ", adjustedAmount=" + adjustedAmount +
+                ", dpRuleName='" + dpRuleName + '\'' +
+                ", couponCode='" + couponCode + '\'' +
+                ", dpRuleType='" + dpRuleType + '\'' +
                 '}';
     }
 
     public enum PaymentMode {
-        NET_BANKING, CREDIT_CARD, DEBIT_CARD;
+        NET_BANKING, CREDIT_CARD, DEBIT_CARD, PREPAID_CARD;
 
         public static PaymentMode getPaymentMode(String paymentMode) {
             PaymentMode mode = null;
@@ -287,6 +355,8 @@ public final class TransactionResponse implements Parcelable {
                 mode = CREDIT_CARD;
             } else if (TextUtils.equals(paymentMode, "DEBIT_CARD")) {
                 mode = DEBIT_CARD;
+            } else if (TextUtils.equals(paymentMode, "PREPAID_CARD")) {
+                mode = PREPAID_CARD;
             }
 
             return mode;
