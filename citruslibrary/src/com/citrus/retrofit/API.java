@@ -65,9 +65,8 @@ public interface API {
     void getSignInWithPasswordResponse(@Field("client_id") String client_ID, @Field("client_secret") String client_Secret, @Field("username") String username, @Field("password") String password, @Field("grant_type") String grantType, Callback<AccessToken> accessTokenPOJOCallback);
 
     // Get signin with password token, mostly used for pay using citrus cash.
-    @FormUrlEncoded
-    @POST("/oauth/token")
-    void getPayUsingCitrusCashToken(@Field("client_id") String client_ID, @Field("client_secret") String client_Secret, @Field("username") String username, @Field("password") String password, @Field("grant_type") String grantType, @Field("scope") String scope, Callback<AccessToken> accessTokenPOJOCallback);
+    @GET("/service/v2/token/validate")
+    void getPrepaymentTokenValidity(@Header("Authorization") String signupToken, @Header("OwnerAuthorization") String prepaymentToken, @Header("OwnerScope") String scope, Callback<JsonElement> callback);
 
     //getCookie
     @FormUrlEncoded

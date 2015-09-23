@@ -80,6 +80,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -126,6 +127,7 @@ public class CitrusClient {
     private Map<String, PGHealth> pgHealthMap = null;
     private boolean initialized = false;
     private CitrusUser citrusUser = null;
+    private boolean prepaymentTokenValid = true;
 
     private CitrusClient(Context context) {
         mContext = context;
@@ -189,6 +191,19 @@ public class CitrusClient {
                 public void success(Boolean signedIn) {
                     if (signedIn) {
                         getProfileInfo(null);
+
+                        // Check whether the prepaid token is valid or not.
+//                        checkPrepaymentTokenValidity(new Callback<Boolean>() {
+//                            @Override
+//                            public void success(Boolean valid) {
+//                                prepaymentTokenValid = valid;
+//                            }
+//
+//                            @Override
+//                            public void error(CitrusError error) {
+//                                prepaymentTokenValid = false;
+//                            }
+//                        });
                     }
                 }
 
@@ -402,7 +417,7 @@ public class CitrusClient {
                                             token.createToken(accessToken.getJSON());
                                             token.saveUserDetails(emailId, mobileNo);//save email and mobile No of the user
                                             Logger.d("USER BIND SUCCESSFULLY***");
-                                            callback.success(ResponseMessages.SUCCESS_MESSAGE_USER_BIND);
+                                            sendResponse(callback, ResponseMessages.SUCCESS_MESSAGE_USER_BIND);
                                         }
                                     }
 
@@ -541,6 +556,19 @@ public class CitrusClient {
                                 // Fetch the profileInfo
                                 getProfileInfo(null);
 
+//                                // Check whether the prepaid token is valid or not.
+//                                checkPrepaymentTokenValidity(new Callback<Boolean>() {
+//                                    @Override
+//                                    public void success(Boolean valid) {
+//                                        prepaymentTokenValid = valid;
+//                                    }
+//
+//                                    @Override
+//                                    public void error(CitrusError error) {
+//                                        prepaymentTokenValid = false;
+//                                    }
+//                                });
+
                                 OauthToken token = new OauthToken(mContext, PREPAID_TOKEN);
                                 token.createToken(accessToken.getJSON());///grant Type password token saved
                                 token.saveUserDetails(emailId, null);//save email ID of the signed in user
@@ -629,6 +657,19 @@ public class CitrusClient {
                         public void success(AccessToken accessToken, Response response) {
                             // Fetch the profileInfo
                             getProfileInfo(null);
+
+                            // Check whether the prepaid token is valid or not.
+//                            checkPrepaymentTokenValidity(new Callback<Boolean>() {
+//                                @Override
+//                                public void success(Boolean valid) {
+//                                    prepaymentTokenValid = valid;
+//                                }
+//
+//                                @Override
+//                                public void error(CitrusError error) {
+//                                    prepaymentTokenValid = false;
+//                                }
+//                            });
 
                             Logger.d("SIGN IN RESPONSE " + accessToken.getJSON().toString());
                             if (accessToken.getHeaderAccessToken() != null) {
@@ -1183,7 +1224,7 @@ public class CitrusClient {
                 Logger.d("GETBILL RESPONSE **" + jsonElement.toString());
                 PaymentBill paymentBill = PaymentBill.fromJSON(jsonElement.toString());
                 if (paymentBill != null) {
-                    callback.success(paymentBill);
+                    sendResponse(callback, paymentBill);
                 } else {
                     sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INVALID_BILL, Status.FAILED));
                 }
@@ -1410,12 +1451,12 @@ public class CitrusClient {
         oauthToken.getPrepaidToken(new Callback<AccessToken>() {
             @Override
             public void success(AccessToken accessToken) {
-                callback.success(true);
+                sendResponse(callback, true);
             }
 
             @Override
             public void error(CitrusError error) {
-                callback.success(false);
+                sendResponse(callback, false);
             }
         });
     }
@@ -1543,79 +1584,157 @@ public class CitrusClient {
             billUrl = citrusCash.getUrl() + "?amount=" + citrusCash.getAmount().getValue();
         }
 
-        // Check whether the balance in the wallet is greater than the transaction amount.
-        getBalance(new Callback<Amount>() {
-            @Override
-            public void success(Amount balanceAmount) {
-                // If the balance amount is greater than equal to the transaction amount, proceed with the payment.
-                if (balanceAmount.getValueAsDouble() >= citrusCash.getAmount().getValueAsDouble()) {
-                    getBill(billUrl, citrusCash.getAmount(), new Callback<PaymentBill>() {
-                        @Override
-                        public void success(final PaymentBill paymentBill) {
-                            final String returnUrl = paymentBill.getReturnUrl();
+        if (prepaymentTokenValid) {
+            // Check whether the balance in the wallet is greater than the transaction amount.
+            getBalance(new Callback<Amount>() {
+                @Override
+                public void success(Amount balanceAmount) {
+                    // If the balance amount is greater than equal to the transaction amount, proceed with the payment.
+                    if (balanceAmount.getValueAsDouble() >= citrusCash.getAmount().getValueAsDouble()) {
+                        getBill(billUrl, citrusCash.getAmount(), new Callback<PaymentBill>() {
+                            @Override
+                            public void success(final PaymentBill paymentBill) {
+                                final String returnUrl = paymentBill.getReturnUrl();
 
-                            oauthToken.getPrepaidToken(new Callback<AccessToken>() {
-                                @Override
-                                public void success(AccessToken accessToken) {
-                                    citrusCash.setPaymentBill(paymentBill);
+                                oauthToken.getPrepaidToken(new Callback<AccessToken>() {
+                                    @Override
+                                    public void success(AccessToken accessToken) {
+                                        citrusCash.setPaymentBill(paymentBill);
 
-                                    // Use the user details sent by the merchant, else use the user details from the token.
-                                    CitrusUser citrusUser = getCitrusUser();
-                                    if (citrusCash.getCitrusUser() == null) {
-                                        if (citrusUser == null) {
-                                            citrusUser = new CitrusUser(getUserEmailId(), getUserMobileNumber());
+                                        // Use the user details sent by the merchant, else use the user details from the token.
+                                        CitrusUser citrusUser = getCitrusUser();
+                                        if (citrusCash.getCitrusUser() == null) {
+                                            if (citrusUser == null) {
+                                                citrusUser = new CitrusUser(getUserEmailId(), getUserMobileNumber());
+                                            }
+
+                                            citrusCash.setCitrusUser(citrusUser);
                                         }
 
-                                        citrusCash.setCitrusUser(citrusUser);
+                                        retrofitClient.payUsingCitrusCash(accessToken.getPrepaidPayToken().getHeaderAccessToken(), new TypedString(citrusCash.getPaymentJSON()), new retrofit.Callback<JsonElement>() {
+                                            @Override
+                                            public void success(JsonElement jsonElement, Response response) {
+
+                                                if (jsonElement != null) {
+                                                    PaymentResponse paymentResponse = PaymentResponse.fromJSON(jsonElement.toString());
+                                                    sendResponse(callback, paymentResponse);
+
+                                                    // Send the response on the return url asynchronously, so as to keep the integration same.
+                                                    sendResponseToReturnUrlAsync(returnUrl, paymentResponse);
+                                                } else {
+                                                    sendError(callback, new CitrusError("Error while making payment", Status.FAILED));
+                                                }
+                                            }
+
+                                            @Override
+                                            public void failure(RetrofitError error) {
+                                                sendError(callback, error);
+                                            }
+                                        });
                                     }
 
-                                    retrofitClient.payUsingCitrusCash(accessToken.getPrepaidPayToken().getHeaderAccessToken(), new TypedString(citrusCash.getPaymentJSON()), new retrofit.Callback<JsonElement>() {
-                                        @Override
-                                        public void success(JsonElement jsonElement, Response response) {
+                                    @Override
+                                    public void error(CitrusError error) {
+                                        sendError(callback, error);
+                                    }
+                                });
+                            }
 
-                                            if (jsonElement != null) {
-                                                PaymentResponse paymentResponse = PaymentResponse.fromJSON(jsonElement.toString());
-                                                sendResponse(callback, paymentResponse);
-
-                                                // Send the response on the return url asynchronously, so as to keep the integration same.
-                                                sendResponseToReturnUrlAsync(returnUrl, paymentResponse);
-                                            } else {
-                                                sendError(callback, new CitrusError("Error while making payment", Status.FAILED));
-                                            }
-                                        }
-
-                                        @Override
-                                        public void failure(RetrofitError error) {
-                                            sendError(callback, error);
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void error(CitrusError error) {
-                                    sendError(callback, error);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void error(CitrusError error) {
-                            sendError(callback, error);
-                        }
-                    });
-                } else {
-                    sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INSUFFICIENT_BALANCE, Status.FAILED));
+                            @Override
+                            public void error(CitrusError error) {
+                                sendError(callback, error);
+                            }
+                        });
+                    } else {
+                        sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INSUFFICIENT_BALANCE, Status.FAILED));
+                    }
                 }
+
+                @Override
+                public void error(CitrusError error) {
+                    sendError(callback, error);
+                }
+            });
+        } else {
+            Logger.d("User's cookie has expired. Please signin");
+            sendError(callback, new CitrusError("User's cookie has expired. Please signin.", Status.FAILED));
+        }
+    }
+
+    private void checkPrepaymentTokenValidity(final Callback<Boolean> callback) {
+
+        oauthToken.getSignUpToken(new Callback<AccessToken>() {
+            @Override
+            public void success(AccessToken accessToken) {
+                final String signupToken = accessToken.getHeaderAccessToken();
+                getPrepaidToken(new Callback<AccessToken>() {
+                    @Override
+                    public void success(AccessToken accessToken) {
+                        String prepaymentToken = accessToken.getPrepaidPayToken().getHeaderAccessToken();
+
+                        retrofitClient.getPrepaymentTokenValidity(signupToken, prepaymentToken, "prepaid_merchant_pay", new retrofit.Callback<JsonElement>() {
+                            @Override
+                            public void success(JsonElement jsonElement, Response response) {
+                                boolean valid = false;
+                                if (jsonElement != null && !TextUtils.isEmpty(jsonElement.toString())) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(jsonElement.toString());
+                                        String validity = jsonObject.optString("expiration");
+
+                                        valid = isTokenValid(validity);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                sendResponse(callback, valid);
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                // Since the error has occurred, send the response as false.
+                                sendResponse(callback, false);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void error(CitrusError error) {
+                        // Since the error has occurred, send the response as false.
+                        sendResponse(callback, false);
+                    }
+                });
             }
 
             @Override
             public void error(CitrusError error) {
-                sendError(callback, error);
+                // Since the error has occurred, send the response as false.
+                sendResponse(callback, false);
             }
         });
     }
 
-    private void sendResponseToReturnUrlAsync(String returnUrl, PaymentResponse paymentResponse) {
+    private synchronized boolean isTokenValid(String expiryDateStr) {
+        boolean valid = false;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date currentDate = new Date(System.currentTimeMillis());
+        try {
+
+            Date expiryDate = dateFormat.parse(expiryDateStr);
+            Logger.d("Expiry date : %s, Current Date : %s", expiryDate, currentDate);
+
+            if (currentDate.before(expiryDate)) {
+                valid = true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return valid;
+    }
+
+    private synchronized void sendResponseToReturnUrlAsync(String returnUrl, PaymentResponse paymentResponse) {
 
         WebView webView = new WebView(mContext);
         webView.getSettings().setJavaScriptEnabled(true);
