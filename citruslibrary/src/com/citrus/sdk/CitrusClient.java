@@ -127,7 +127,7 @@ public class CitrusClient {
     private Map<String, PGHealth> pgHealthMap = null;
     private boolean initialized = false;
     private CitrusUser citrusUser = null;
-    private boolean prepaymentTokenValid = true;
+    private boolean prepaymentTokenValid = false;
 
     private CitrusClient(Context context) {
         mContext = context;
@@ -193,17 +193,18 @@ public class CitrusClient {
                         getProfileInfo(null);
 
                         // Check whether the prepaid token is valid or not.
-//                        checkPrepaymentTokenValidity(new Callback<Boolean>() {
-//                            @Override
-//                            public void success(Boolean valid) {
-//                                prepaymentTokenValid = valid;
-//                            }
-//
-//                            @Override
-//                            public void error(CitrusError error) {
-//                                prepaymentTokenValid = false;
-//                            }
-//                        });
+                        checkPrepaymentTokenValidity(new Callback<Boolean>() {
+                            @Override
+                            public void success(Boolean valid) {
+                                prepaymentTokenValid = valid;
+                            }
+
+                            @Override
+                            public void error(CitrusError error) {
+                                // This will never be called.
+                                prepaymentTokenValid = false;
+                            }
+                        });
                     }
                 }
 
@@ -556,19 +557,6 @@ public class CitrusClient {
                                 // Fetch the profileInfo
                                 getProfileInfo(null);
 
-//                                // Check whether the prepaid token is valid or not.
-//                                checkPrepaymentTokenValidity(new Callback<Boolean>() {
-//                                    @Override
-//                                    public void success(Boolean valid) {
-//                                        prepaymentTokenValid = valid;
-//                                    }
-//
-//                                    @Override
-//                                    public void error(CitrusError error) {
-//                                        prepaymentTokenValid = false;
-//                                    }
-//                                });
-
                                 OauthToken token = new OauthToken(mContext, PREPAID_TOKEN);
                                 token.createToken(accessToken.getJSON());///grant Type password token saved
                                 token.saveUserDetails(emailId, null);//save email ID of the signed in user
@@ -601,6 +589,20 @@ public class CitrusClient {
                                                     Logger.d("PREPAID LOGIN UNSUCCESSFUL");
                                                 }
                                                 EventBus.getDefault().unregister(CitrusClient.this);
+
+                                                // Check whether the prepaid token is valid or not.
+                                                checkPrepaymentTokenValidity(new Callback<Boolean>() {
+                                                    @Override
+                                                    public void success(Boolean valid) {
+                                                        prepaymentTokenValid = valid;
+                                                    }
+
+                                                    @Override
+                                                    public void error(CitrusError error) {
+                                                        // It will never be called.
+                                                        prepaymentTokenValid = false;
+                                                    }
+                                                });
 
                                                 // Since we have a got the cookie, we are giving the callback.
                                                 sendResponse(callback, new CitrusResponse(ResponseMessages.SUCCESS_MESSAGE_SIGNIN, Status.SUCCESSFUL));
@@ -658,19 +660,6 @@ public class CitrusClient {
                             // Fetch the profileInfo
                             getProfileInfo(null);
 
-                            // Check whether the prepaid token is valid or not.
-//                            checkPrepaymentTokenValidity(new Callback<Boolean>() {
-//                                @Override
-//                                public void success(Boolean valid) {
-//                                    prepaymentTokenValid = valid;
-//                                }
-//
-//                                @Override
-//                                public void error(CitrusError error) {
-//                                    prepaymentTokenValid = false;
-//                                }
-//                            });
-
                             Logger.d("SIGN IN RESPONSE " + accessToken.getJSON().toString());
                             if (accessToken.getHeaderAccessToken() != null) {
                                 final OauthToken token = new OauthToken(mContext, PREPAID_TOKEN);
@@ -722,6 +711,20 @@ public class CitrusClient {
                                                     Logger.d("PREPAID LOGIN UNSUCCESSFUL");
                                                 }
                                                 EventBus.getDefault().unregister(CitrusClient.this);
+
+                                                // Check whether the prepaid token is valid or not. This is async call, no need to wait for the result.
+                                                checkPrepaymentTokenValidity(new Callback<Boolean>() {
+                                                    @Override
+                                                    public void success(Boolean valid) {
+                                                        prepaymentTokenValid = valid;
+                                                    }
+
+                                                    @Override
+                                                    public void error(CitrusError error) {
+                                                        // It will never be called.
+                                                        prepaymentTokenValid = false;
+                                                    }
+                                                });
 
                                                 // Since we have a got the cookie, we are giving the callback.
                                                 sendResponse(callback, new CitrusResponse(ResponseMessages.SUCCESS_MESSAGE_SIGNIN, Status.SUCCESSFUL));
@@ -797,6 +800,9 @@ public class CitrusClient {
     public synchronized void signOut(Callback<CitrusResponse> callback) {
         if (validate()) {
             if (User.logoutUser(mContext)) {
+                // reset the token validity flag
+                prepaymentTokenValid = false;
+
                 CitrusResponse citrusResponse = new CitrusResponse("User Logged Out Successfully.", Status.SUCCESSFUL);
                 sendResponse(callback, citrusResponse);
             } else {
@@ -1729,6 +1735,8 @@ public class CitrusClient {
             }
         } catch (ParseException e) {
             e.printStackTrace();
+
+            valid = true;
         }
 
         return valid;
