@@ -3,11 +3,60 @@
 
     <ListPreference
         android:defaultValue="@string/environment_preference_default_value"
-        android:dialogTitle="@string/choose_environment_text"
+        android:dialogTitle="@string/choose_environment_prefs_text"
         android:entries="@array/environments"
         android:entryValues="@array/environmentsValues"
-        android:key="@string/prefs_environment_key_text"
-        android:title="@string/choose_environment_text" />
+        android:key="@string/prefs_environment_key"
+        android:title="@string/choose_environment_prefs_text" />
 
+    <PreferenceCategory android:title="@string/signatures_preference_text">
+
+        <EditTextPreference
+            android:defaultValue="@string/signup_id_prefs_default_value"
+            android:dialogTitle="@string/signup_id_prefs_text"
+            android:key="@string/prefs_signup_id_key"
+            android:title="@string/signup_id_prefs_text" />
+
+        <EditTextPreference
+            android:defaultValue="@string/signup_secret_pref_default_value"
+            android:dialogTitle="@string/signup_secret_prefs_text"
+            android:key="@string/prefs_signup_secret_key"
+            android:title="@string/signup_secret_prefs_text" />
+
+        <EditTextPreference
+            android:defaultValue="@string/prefs_signin_id_default_value"
+            android:dialogTitle="@string/sign_id_prefs_text"
+            android:key="@string/prefs_signin_id_key"
+            android:title="@string/sign_id_prefs_text" />
+
+        <EditTextPreference
+            android:defaultValue="@string/prefs_signin_secret_default_value"
+            android:dialogTitle="@string/signin_secret_prefs_text"
+            android:key="@string/prefs_signin_secret_key"
+            android:title="@string/signin_secret_prefs_text" />
+
+        <EditTextPreference
+            android:defaultValue="@string/prefs_vanity_default_value"
+            android:dialogTitle="@string/vanity_prefs_text"
+            android:key="@string/prefs_vanity_key"
+            android:title="@string/vanity_prefs_text" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/urls_preference_text">
+
+        <EditTextPreference
+            android:defaultValue="@string/prefs_bill_url_default_value"
+            android:dialogTitle="@string/bill_url_prefs_text"
+            android:key="prefs_bill_url_key"
+            android:title="@string/bill_url_prefs_text" />
+
+        <EditTextPreference
+            android:defaultValue="@string/prefs_load_money_return_url_default_value"
+            android:dialogTitle="@string/load_money_return_url_prefs_text"
+            android:key="@string/prefs_load_money_return_url_key"
+            android:title="@string/load_money_return_url_prefs_text" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

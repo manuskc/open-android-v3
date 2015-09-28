@@ -36,7 +36,7 @@ public class Utils {
     public static String getPreferredEnvironment(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        String preferredEnvironment = prefs.getString(getResourceString(context,R.string.prefs_environment_key_text),getResourceString(context,R.string.environment_preference_default_value));
+        String preferredEnvironment = prefs.getString(getResourceString(context,R.string.prefs_environment_key),getResourceString(context,R.string.environment_preference_default_value));
 
         return  preferredEnvironment;
     }

@@ -83,7 +83,7 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        if (Utils.getResourceString(UIActivity.this,R.string.prefs_environment_key_text).equals(key)){
+        if (Utils.getResourceString(UIActivity.this,R.string.prefs_environment_key).equals(key)){
             Toast.makeText(this, "UI ACTIVITY REFRESH CLIENT", Toast.LENGTH_SHORT).show();
 
             citrusClient.destroyVariables();
