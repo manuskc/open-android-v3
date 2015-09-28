@@ -20,4 +20,22 @@
     <string name="card_name_hint">Enter card holder name</string>
     <string name="card_nick_name_hint">Enter nick name</string>
 
+    <!--Wallet Payment Screen Button texts-->
+    <string name="get_balance_btn_text">Get Balance</string>
+    <string name="load_money_btn_text">Load Money</string>
+    <string name="pay_using_citrus_cash_btn_text">Pay Using Citrus Cash</string>
+    <string name="pg_payment_btn_text">PG Payment</string>
+    <string name="get_withdraw_money_info_btn_text">Get Withdraw Money Info</string>
+    <string name="withdraw_money_to_your_account_btn_text">Withdraw Money To Your Account</string>
+    <string name="send_money_btn_text">Send Money</string>
+    <string name="settings_btn_text">Settings</string>
+
+    <!--Settings Screen-->
+    <string name="environment_preference_default_value">sandbox</string>
+    <string name="choose_environment_text">Choose Environment</string>
+
+    <string name="settings_screen_title_text">Settings</string>
+    <string name="prefs_environment_key_text">pref_environment</string>
+    <string name="sigantures_preference_text">Signatures</string>
+
 </resources>

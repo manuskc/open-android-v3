@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="@string/environment_preference_default_value"
+        android:dialogTitle="@string/choose_environment_text"
+        android:entries="@array/environments"
+        android:entryValues="@array/environmentsValues"
+        android:key="@string/prefs_environment_key_text"
+        android:title="@string/choose_environment_text" />
+
+
+</PreferenceScreen>

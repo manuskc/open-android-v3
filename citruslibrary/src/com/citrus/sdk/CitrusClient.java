@@ -112,7 +112,7 @@ public class CitrusClient {
     private Environment environment = Environment.SANDBOX;
     private Amount balanceAmount;
     private static CitrusClient instance;
-    private final Context mContext;
+    private Context mContext;
     private SharedPreferences mSharedPreferences;
     private MerchantPaymentOption merchantPaymentOption = null;
 
@@ -140,6 +140,23 @@ public class CitrusClient {
             CitrusLogger.disableLogs();
         }
     }
+
+
+    public void destroyVariables(){
+        signinId = null;
+        signinSecret = null;
+        signupId = null;
+        signupSecret = null;
+        vanity = null;
+
+//        instance = null;
+//        mContext = null;
+//        merchantPaymentOption = null;
+
+        initialized = false;
+
+    }
+
 
     public void init(@NonNull String signupId, @NonNull String signupSecret, @NonNull String signinId, @NonNull String signinSecret, @NonNull String vanity, @NonNull Environment environment) {
         if (!initialized) {

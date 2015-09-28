@@ -16,6 +16,8 @@
 package com.citrus.sample;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 /**
@@ -29,5 +31,23 @@ public class Utils {
 
     public static enum PaymentType {
         LOAD_MONEY, CITRUS_CASH, PG_PAYMENT;
+    }
+
+    public static String getPreferredEnvironment(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        String preferredEnvironment = prefs.getString(getResourceString(context,R.string.prefs_environment_key_text),getResourceString(context,R.string.environment_preference_default_value));
+
+        return  preferredEnvironment;
+    }
+
+    /**
+     * @param context
+     * @param resourceId
+     * @return resourceString
+     */
+    public static String getResourceString(Context context, int resourceId){
+
+        return context.getString(resourceId);
     }
 }

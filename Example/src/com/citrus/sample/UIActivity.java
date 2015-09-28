@@ -16,14 +16,19 @@
 package com.citrus.sample;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.citrus.sdk.Callback;
 import com.citrus.sdk.CitrusClient;
+import com.citrus.sdk.Environment;
 import com.citrus.sdk.TransactionResponse;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CashoutInfo;
@@ -35,7 +40,7 @@ import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.sdk.response.PaymentResponse;
 
 
-public class UIActivity extends ActionBarActivity implements UserManagementFragment.UserManagementInteractionListener, WalletFragmentListener {
+public class UIActivity extends ActionBarActivity implements UserManagementFragment.UserManagementInteractionListener, WalletFragmentListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private FragmentManager fragmentManager = null;
     private Context mContext = this;
@@ -52,7 +57,11 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
         citrusClient = CitrusClient.getInstance(mContext);
         citrusClient.enableLog(Constants.enableLogging);
 
-        citrusClient.init(Constants.SIGNUP_ID, Constants.SIGNUP_SECRET, Constants.SIGNIN_ID, Constants.SIGNIN_SECRET, Constants.VANITY, Constants.environment);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
+
+        initCitrusClient();
+
 
         citrusConfig = CitrusConfig.getInstance();
         citrusConfig.setColorPrimary(Constants.colorPrimary);
@@ -60,6 +69,28 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
         citrusConfig.setTextColorPrimary(Constants.textColor);
 
         showUI();
+    }
+
+    private void initCitrusClient() {
+        if (Utils.getPreferredEnvironment(this).equalsIgnoreCase(Utils.getResourceString(this, R.string.environment_preference_default_value))) {
+            Toast.makeText(this, "UI ACTIVITY ENV = SANDBOX", Toast.LENGTH_SHORT).show();
+            citrusClient.init(Constants.SIGNUP_ID, Constants.SIGNUP_SECRET, Constants.SIGNIN_ID, Constants.SIGNIN_SECRET, Constants.VANITY, Environment.SANDBOX);
+        }else{
+            Toast.makeText(this, "UI ACTIVITY ENV = PRODUCTION", Toast.LENGTH_SHORT).show();
+            citrusClient.init(Constants.SIGNUP_ID, Constants.SIGNUP_SECRET, Constants.SIGNIN_ID, Constants.SIGNIN_SECRET, Constants.VANITY, Environment.PRODUCTION);
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if (Utils.getResourceString(UIActivity.this,R.string.prefs_environment_key_text).equals(key)){
+            Toast.makeText(this, "UI ACTIVITY REFRESH CLIENT", Toast.LENGTH_SHORT).show();
+
+            citrusClient.destroyVariables();
+
+            initCitrusClient();
+        }
+
     }
 
     private void showUI() {
@@ -159,6 +190,20 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
                 Utils.showToast(getApplicationContext(), error.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onFragmentChangeEvent(Bundle bundle, int fragmentType) {
+
+        switch (fragmentType) {
+            case SETTINGS_FRAGMENT:
+
+                Intent settingsIntent = new Intent(UIActivity.this,SettingsActivity.class);
+                startActivity(settingsIntent);
+
+                break;
+        }
+
     }
 
     public void onWalletPaymentClicked(View view) {

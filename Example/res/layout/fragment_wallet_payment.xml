@@ -20,53 +20,74 @@
     android:orientation="vertical"
     tools:context="com.citrus.sample.WalletPaymentFragment">
 
-    <Button
-        android:id="@+id/btn_get_balance"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/button_margin"
-        android:text="Get Balance" />
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/btn_load_money"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/button_margin"
-        android:text="Load Money" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_pay_using_cash"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/button_margin"
-        android:text="Pay Using Citrus Cash" />
+            <Button
+                android:id="@+id/btn_get_balance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                android:text="@string/get_balance_btn_text" />
 
-    <Button
-        android:id="@+id/btn_pg_payment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/button_margin"
-        android:text="PG Payment" />
+            <Button
+                android:id="@+id/btn_load_money"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                android:text="@string/load_money_btn_text" />
 
-    <Button
-        android:id="@+id/btn_get_cashout_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/button_margin"
-        android:text="Get Withdraw Money Info" />
+            <Button
+                android:id="@+id/btn_pay_using_cash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                android:text="@string/pay_using_citrus_cash_btn_text" />
 
-    <Button
-        android:id="@+id/btn_cashout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/button_margin"
-        android:text="Withdraw Money To Your Account" />
+            <Button
+                android:id="@+id/btn_pg_payment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                android:text="@string/pg_payment_btn_text" />
 
-    <Button
-        android:id="@+id/btn_send_money"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/button_margin"
-        android:text="Send Money" />
+            <Button
+                android:id="@+id/btn_get_cashout_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                android:text="@string/get_withdraw_money_info_btn_text" />
+
+            <Button
+                android:id="@+id/btn_cashout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                android:text="@string/withdraw_money_to_your_account_btn_text" />
+
+            <Button
+                android:id="@+id/btn_send_money"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                android:text="@string/send_money_btn_text" />
+
+            <Button
+                android:id="@+id/btn_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_margin"
+                android:text="@string/settings_btn_text" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
 
 </LinearLayout>

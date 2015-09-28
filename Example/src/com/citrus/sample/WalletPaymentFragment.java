@@ -107,6 +107,10 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         btnGetWithdrawInfo = (Button) rootView.findViewById(R.id.btn_get_cashout_info);
         btnSendMoney = (Button) rootView.findViewById(R.id.btn_send_money);
 
+        //Settings button
+        Button btnSettings = (Button) rootView.findViewById(R.id.btn_settings);
+        btnSettings.setOnClickListener(this);
+
         btnGetBalance.setOnClickListener(this);
         btnLoadMoney.setOnClickListener(this);
         btnPayUsingCash.setOnClickListener(this);
@@ -160,6 +164,11 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
             case R.id.btn_send_money:
                 sendMoney();
                 break;
+
+            //Settings button
+            case R.id.btn_settings:
+                loadSettingsScreen();
+                break;
         }
     }
 
@@ -210,6 +219,11 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
 
     private void sendMoney() {
         showSendMoneyPrompt();
+    }
+
+    //Settings feature
+    private void loadSettingsScreen() {
+        mListener.onFragmentChangeEvent(null, WalletFragmentListener.SETTINGS_FRAGMENT);
     }
 
     private void showPrompt(final Utils.PaymentType paymentType) {
