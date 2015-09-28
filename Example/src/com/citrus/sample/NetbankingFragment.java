@@ -243,18 +243,20 @@ public final class NetbankingFragment extends Fragment {
         final TextView originalAmount = new TextView(getActivity());
         final TextView alteredAmount = new TextView(getActivity());
         final TextView txtMessage = new TextView(getActivity());
+        final TextView txtConsumerMessage = new TextView(getActivity());
 
         linearLayout.addView(originalAmount);
         linearLayout.addView(alteredAmount);
         linearLayout.addView(txtMessage);
+        linearLayout.addView(txtConsumerMessage);
 
         originalAmount.setText("Original Amount : " + (dynamicPricingResponse.getOriginalAmount() != null ? dynamicPricingResponse.getOriginalAmount().getValue() : ""));
         alteredAmount.setText("Altered Amount : " + (dynamicPricingResponse.getAlteredAmount() != null ? dynamicPricingResponse.getAlteredAmount().getValue() : ""));
         txtMessage.setText("Message : " + dynamicPricingResponse.getMessage());
+        txtMessage.setText("Consumer Message : " + dynamicPricingResponse.getConsumerMessage());
 
-        alert.setTitle("Dynamic Pricing");
+        alert.setTitle("Dynamic Pricing Response");
         alert.setMessage(message);
-        // Set an EditText view to get user input
         alert.setView(linearLayout);
         if (dynamicPricingResponse.getStatus() == DynamicPricingResponse.Status.SUCCESS) {
             alert.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
@@ -282,6 +284,7 @@ public final class NetbankingFragment extends Fragment {
                 dialog.cancel();
             }
         });
+
         alert.show();
     }
 }

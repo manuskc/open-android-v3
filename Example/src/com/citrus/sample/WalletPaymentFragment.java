@@ -30,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -435,7 +436,7 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         String message = "Apply Dynamic Pricing";
         String positiveButtonText = "Apply";
         final Utils.DPRequestType[] dpRequestType = new Utils.DPRequestType[1];
-
+        ScrollView scrollView = new ScrollView(getActivity());
         LinearLayout linearLayout = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.dynamic_pricing_input_layout, null);
         final EditText editTransactionAmount = (EditText) linearLayout.findViewById(R.id.edit_txn_amount);
         final EditText editCouponCode = (EditText) linearLayout.findViewById(R.id.edit_coupon_code);
@@ -475,7 +476,8 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         alert.setTitle("Perform Dynamic Pricing");
         alert.setMessage(message);
 
-        alert.setView(linearLayout);
+        scrollView.addView(linearLayout);
+        alert.setView(scrollView);
         alert.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int whichButton) {

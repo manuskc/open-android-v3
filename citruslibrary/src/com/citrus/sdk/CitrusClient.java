@@ -229,7 +229,7 @@ public class CitrusClient {
 
                     @Override
                     public void failure(RetrofitError error) {
-                       // Logger.e("Error while fetching the health");
+                        // Logger.e("Error while fetching the health");
                     }
                 }
         );
@@ -1277,9 +1277,10 @@ public class CitrusClient {
                 final CitrusUser citrusUser = dynamicPricingRequestType.getCitrusUser();
                 final DynamicPricingRequest request = new DynamicPricingRequest(dynamicPricingRequestType, paymentBill);
 
-                citrusBaseUrlClient.performDynamicPricing(new TypedString(DynamicPricingRequest.toJSON(request)), new retrofit.Callback<DynamicPricingResponse>() {
+                citrusBaseUrlClient.performDynamicPricing(new TypedString(DynamicPricingRequest.toJSON(request)), new retrofit.Callback<JsonElement>() {
                     @Override
-                    public void success(DynamicPricingResponse dynamicPricingResponse, Response response) {
+                    public void success(JsonElement jsonElement, Response response) {
+                        DynamicPricingResponse dynamicPricingResponse = DynamicPricingResponse.fromJSON(jsonElement.toString());
                         dynamicPricingResponse.setPaymentBill(paymentBill);
                         dynamicPricingResponse.setPaymentOption(paymentOption);
                         dynamicPricingResponse.setCitrusUser(citrusUser);

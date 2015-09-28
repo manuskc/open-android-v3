@@ -21,7 +21,6 @@ import com.citrus.sdk.classes.BindPOJO;
 import com.citrus.sdk.classes.CitrusPrepaidBill;
 import com.citrus.sdk.classes.PGHealthResponse;
 import com.citrus.sdk.classes.StructResponsePOJO;
-import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.sdk.response.PaymentResponse;
 import com.google.gson.JsonElement;
@@ -131,7 +130,7 @@ public interface API {
     // Dynamic Pricing
     @Headers("Content-Type: application/json")
     @POST("/dynamic-pricing/dynamicpricing/performDynamicPricing")
-    void performDynamicPricing(@Body TypedString body, Callback<DynamicPricingResponse> callback);
+    void performDynamicPricing(@Body TypedString body, Callback<JsonElement> callback);
 
     // Save payment option
     @Headers("Content-Type: application/json")

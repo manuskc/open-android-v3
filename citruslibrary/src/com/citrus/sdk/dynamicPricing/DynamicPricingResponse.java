@@ -2,12 +2,18 @@ package com.citrus.sdk.dynamicPricing;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.citrus.sdk.CitrusUser;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.payment.PaymentBill;
 import com.citrus.sdk.payment.PaymentOption;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -40,14 +46,17 @@ public class DynamicPricingResponse implements Parcelable {
         }
     }
 
-    private final int resultCode;
-    private final Amount originalAmount;
-    private final Amount alteredAmount;
-    private final String offerToken;
-    private final Map<String, String> extraParameters;
+    private int resultCode = -1;
+    private Amount originalAmount = null;
+    private Amount alteredAmount = null;
+    private String offerToken = null;
+    private Map<String, String> extraParameters = null;
     private PaymentBill paymentBill = null;
     private PaymentOption paymentOption = null;
     private CitrusUser citrusUser = null;
+
+    private DynamicPricingResponse() {
+    }
 
     public DynamicPricingResponse(int resultCode, Amount originalAmount, Amount alteredAmount, String offerToken, Map<String, String> extraParameters) {
         this.resultCode = resultCode;
@@ -93,6 +102,15 @@ public class DynamicPricingResponse implements Parcelable {
         return offerToken;
     }
 
+    /**
+     * Get human readable consumer message for the rule.
+     *
+     * @return
+     */
+    public String getConsumerMessage() {
+        return ((extraParameters != null) ? extraParameters.get("consumerMessage") : "");
+    }
+
     public Map<String, String> getExtraParameters() {
         return extraParameters;
     }
@@ -119,6 +137,39 @@ public class DynamicPricingResponse implements Parcelable {
 
     public void setCitrusUser(CitrusUser citrusUser) {
         this.citrusUser = citrusUser;
+    }
+
+    public static final DynamicPricingResponse fromJSON(String json) {
+        DynamicPricingResponse dynamicPricingResponse = null;
+
+
+        if (!TextUtils.isEmpty(json)) {
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                dynamicPricingResponse = new DynamicPricingResponse();
+                dynamicPricingResponse.resultCode = jsonObject.optInt("resultCode", -1);
+                dynamicPricingResponse.originalAmount = Amount.fromJSONObject(jsonObject.optJSONObject("originalAmount"));
+                dynamicPricingResponse.alteredAmount = Amount.fromJSONObject(jsonObject.optJSONObject("alteredAmount"));
+                dynamicPricingResponse.offerToken = jsonObject.optString("offerToken");
+
+                Map<String, String> extraParamsMap = new HashMap<>();
+
+                JSONObject extraParams = jsonObject.optJSONObject("extraParams");
+                if (extraParams != null) {
+                    Iterator<String> iterator = extraParams.keys();
+                    while (iterator.hasNext()) {
+                        String key = iterator.next();
+                        extraParamsMap.put(key, extraParams.optString(key));
+                    }
+                    dynamicPricingResponse.extraParameters = extraParamsMap;
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return dynamicPricingResponse;
     }
 
     @Override
