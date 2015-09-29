@@ -12,6 +12,8 @@ public interface WalletFragmentListener {
 
     void onPaymentTypeSelected(Utils.PaymentType paymentType, Amount amount);
 
+    void onPaymentTypeSelected(Utils.DPRequestType dpRequestType, Amount originalAmount, String couponCode, Amount alteredAmount);
+
     void onCashoutSelected(CashoutInfo cashoutInfo);
 
 }

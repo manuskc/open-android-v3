@@ -135,6 +135,16 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
     }
 
     @Override
+    public void onPaymentTypeSelected(Utils.DPRequestType dpRequestType, Amount originalAmount, String couponCode, Amount alteredAmount) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .replace(R.id.container, CardPaymentFragment.newInstance(dpRequestType, originalAmount, couponCode, alteredAmount));
+
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    @Override
     public void onCashoutSelected(CashoutInfo cashoutInfo) {
         citrusClient.saveCashoutInfo(cashoutInfo, new Callback<CitrusResponse>() {
             @Override
