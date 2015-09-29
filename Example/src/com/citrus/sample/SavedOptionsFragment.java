@@ -142,11 +142,16 @@ public class SavedOptionsFragment extends Fragment {
         };
 
         try {
+
+            AuthenticationSignatures authenticationSignatures = Utils.getAuthenticationSignatures(getActivity());
+
             if (paymentType == Utils.PaymentType.LOAD_MONEY) {
-                paymentType1 = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, paymentOption);
+                paymentType1 = new PaymentType.LoadMoney(amount, authenticationSignatures.getRETURN_URL_LOAD_MONEY(), paymentOption);
+//                paymentType1 = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, paymentOption);
                 citrusClient.loadMoney((PaymentType.LoadMoney) paymentType1, callback);
             } else if (paymentType == Utils.PaymentType.PG_PAYMENT) {
-                paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, paymentOption, new CitrusUser(citrusClient.getUserEmailId(), citrusClient.getUserMobileNumber()));
+                paymentType1 = new PaymentType.PGPayment(amount, authenticationSignatures.getBILL_URL(), paymentOption, new CitrusUser(citrusClient.getUserEmailId(), citrusClient.getUserMobileNumber()));
+//                paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, paymentOption, new CitrusUser(citrusClient.getUserEmailId(), citrusClient.getUserMobileNumber()));
                 citrusClient.pgPayment((PaymentType.PGPayment) paymentType1, callback);
             }
         } catch (CitrusException e) {

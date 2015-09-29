@@ -12,13 +12,13 @@
     <PreferenceCategory android:title="@string/signatures_preference_text">
 
         <EditTextPreference
-            android:defaultValue="@string/signup_id_prefs_default_value"
+            android:defaultValue="@string/prefs_signup_id_default_value"
             android:dialogTitle="@string/signup_id_prefs_text"
             android:key="@string/prefs_signup_id_key"
             android:title="@string/signup_id_prefs_text" />
 
         <EditTextPreference
-            android:defaultValue="@string/signup_secret_pref_default_value"
+            android:defaultValue="@string/prefs_signup_secret_default_value"
             android:dialogTitle="@string/signup_secret_prefs_text"
             android:key="@string/prefs_signup_secret_key"
             android:title="@string/signup_secret_prefs_text" />
@@ -48,7 +48,7 @@
         <EditTextPreference
             android:defaultValue="@string/prefs_bill_url_default_value"
             android:dialogTitle="@string/bill_url_prefs_text"
-            android:key="prefs_bill_url_key"
+            android:key="@string/pref_bill_url_key"
             android:title="@string/bill_url_prefs_text" />
 
         <EditTextPreference

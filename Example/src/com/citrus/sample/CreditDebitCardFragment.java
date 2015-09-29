@@ -123,12 +123,15 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
 
         try {
 
+            AuthenticationSignatures authenticationSignatures = Utils.getAuthenticationSignatures(getActivity());
 
             if (this.paymentType == Utils.PaymentType.LOAD_MONEY) {
-                paymentType = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, cardOption);
+                paymentType = new PaymentType.LoadMoney(amount, authenticationSignatures.getRETURN_URL_LOAD_MONEY(), cardOption);
+//                paymentType = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, cardOption);
                 client.loadMoney((PaymentType.LoadMoney) paymentType, callback);
             } else if (this.paymentType == Utils.PaymentType.PG_PAYMENT) {
-                paymentType = new PaymentType.PGPayment(amount, Constants.BILL_URL, cardOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
+                paymentType = new PaymentType.PGPayment(amount, authenticationSignatures.getBILL_URL(), cardOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
+//                paymentType = new PaymentType.PGPayment(amount, Constants.BILL_URL, cardOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
                 client.pgPayment((PaymentType.PGPayment) paymentType, callback);
             }
         } catch (CitrusException e) {

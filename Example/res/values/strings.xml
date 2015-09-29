@@ -38,10 +38,10 @@
     <string name="signatures_preference_text">Signatures</string>
     <string name="prefs_signup_secret_key">prefs_signup_secret</string>
     <string name="signup_secret_prefs_text">Sign Up Secret</string>
-    <string name="signup_secret_pref_default_value">c78ec84e389814a05d3ae46546d16d2e</string>
+    <string name="prefs_signup_secret_default_value">c78ec84e389814a05d3ae46546d16d2e</string>
     <string name="signup_id_prefs_text">Sign Up ID</string>
     <string name="prefs_signup_id_key">prefs_signup_id</string>
-    <string name="signup_id_prefs_default_value">test-signup</string>
+    <string name="prefs_signup_id_default_value">test-signup</string>
     <string name="sign_id_prefs_text">Sign In ID</string>
     <string name="prefs_signin_id_key">prefs_signin_id</string>
     <string name="prefs_signin_id_default_value">test-signin</string>
@@ -57,5 +57,6 @@
     <string name="prefs_load_money_return_url_key">prefs_load_money_return_url</string>
     <string name="prefs_load_money_return_url_default_value">https://salty-plateau-1529.herokuapp.com/redirectUrlLoadCash.php</string>
     <string name="load_money_return_url_prefs_text">Load Money Return URL</string>
+    <string name="pref_bill_url_key">prefs_bill_url_key</string>
 
 </resources>

@@ -33,12 +33,46 @@ public class Utils {
         LOAD_MONEY, CITRUS_CASH, PG_PAYMENT;
     }
 
+    /**
+     *
+     * @param context
+     * @return preferredEnvironment
+     */
     public static String getPreferredEnvironment(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String preferredEnvironment = prefs.getString(getResourceString(context,R.string.prefs_environment_key),getResourceString(context,R.string.environment_preference_default_value));
 
         return  preferredEnvironment;
+    }
+
+    /**
+     *
+     * @param context
+     * @return authenticationSignatures
+     */
+    public static AuthenticationSignatures getAuthenticationSignatures(Context context){
+        AuthenticationSignatures authenticationSignatures = new AuthenticationSignatures();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String billUrl = prefs.getString(getResourceString(context, R.string.pref_bill_url_key), getResourceString(context, R.string.prefs_bill_url_default_value));
+        String loadMoneyReturnUrl = prefs.getString(getResourceString(context,R.string.prefs_load_money_return_url_key),getResourceString(context,R.string.prefs_load_money_return_url_default_value));
+        String signUpID = prefs.getString(getResourceString(context,R.string.prefs_signup_id_key),getResourceString(context,R.string.prefs_signup_id_default_value));
+        String signUpSecret = prefs.getString(getResourceString(context,R.string.prefs_signup_secret_key),getResourceString(context,R.string.prefs_signup_secret_default_value));
+        String signInID = prefs.getString(getResourceString(context,R.string.prefs_signin_id_key),getResourceString(context,R.string.prefs_signin_id_default_value));
+        String signInSecret = prefs.getString(getResourceString(context,R.string.prefs_signin_secret_key),getResourceString(context,R.string.prefs_signin_secret_default_value));
+        String vanity = prefs.getString(getResourceString(context,R.string.prefs_vanity_key),getResourceString(context,R.string.prefs_vanity_default_value));
+
+        authenticationSignatures.setBILL_URL(billUrl);
+        authenticationSignatures.setRETURN_URL_LOAD_MONEY(loadMoneyReturnUrl);
+        authenticationSignatures.setSIGNUP_ID(signUpID);
+        authenticationSignatures.setSIGNUP_SECRET(signUpSecret);
+        authenticationSignatures.setSIGNIN_ID(signInID);
+        authenticationSignatures.setSIGNIN_SECRET(signInSecret);
+        authenticationSignatures.setVANITY(vanity);
+
+        return authenticationSignatures;
+
     }
 
     /**

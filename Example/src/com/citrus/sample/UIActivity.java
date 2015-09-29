@@ -46,6 +46,7 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
     private Context mContext = this;
     private CitrusClient citrusClient = null;
     private CitrusConfig citrusConfig = null;
+    AuthenticationSignatures authenticationSignatures = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +73,18 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
     }
 
     private void initCitrusClient() {
+
+         authenticationSignatures = Utils.getAuthenticationSignatures(this);
+
+
         if (Utils.getPreferredEnvironment(this).equalsIgnoreCase(Utils.getResourceString(this, R.string.environment_preference_default_value))) {
             Toast.makeText(this, "UI ACTIVITY ENV = SANDBOX", Toast.LENGTH_SHORT).show();
-            citrusClient.init(Constants.SIGNUP_ID, Constants.SIGNUP_SECRET, Constants.SIGNIN_ID, Constants.SIGNIN_SECRET, Constants.VANITY, Environment.SANDBOX);
+//            citrusClient.init(Constants.SIGNUP_ID, Constants.SIGNUP_SECRET, Constants.SIGNIN_ID, Constants.SIGNIN_SECRET, Constants.VANITY, Environment.SANDBOX);
+            citrusClient.init(authenticationSignatures.getSIGNUP_ID(), authenticationSignatures.getSIGNUP_SECRET(), authenticationSignatures.getSIGNIN_ID(), authenticationSignatures.getSIGNIN_SECRET(), authenticationSignatures.getVANITY(), Environment.SANDBOX);
         }else{
             Toast.makeText(this, "UI ACTIVITY ENV = PRODUCTION", Toast.LENGTH_SHORT).show();
-            citrusClient.init(Constants.SIGNUP_ID, Constants.SIGNUP_SECRET, Constants.SIGNIN_ID, Constants.SIGNIN_SECRET, Constants.VANITY, Environment.PRODUCTION);
+//            citrusClient.init(Constants.SIGNUP_ID, Constants.SIGNUP_SECRET, Constants.SIGNIN_ID, Constants.SIGNIN_SECRET, Constants.VANITY, Environment.PRODUCTION);
+            citrusClient.init(authenticationSignatures.getSIGNUP_ID(), authenticationSignatures.getSIGNUP_SECRET(), authenticationSignatures.getSIGNIN_ID(), authenticationSignatures.getSIGNIN_SECRET(), authenticationSignatures.getVANITY(), Environment.PRODUCTION);
         }
     }
 
@@ -139,7 +146,9 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
         if (paymentType == Utils.PaymentType.CITRUS_CASH) {
 
             try {
-                citrusClient.payUsingCitrusCash(new PaymentType.CitrusCash(amount, Constants.BILL_URL), new Callback<TransactionResponse>() {
+
+                citrusClient.payUsingCitrusCash(new PaymentType.CitrusCash(amount, authenticationSignatures.getBILL_URL()), new Callback<TransactionResponse>() {
+//                citrusClient.payUsingCitrusCash(new PaymentType.CitrusCash(amount, Constants.BILL_URL), new Callback<TransactionResponse>() {
                     @Override
                     public void success(TransactionResponse transactionResponse) {
                         Utils.showToast(getApplicationContext(), transactionResponse.getMessage());
