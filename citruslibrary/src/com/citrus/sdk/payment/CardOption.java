@@ -125,7 +125,7 @@ public abstract class CardOption extends PaymentOption {
     }
 
     public String getNickName() {
-        return nickName;
+        return getName();
     }
 
     public String getCardExpiryYear() {
@@ -385,6 +385,10 @@ public abstract class CardOption extends PaymentOption {
 
             JSONObject option = new JSONObject();
             option.put("owner", cardHolderName);
+            // Set nickname
+            if (!TextUtils.isEmpty(nickName)) {
+                option.put("name", nickName);
+            }
             option.put("number", cardNumber);
             option.put("scheme", cardScheme.toString());
             option.put("expiryDate", cardExpiry);
