@@ -62,6 +62,7 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
         Bundle bundle = new Bundle();
         bundle.putSerializable("paymentType", Utils.PaymentType.DYNAMIC_PRICING);
         bundle.putSerializable("dpRequestType", dpRequestType);
+        bundle.putSerializable("cType", cType);
         bundle.putParcelable("amount", originalAmount);
         bundle.putParcelable("alteredAmount", alteredAmount);
         bundle.putString("couponCode", couponCode);

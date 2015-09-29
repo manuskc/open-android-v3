@@ -94,7 +94,7 @@ public class DynamicPricingRequest {
                     jsonObject.put("issuerId", ((NetbankingOption) paymentOption).getBankCID());
                 } else if (paymentOption instanceof CardOption) {
                     jsonObject.put("cardNo", ((CardOption) paymentOption).getCardNumber());
-                    jsonObject.put("cardType", ((CardOption) paymentOption).getCardScheme().toString());
+                    jsonObject.put("cardType", ((CardOption) paymentOption).getCardScheme().getName().toUpperCase()); // For DP card types are all in CAPS.
                 }
 
                 jsonObject.put("paymentMode", paymentOption.getDynamicPricingPaymentMode());
