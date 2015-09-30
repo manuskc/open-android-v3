@@ -530,7 +530,7 @@ public class CitrusActivity extends ActionBarActivity {
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
 //            super.onReceivedSslError(view, handler, error);
-            handler.proceed();
+            handler.cancel();
         }
     }
 
