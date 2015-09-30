@@ -9,6 +9,7 @@
         android:key="@string/prefs_environment_key"
         android:title="@string/choose_environment_prefs_text" />
 
+
     <PreferenceCategory android:title="@string/signatures_preference_text">
 
         <EditTextPreference

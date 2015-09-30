@@ -76,7 +76,6 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
 
          authenticationSignatures = Utils.getAuthenticationSignatures(this);
 
-
         if (Utils.getPreferredEnvironment(this).equalsIgnoreCase(Utils.getResourceString(this, R.string.environment_preference_default_value))) {
             Toast.makeText(this, "UI ACTIVITY ENV = SANDBOX", Toast.LENGTH_SHORT).show();
 //            citrusClient.init(Constants.SIGNUP_ID, Constants.SIGNUP_SECRET, Constants.SIGNIN_ID, Constants.SIGNIN_SECRET, Constants.VANITY, Environment.SANDBOX);
@@ -90,12 +89,18 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        if (Utils.getResourceString(UIActivity.this,R.string.prefs_environment_key).equals(key)){
+        if ((Utils.getResourceString(UIActivity.this,R.string.prefs_environment_key).equals(key))
+                || (Utils.getResourceString(UIActivity.this,R.string.prefs_signin_id_key).equals(key))
+                || (Utils.getResourceString(UIActivity.this,R.string.prefs_signin_secret_key).equals(key))
+                || (Utils.getResourceString(UIActivity.this,R.string.prefs_signup_id_key).equals(key))
+                || (Utils.getResourceString(UIActivity.this,R.string.prefs_signup_secret_key).equals(key))
+                || (Utils.getResourceString(UIActivity.this,R.string.prefs_vanity_key).equals(key))){
             Toast.makeText(this, "UI ACTIVITY REFRESH CLIENT", Toast.LENGTH_SHORT).show();
 
             citrusClient.destroyVariables();
 
             initCitrusClient();
+
         }
 
     }
