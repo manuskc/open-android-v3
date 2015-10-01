@@ -15,7 +15,9 @@
 
 package com.citrus.sample;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,7 +25,11 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.text.InputType;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.citrus.sdk.Callback;
@@ -95,15 +101,51 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
                 || (Utils.getResourceString(UIActivity.this,R.string.prefs_signup_id_key).equals(key))
                 || (Utils.getResourceString(UIActivity.this,R.string.prefs_signup_secret_key).equals(key))
                 || (Utils.getResourceString(UIActivity.this,R.string.prefs_vanity_key).equals(key))){
-            Toast.makeText(this, "UI ACTIVITY REFRESH CLIENT", Toast.LENGTH_SHORT).show();
 
-            citrusClient.destroyVariables();
-
-            initCitrusClient();
-
+            showAlertPrompt();
         }
-
     }
+
+    private void showAlertPrompt() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(UIActivity.this);
+        String message = "This change will log you out. Do you want to continue?";
+        String positiveButtonText = "Yes";
+
+        alert.setTitle("Alert");
+        alert.setMessage(message);
+        alert.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int whichButton) {
+                Toast.makeText(UIActivity.this, "UI ACTIVITY REFRESH CLIENT", Toast.LENGTH_SHORT).show();
+
+                citrusClient.destroyVariables();
+
+                initCitrusClient();
+
+                citrusClient.signOut(new Callback<CitrusResponse>() {
+                    @Override
+                    public void success(CitrusResponse citrusResponse) {
+                        Utils.showToast(UIActivity.this, citrusResponse.getMessage());
+
+                    }
+
+                    @Override
+                    public void error(CitrusError error) {
+                        Utils.showToast(UIActivity.this, error.getMessage());
+                    }
+                });
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        });
+
+        alert.show();
+    }
+
 
     private void showUI() {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
