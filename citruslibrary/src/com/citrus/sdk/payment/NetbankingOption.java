@@ -136,7 +136,7 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
         } else if ("Indian Overseas Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("indian_overseas_bank", "drawable", context.getPackageName());
         } else if ("Induslnd Bank".equalsIgnoreCase(bankName)) {
-            resourceId = context.getResources().getIdentifier("induslnd_bank", "drawable", context.getPackageName());
+            resourceId = context.getResources().getIdentifier("indusind_bank", "drawable", context.getPackageName());
         } else if ("ING VYSA".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("ing_vysa", "drawable", context.getPackageName());
         } else if ("Kotak Mahindra Bank".equalsIgnoreCase(bankName)) {
