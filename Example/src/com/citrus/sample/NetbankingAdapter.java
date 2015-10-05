@@ -1,5 +1,7 @@
 package com.citrus.sample;
 
+import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +18,10 @@ import java.util.ArrayList;
 final class NetbankingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ArrayList<NetbankingOption> mNetbankingOptionList = null;
+    Activity mActivity = null;
 
-    public NetbankingAdapter(ArrayList<NetbankingOption> netbankingOptionList) {
+    public NetbankingAdapter(Activity activity, ArrayList<NetbankingOption> netbankingOptionList) {
+        this.mActivity = activity;
         this.mNetbankingOptionList = netbankingOptionList;
     }
 
@@ -43,6 +47,9 @@ final class NetbankingAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         if (netbankingOption != null) {
             itemHolder.txtBankName.setText(netbankingOption.getBankName());
+            Drawable mBankIconDrawable = netbankingOption.getOptionIcon(mActivity);
+            itemHolder.txtBankName.setCompoundDrawablePadding(25);
+            itemHolder.txtBankName.setCompoundDrawablesWithIntrinsicBounds(mBankIconDrawable,null,null,null);
         }
     }
 
