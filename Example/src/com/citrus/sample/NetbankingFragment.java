@@ -64,7 +64,7 @@ public final class NetbankingFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_net_banking, container, false);
 
-        final NetbankingAdapter netbankingAdapter = new NetbankingAdapter(mNetbankingOptionsList);
+        final NetbankingAdapter netbankingAdapter = new NetbankingAdapter(getActivity(),mNetbankingOptionsList);
 
         RecyclerView recylerViewNetbanking = (RecyclerView) view.findViewById(R.id.recycler_view_netbanking);
         recylerViewNetbanking.setAdapter(netbankingAdapter);
