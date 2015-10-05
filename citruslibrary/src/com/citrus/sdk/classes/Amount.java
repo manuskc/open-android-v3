@@ -7,6 +7,8 @@ import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+
 /**
  * Created by salil on 24/4/15.
  */
@@ -37,6 +39,19 @@ public class Amount implements Parcelable {
 
     public String getCurrency() {
         return currency;
+    }
+
+    /**
+     * Returns the value in given format. If you want the value to be 1.00 pass format as #.00
+     *
+     * @param format
+     * @return the amount in given format
+     * @throws NumberFormatException if unable to convert the amount value to given format.
+     */
+    public String getValueAsFormattedDouble(String format) throws NumberFormatException {
+        DecimalFormat df = new DecimalFormat(format);
+
+        return df.format(getValueAsDouble());
     }
 
     /**
@@ -83,6 +98,15 @@ public class Amount implements Parcelable {
         }
 
         return amount;
+    }
+
+    public static String toJSON(Amount amount) {
+        JSONObject billObject = toJSONObject(amount);
+        if (billObject != null) {
+            return billObject.toString();
+        } else {
+            return null;
+        }
     }
 
     public static JSONObject toJSONObject(Amount amount) {

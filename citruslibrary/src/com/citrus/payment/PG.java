@@ -33,6 +33,7 @@ import com.citrus.sdk.ResponseMessages;
 import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.CitrusPrepaidBill;
 import com.citrus.sdk.classes.StructResponsePOJO;
+import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.NetbankingOption;
 import com.citrus.sdk.payment.PaymentOption;
@@ -73,8 +74,9 @@ public class PG {
     private LoadMoney loadmoney;
 
     ArrayList<String> mylist = new ArrayList<String>();
+    private DynamicPricingResponse dynamicPricingResponse = null;
 
-    public PG(PaymentOption paymentOption, Bill bill, UserDetails userDetails) {
+    public PG(PaymentOption paymentOption, Bill bill, UserDetails userDetails, DynamicPricingResponse dynamicPricingResponse) {
         if (paymentOption != null) {
             if (paymentOption instanceof CardOption) {
                 CardOption cardOption = (CardOption) paymentOption;
@@ -101,6 +103,7 @@ public class PG {
         this.bill = bill;
         this.userDetails = userDetails;
         this.customParameters = bill.getCustomParameters();
+        this.dynamicPricingResponse = dynamicPricingResponse;
     }
 
     public PG(PaymentOption paymentOption, LoadMoney load, UserDetails userDetails) {
@@ -412,6 +415,10 @@ public class PG {
                 payment.put("customParameters", customParameters);
             }
 
+            // Dynamic-Pricing related changes.
+            if (dynamicPricingResponse != null) {
+                payment.put("offerToken", dynamicPricingResponse.getOfferToken());
+            }
 
             payment.put("paymentToken", paymentToken);
             payment.put("merchantTxnId", bill.getTxnId());
@@ -443,8 +450,6 @@ public class PG {
     }
 
 
-
-
     private void retrofitCharge() {
         RetroFitClient.getCitrusRetroFitClient().getPaymentResponse(new TypedString(payment.toString()), new retrofit.Callback<StructResponsePOJO>() {
             @Override
@@ -459,7 +464,7 @@ public class PG {
             @Override
             public void failure(RetrofitError error) {
                 Logger.d("FAILED MOTO CALL**** " + error.getMessage());
-                if(error.getKind() == RetrofitError.Kind.NETWORK)
+                if (error.getKind() == RetrofitError.Kind.NETWORK)
                     callback.onTaskexecuted("", ResponseMessages.ERROR_NETWORK_CONNECTION);
                 else
                     callback.onTaskexecuted("", error.getMessage());
