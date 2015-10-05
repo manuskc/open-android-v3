@@ -218,6 +218,12 @@ public class PaymentBill implements Parcelable {
         return paymentBill;
     }
 
+    public static String toJSON(PaymentBill paymentBill) {
+        JSONObject jsonObject = toJSONObject(paymentBill);
+
+        return ((paymentBill != null) ? jsonObject.toString(): "");
+    }
+
     public static JSONObject toJSONObject(PaymentBill paymentBill) {
         JSONObject billObject = null;
 

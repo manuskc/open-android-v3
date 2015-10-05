@@ -79,6 +79,7 @@ public class RESTclient {
             urls.put("production", "https://admin.citruspay.com/");
             urls.put("oops", "https://oops.citruspay.com/");
             urls.put("sandbox", "https://sandboxadmin.citruspay.com/");
+            urls.put("stg3", "https://stg3admin.citruspay.com/");
             urls.put("signup", "oauth/token");
             urls.put("bind", "service/v2/identity/bind");
             urls.put("signin", "oauth/token");

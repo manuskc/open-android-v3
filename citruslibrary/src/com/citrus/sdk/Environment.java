@@ -34,6 +34,21 @@ public enum Environment {
         public String toString() {
             return "PRODUCTION";
         }
+    }, STG3 {
+        @Override
+        public String getBaseUrl() {
+            return "https://stg3admin.citruspay.com";
+        }
+
+        @Override
+        public String getBaseCitrusUrl() {
+            return "https://stg3.citruspay.com";
+        }
+
+        @Override
+        public String toString() {
+            return "STG3";
+        }
     }, NONE {
         @Override
         public String getBaseUrl() {

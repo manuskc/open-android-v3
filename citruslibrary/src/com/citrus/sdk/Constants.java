@@ -44,6 +44,7 @@ public interface Constants {
     String SIGNIN_TOKEN = "signin_token";
     String SIGNUP_TOKEN = "signup_token";
     String PREPAID_TOKEN = "prepaid_token";
+    String PAY_USING_CITRUS_CASH_TOKEN = "pay_using_citrus_cash_token";
 
     String LOGOUT_SUCCESS_MESSAGE = "User Logged Out Successfully.";
 
