@@ -19,7 +19,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
@@ -117,11 +116,11 @@ public class CitrusClient {
     private Amount balanceAmount;
     private static CitrusClient instance;
     private final Context mContext;
-    private SharedPreferences mSharedPreferences;
     private MerchantPaymentOption merchantPaymentOption = null;
 
     private API retrofitClient;
     private API citrusBaseUrlClient;
+    private API dynamicPricingClient;
     private String prepaidCookie = null;
     private OauthToken oauthToken = null;
     private CookieManager cookieManager;
@@ -167,6 +166,7 @@ public class CitrusClient {
             if (validate()) {
                 initRetrofitClient();
                 initCitrusBaseUrlClient();
+                initDynamicPricingClient();
             }
 
             // TODO: Remove full dependency on this class.
@@ -265,7 +265,11 @@ public class CitrusClient {
     }
 
     private void initCitrusBaseUrlClient() {
-        citrusBaseUrlClient = RetroFitClient.getCitrusBaseUrlClient(environment.getBaseCitrusUrl());
+        citrusBaseUrlClient = RetroFitClient.getClientWithUrl(environment.getBaseCitrusUrl());
+    }
+
+    private void initDynamicPricingClient() {
+        dynamicPricingClient = RetroFitClient.getClientWithUrl(environment.getDynamicPricingBaseUrl());
     }
 
     public static CitrusClient getInstance(Context context) {
@@ -1277,7 +1281,7 @@ public class CitrusClient {
                 final CitrusUser citrusUser = dynamicPricingRequestType.getCitrusUser();
                 final DynamicPricingRequest request = new DynamicPricingRequest(dynamicPricingRequestType, paymentBill);
 
-                citrusBaseUrlClient.performDynamicPricing(new TypedString(DynamicPricingRequest.toJSON(request)), new retrofit.Callback<JsonElement>() {
+                dynamicPricingClient.performDynamicPricing(new TypedString(DynamicPricingRequest.toJSON(request)), new retrofit.Callback<JsonElement>() {
                     @Override
                     public void success(JsonElement jsonElement, Response response) {
                         DynamicPricingResponse dynamicPricingResponse = DynamicPricingResponse.fromJSON(jsonElement.toString());

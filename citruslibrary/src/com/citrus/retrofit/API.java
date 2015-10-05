@@ -129,7 +129,7 @@ public interface API {
 
     // Dynamic Pricing
     @Headers("Content-Type: application/json")
-    @POST("/dynamic-pricing/dynamicpricing/performDynamicPricing")
+    @POST("/dynamicpricing/performDynamicPricing")
     void performDynamicPricing(@Body TypedString body, Callback<JsonElement> callback);
 
     // Save payment option
