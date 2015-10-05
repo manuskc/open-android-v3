@@ -92,7 +92,7 @@ public class SavedOptionsFragment extends Fragment {
 
         View returnView = inflater.inflate(R.layout.fragment_saved_cards, container, false);
 
-        final SavedOptionsAdapter savedOptionsAdapter = new SavedOptionsAdapter(walletList);
+        final SavedOptionsAdapter savedOptionsAdapter = new SavedOptionsAdapter(getActivity(),walletList);
 
         RecyclerView recylerViewNetbanking = (RecyclerView) returnView.findViewById(R.id.recycler_view_saved_options);
         recylerViewNetbanking.setAdapter(savedOptionsAdapter);

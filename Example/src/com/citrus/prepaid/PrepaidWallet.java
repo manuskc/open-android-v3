@@ -2,7 +2,9 @@ package com.citrus.prepaid;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -480,6 +482,8 @@ public class PrepaidWallet extends Activity {
 
 
     private void initconfig() {
+
+
         Config.setEnv("sandbox"); //replace it with "production" when you are ready
         
         /*Replace following details with oauth details provided to you*/
@@ -491,7 +495,8 @@ public class PrepaidWallet extends Activity {
 
         CitrusLogger.enableLogs();
 
-        citrusClient.init("test-signup", "c78ec84e389814a05d3ae46546d16d2e", "test-signin", "52f7e15efd4208cf5345dd554443fd99", "prepaid", Environment.SANDBOX);
+            citrusClient.init("test-signup", "c78ec84e389814a05d3ae46546d16d2e", "test-signin", "52f7e15efd4208cf5345dd554443fd99", "prepaid", Environment.SANDBOX);
+
 
 
     }
