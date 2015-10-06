@@ -8,6 +8,7 @@ import com.citrus.sdk.Environment;
 public interface Constants {
 
     String BILL_URL = "https://salty-plateau-1529.herokuapp.com/billGenerator.sandbox.php";
+
     String RETURN_URL_LOAD_MONEY = "https://salty-plateau-1529.herokuapp.com/redirectUrlLoadCash.php";
 
     String SIGNUP_ID = "test-signup";
