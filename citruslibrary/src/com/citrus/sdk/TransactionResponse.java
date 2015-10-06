@@ -216,6 +216,14 @@ public final class TransactionResponse implements Parcelable {
         return transactionStatus;
     }
 
+    public String getTransactionId() {
+        if (transactionDetails != null) {
+            return transactionDetails.getTransactionId();
+        }
+
+        return null;
+    }
+
     public CitrusUser getCitrusUser() {
         return citrusUser;
     }
@@ -318,9 +326,10 @@ public final class TransactionResponse implements Parcelable {
 
     @Override
     public String toString() {
-        return "TransactionResponse{" +
-                "balanceAmount=" + balanceAmount +
-                ", transactionAmount=" + transactionAmount +
+        return "CitrusTransactionResponse{" +
+                "transactionAmount='" + (transactionAmount != null ? transactionAmount.toString() : "") + '\'' +
+
+                "balanceAmount='" + (balanceAmount != null ? balanceAmount.toString() : "") + '\'' +
                 ", message='" + message + '\'' +
                 ", responseCode='" + responseCode + '\'' +
                 ", transactionStatus=" + transactionStatus +
@@ -345,7 +354,7 @@ public final class TransactionResponse implements Parcelable {
     }
 
     public enum PaymentMode {
-        NET_BANKING, CREDIT_CARD, DEBIT_CARD, PREPAID_CARD;
+        NET_BANKING, CREDIT_CARD, DEBIT_CARD;
 
         public static PaymentMode getPaymentMode(String paymentMode) {
             PaymentMode mode = null;
@@ -368,7 +377,7 @@ public final class TransactionResponse implements Parcelable {
 
         public static TransactionStatus getTransactionStatus(String transactionStatus) {
             TransactionStatus status = UNKNOWN;
-            if (TextUtils.equals(transactionStatus, "SUCCESS")) {
+            if (TextUtils.equals(transactionStatus, "SUCCESS") || TextUtils.equals(transactionStatus, "SUCCESSFUL")) {
                 status = SUCCESSFUL;
             } else if (TextUtils.equals(transactionStatus, "FAIL")) {
                 status = FAILED;
