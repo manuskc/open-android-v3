@@ -6,31 +6,17 @@
         <option name="GRADLE_PROJECT_PATH" value=":citruslibrary" />
       </configuration>
     </facet>
-    <facet type="java-gradle" name="Java-Gradle">
-      <configuration>
-        <option name="BUILD_FOLDER_PATH" value="$MODULE_DIR$/build" />
-        <option name="BUILDABLE" value="false" />
-      </configuration>
-    </facet>
     <facet type="android" name="Android">
       <configuration>
         <option name="SELECTED_BUILD_VARIANT" value="debug" />
         <option name="SELECTED_TEST_ARTIFACT" value="_android_test_" />
         <option name="ASSEMBLE_TASK_NAME" value="assembleDebug" />
         <option name="COMPILE_JAVA_TASK_NAME" value="compileDebugSources" />
-<<<<<<< HEAD
         <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleDebugAndroidTest" />
         <option name="COMPILE_JAVA_TEST_TASK_NAME" value="compileDebugAndroidTestSources" />
         <afterSyncTasks>
           <task>generateDebugAndroidTestSources</task>
           <task>generateDebugSources</task>
-=======
-        <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleDebugTest" />
-        <option name="COMPILE_JAVA_TEST_TASK_NAME" value="compileDebugTestSources" />
-        <afterSyncTasks>
-          <task>generateDebugSources</task>
-          <task>generateDebugTestSources</task>
->>>>>>> dynamic_pricing
         </afterSyncTasks>
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res" />
@@ -104,13 +90,8 @@
     <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.0.0" level="project" />
-<<<<<<< HEAD
-    <orderEntry type="library" exported="" name="okhttp-urlconnection-2.3.0" level="project" />
-    <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
-=======
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="okhttp-urlconnection-2.3.0" level="project" />
->>>>>>> dynamic_pricing
     <orderEntry type="library" exported="" name="eventbus-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-analytics-7.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-7.0.0" level="project" />
