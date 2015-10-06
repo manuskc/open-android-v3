@@ -41,9 +41,13 @@ import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.BindPOJO;
 import com.citrus.sdk.classes.CashoutInfo;
+import com.citrus.sdk.classes.CitrusException;
 import com.citrus.sdk.classes.MemberInfo;
 import com.citrus.sdk.classes.PGHealth;
 import com.citrus.sdk.classes.PGHealthResponse;
+import com.citrus.sdk.dynamicPricing.DynamicPricingRequest;
+import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
+import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.CreditCardOption;
 import com.citrus.sdk.payment.DebitCardOption;
@@ -120,6 +124,7 @@ public class CitrusClient {
 
     private API retrofitClient;
     private API citrusBaseUrlClient;
+    private API dynamicPricingClient;
     private String prepaidCookie = null;
     private OauthToken oauthToken = null;
     private CookieManager cookieManager;
@@ -243,7 +248,7 @@ public class CitrusClient {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        // Logger.e("Error while fetching the health");
+                       // Logger.e("Error while fetching the health");
                     }
                 }
         );
@@ -279,7 +284,11 @@ public class CitrusClient {
     }
 
     private void initCitrusBaseUrlClient() {
-        citrusBaseUrlClient = RetroFitClient.getCitrusBaseUrlClient(environment.getBaseCitrusUrl());
+        citrusBaseUrlClient = RetroFitClient.getClientWithUrl(environment.getBaseCitrusUrl());
+    }
+
+    private void initDynamicPricingClient() {
+        dynamicPricingClient = RetroFitClient.getClientWithUrl(environment.getDynamicPricingBaseUrl());
     }
 
     public static CitrusClient getInstance(Context context) {
@@ -626,6 +635,7 @@ public class CitrusClient {
                             sendError(callback, error);
                         }
                     });
+
                 }
             }
 
@@ -1245,6 +1255,106 @@ public class CitrusClient {
 
     }
 
+    // Dynamic Pricing.
+
+    /**
+     * Perform Dynamic Pricing. You can specify one the dynamicPricingRequestType to perform Dynamic Pricing.
+     *
+     * @param dynamicPricingRequestType - One of the dynamicPricingRequestType from {@link DynamicPricingRequestType}
+     * @param billUrl                   - billUrl from where we will fetch the bill.
+     * @param callback                  - callback
+     */
+    public synchronized void performDynamicPricing(@NonNull final DynamicPricingRequestType dynamicPricingRequestType, @NonNull final String billUrl, @NonNull final Callback<DynamicPricingResponse> callback) {
+
+        if (validate()) {
+            if (dynamicPricingRequestType != null && !TextUtils.isEmpty(billUrl)) {
+
+                final Amount originalAmount = dynamicPricingRequestType.getOriginalAmount();
+                final String format = "#.00";
+
+                String url;
+                if (billUrl.contains("?")) {
+                    url = billUrl + "&amount=" + originalAmount.getValueAsFormattedDouble(format);
+                } else {
+                    url = billUrl + "?amount=" + originalAmount.getValueAsFormattedDouble(format);
+                }
+
+                String dpOperation = "&dpOperation=" + dynamicPricingRequestType.getDPOperationName();
+                if (dynamicPricingRequestType instanceof DynamicPricingRequestType.SearchAndApplyRule) {
+                    url = url + dpOperation;
+                } else if (dynamicPricingRequestType instanceof DynamicPricingRequestType.CalculatePrice) {
+                    String ruleName = "&ruleName=" + ((DynamicPricingRequestType.CalculatePrice) dynamicPricingRequestType).getRuleName();
+                    url = url + dpOperation + ruleName;
+                } else if (dynamicPricingRequestType instanceof DynamicPricingRequestType.ValidateRule) {
+                    String ruleName = "&ruleName=" + ((DynamicPricingRequestType.ValidateRule) dynamicPricingRequestType).getRuleName();
+                    Amount alteredAmount = ((DynamicPricingRequestType.ValidateRule) dynamicPricingRequestType).getAlteredAmount();
+                    String alteredAmountValue = "&alteredAmount=" + alteredAmount.getValueAsFormattedDouble(format);
+                    url = url + dpOperation + ruleName + alteredAmountValue;
+                }
+
+                getBill(url, originalAmount, new Callback<PaymentBill>() {
+                    @Override
+                    public void success(PaymentBill paymentBill) {
+                        performDynamicPricing(dynamicPricingRequestType, paymentBill, new Callback<DynamicPricingResponse>() {
+                            @Override
+                            public void success(DynamicPricingResponse dynamicPricingResponse) {
+                                sendResponse(callback, dynamicPricingResponse);
+                            }
+
+                            @Override
+                            public void error(CitrusError error) {
+                                sendError(callback, error);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void error(CitrusError error) {
+                        sendError(callback, error);
+                    }
+                });
+            }
+        } else {
+            sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_BLANK_NULL_DP_PARAMS, Status.FAILED));
+        }
+    }
+
+    /**
+     * Perform Dynamic Pricing. You can specify one the dynamicPricingRequestType to perform Dynamic Pricing.
+     *
+     * @param dynamicPricingRequestType - One of the dynamicPricingRequestType from {@link DynamicPricingRequestType}
+     * @param paymentBill               - PaymentBill in case you are fetching bill response from your server.
+     * @param callback                  - callback
+     */
+    public synchronized void performDynamicPricing(@NonNull final DynamicPricingRequestType dynamicPricingRequestType, @NonNull final PaymentBill paymentBill, @NonNull final Callback<DynamicPricingResponse> callback) {
+
+        if (validate()) {
+            if (dynamicPricingRequestType != null && paymentBill != null) {
+                final PaymentOption paymentOption = dynamicPricingRequestType.getPaymentOption();
+                final CitrusUser citrusUser = dynamicPricingRequestType.getCitrusUser();
+                final DynamicPricingRequest request = new DynamicPricingRequest(dynamicPricingRequestType, paymentBill);
+
+                dynamicPricingClient.performDynamicPricing(new TypedString(DynamicPricingRequest.toJSON(request)), new retrofit.Callback<JsonElement>() {
+                    @Override
+                    public void success(JsonElement jsonElement, Response response) {
+                        DynamicPricingResponse dynamicPricingResponse = DynamicPricingResponse.fromJSON(jsonElement.toString());
+                        dynamicPricingResponse.setPaymentBill(paymentBill);
+                        dynamicPricingResponse.setPaymentOption(paymentOption);
+                        dynamicPricingResponse.setCitrusUser(citrusUser);
+                        sendResponse(callback, dynamicPricingResponse);
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        sendError(callback, error);
+                    }
+                });
+
+            } else {
+                sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_BLANK_NULL_DP_PARAMS, Status.FAILED));
+            }
+        }
+    }
 
     /**
      * Send money to your friend.
@@ -1503,7 +1613,28 @@ public class CitrusClient {
         startCitrusActivity(pgPayment);
     }
 
-    /**
+    public synchronized void pgPayment(final DynamicPricingResponse dynamicPricingResponse, final Callback<TransactionResponse> callback) {
+
+        if (dynamicPricingResponse != null) {
+            PaymentBill paymentBill = dynamicPricingResponse.getPaymentBill();
+
+            PaymentType.PGPayment pgPayment;
+            try {
+                pgPayment = new PaymentType.PGPayment(paymentBill, dynamicPricingResponse.getPaymentOption(), dynamicPricingResponse.getCitrusUser());
+
+                registerReceiver(callback, new IntentFilter(pgPayment.getIntentAction()));
+
+                startCitrusActivity(pgPayment, dynamicPricingResponse);
+            } catch (CitrusException e) {
+                e.printStackTrace();
+                sendError(callback, new CitrusError(e.getMessage(), Status.FAILED));
+            }
+        } else {
+            sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_NULL_DYNAMIC_RESPONSE, Status.FAILED));
+        }
+    }
+
+	/**
      * @param citrusCash
      * @param callback
      * @deprecated Please use {@link CitrusClient#prepaidPay(PaymentType.CitrusCash, Callback)} instead.
@@ -1904,12 +2035,17 @@ public class CitrusClient {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(receiver);
     }
 
-    private void startCitrusActivity(PaymentType paymentType) {
+    private void startCitrusActivity(PaymentType paymentType, DynamicPricingResponse dynamicPricingResponse) {
         Intent intent = new Intent(mContext, CitrusActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.INTENT_EXTRA_PAYMENT_TYPE, paymentType);
+        intent.putExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE, dynamicPricingResponse);
 
         mContext.startActivity(intent);
+    }
+
+    private void startCitrusActivity(PaymentType paymentType) {
+        startCitrusActivity(paymentType, null);
     }
 
     private <T> void registerReceiver(final Callback<T> callback, IntentFilter intentFilter) {

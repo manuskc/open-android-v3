@@ -113,6 +113,8 @@ public abstract class PaymentOption implements Parcelable {
 
     public abstract com.citrus.analytics.PaymentType getAnalyticsPaymentType();
 
+    public abstract String getDynamicPricingPaymentMode();
+
     @Override
     public String toString() {
         return "PaymentOption{" +

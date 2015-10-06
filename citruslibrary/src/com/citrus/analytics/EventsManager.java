@@ -11,7 +11,6 @@ import com.citrus.sdk.Constants;
 import com.citrus.sdk.Environment;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.orhanobut.logger.Logger;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -78,7 +77,7 @@ public class EventsManager {
         CitrusClient client = CitrusClient.getInstance(context);
         Environment environment = client.getEnvironment();
         if (environment != null) {
-            API citrusBaseURLClient = RetroFitClient.getCitrusBaseUrlClient(client.getEnvironment().getBaseCitrusUrl());
+            API citrusBaseURLClient = RetroFitClient.getClientWithUrl(client.getEnvironment().getBaseCitrusUrl());
             citrusBaseURLClient.getMerchantName(Config.getVanity(), new Callback<Response>() {
                 @Override
                 public void success(Response s, Response response) {

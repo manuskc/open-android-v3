@@ -136,6 +136,11 @@ public interface API {
     @GET("/{path}")
     void getBill(@Path(value = "path", encode = false) String path, Callback<JsonElement> callback);
 
+    // Dynamic Pricing
+    @Headers("Content-Type: application/json")
+    @POST("/dynamicpricing/performDynamicPricing")
+    void performDynamicPricing(@Body TypedString body, Callback<JsonElement> callback);
+
     // Save payment option
     @Headers("Content-Type: application/json")
     @PUT("/service/v2/profile/me/payment")
