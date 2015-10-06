@@ -85,6 +85,26 @@ public enum Environment {
         public String toString() {
             return "STG5";
         }
+    },STG3 {
+        @Override
+        public String getBaseUrl() {
+            return "https://stg3admin.citruspay.com/";
+        }
+
+        @Override
+        public String getBaseCitrusUrl() {
+            return "https://stg3admin.citruspay.com/";
+        }
+
+        @Override
+        public String getDynamicPricingBaseUrl() {
+            return "https://stg3admin.citruspay.com/dynamic-pricing/";
+        }
+
+        @Override
+        public String toString() {
+            return "STG5";
+        }
     }, NONE {
         @Override
         public String getBaseUrl() {
