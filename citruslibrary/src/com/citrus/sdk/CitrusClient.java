@@ -248,7 +248,7 @@ public class CitrusClient {
 
                     @Override
                     public void failure(RetrofitError error) {
-                       // Logger.e("Error while fetching the health");
+                        // Logger.e("Error while fetching the health");
                     }
                 }
         );
@@ -1634,7 +1634,7 @@ public class CitrusClient {
         }
     }
 
-	/**
+    /**
      * @param citrusCash
      * @param callback
      * @deprecated Please use {@link CitrusClient#prepaidPay(PaymentType.CitrusCash, Callback)} instead.
@@ -1807,7 +1807,11 @@ public class CitrusClient {
                 getPrepaidToken(new Callback<AccessToken>() {
                     @Override
                     public void success(AccessToken accessToken) {
-                        String prepaymentToken = accessToken.getPrepaidPayToken().getHeaderAccessToken();
+                        String prepaymentToken = "";
+
+                        if (accessToken.getPrepaidPayToken() != null) {
+                            prepaymentToken = accessToken.getPrepaidPayToken().getHeaderAccessToken();
+                        }
 
                         retrofitClient.getPrepaymentTokenValidity(signupToken, prepaymentToken, "prepaid_merchant_pay", new retrofit.Callback<JsonElement>() {
                             @Override
