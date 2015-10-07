@@ -61,6 +61,7 @@ import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusConfig;
 import com.citrus.sdk.classes.Utils;
 import com.citrus.sdk.payment.CardOption;
+import com.citrus.sdk.payment.NetbankingOption;
 import com.citrus.sdk.payment.PaymentBill;
 import com.citrus.sdk.payment.PaymentOption;
 import com.citrus.sdk.payment.PaymentType;
@@ -162,8 +163,23 @@ public class CitrusActivity extends ActionBarActivity {
         mActionBar = getSupportActionBar();
         mProgressDialog = new ProgressDialog(mContext);
         mPaymentWebview = (WebView) findViewById(R.id.payment_webview);
-        mPaymentWebview.getSettings().setUseWideViewPort(true);
+//        mPaymentWebview.getSettings().setUseWideViewPort(true);
+//        mPaymentWebview.getSettings().setLoadWithOverviewMode(true);
+        mPaymentWebview.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
         mPaymentWebview.getSettings().setJavaScriptEnabled(true);
+
+        // This is done to have horizontal scroll for 2 banks whose page renders improperly in the webview
+        if(mPaymentOption instanceof NetbankingOption){
+
+            if("CID032".equalsIgnoreCase(((NetbankingOption) mPaymentOption).getBankCID()) // Karur Vyasa
+                    ||"CID051".equalsIgnoreCase(((NetbankingOption) mPaymentOption).getBankCID())) // Canara Bank
+            {
+                mPaymentWebview.getSettings().setUseWideViewPort(true);
+            }
+
+        }
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             /*
             This setting is required to enable redirection of urls from https to http or vice-versa.
