@@ -1187,9 +1187,10 @@ public class CitrusClient {
                 oauthToken.getSignInToken(new Callback<AccessToken>() {
                     @Override
                     public void success(AccessToken accessToken) {
-                        retrofit.Callback<CitrusResponse> deleteCallback = new retrofit.Callback<CitrusResponse>() {
+
+                        retrofitClient.deletePaymentOption(accessToken.getHeaderAccessToken(), paymentOption.getToken(), new retrofit.Callback<Response>() {
                             @Override
-                            public void success(CitrusResponse citrusResponse, Response response) {
+                            public void success(Response r, Response response) {
                                 sendResponse(callback, new CitrusResponse(ResponseMessages.SUCCESS_MESSAGE_DELETE_PAYMENT_OPTIONS, Status.SUCCESSFUL));
                             }
 
@@ -1197,22 +1198,7 @@ public class CitrusClient {
                             public void failure(RetrofitError error) {
                                 sendError(callback, error);
                             }
-                        };
-
-
-                        if (paymentOption instanceof NetbankingOption) {
-                            retrofitClient.deleteBank(accessToken.getHeaderAccessToken(), paymentOption.getToken(), deleteCallback);
-
-                        } else if (paymentOption instanceof CardOption) {
-                            String last4Digits = ((CardOption) paymentOption).getLast4Digits();
-                            CardOption.CardScheme cardScheme = ((CardOption) paymentOption).getCardScheme();
-                            String scheme = null;
-                            if (cardScheme != null) {
-                                scheme = cardScheme.getName();
-                            }
-
-                            retrofitClient.deleteCard(accessToken.getHeaderAccessToken(), last4Digits, scheme, deleteCallback);
-                        }
+                        });
                     }
 
                     @Override

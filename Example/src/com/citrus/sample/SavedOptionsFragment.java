@@ -29,6 +29,7 @@ import com.citrus.sdk.payment.CitrusCash;
 import com.citrus.sdk.payment.PaymentOption;
 import com.citrus.sdk.payment.PaymentType;
 import com.citrus.sdk.response.CitrusError;
+import com.citrus.sdk.response.CitrusResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class SavedOptionsFragment extends Fragment {
     private Amount alteredAmount = null;
     private ArrayList<PaymentOption> walletList = null;
     private CitrusClient citrusClient = null;
+    private SavedOptionsAdapter savedOptionsAdapter = null;
 
     public SavedOptionsFragment() {
 
@@ -92,7 +94,7 @@ public class SavedOptionsFragment extends Fragment {
 
         View returnView = inflater.inflate(R.layout.fragment_saved_cards, container, false);
 
-        final SavedOptionsAdapter savedOptionsAdapter = new SavedOptionsAdapter(getActivity(),walletList);
+        savedOptionsAdapter = new SavedOptionsAdapter(getActivity(), walletList);
 
         RecyclerView recylerViewNetbanking = (RecyclerView) returnView.findViewById(R.id.recycler_view_saved_options);
         recylerViewNetbanking.setAdapter(savedOptionsAdapter);
@@ -123,7 +125,12 @@ public class SavedOptionsFragment extends Fragment {
             });
         }
 
+        fetchWallet();
 
+        return returnView;
+    }
+
+    private void fetchWallet() {
         citrusClient.getWallet(new Callback<List<PaymentOption>>() {
             @Override
             public void success(List<PaymentOption> paymentOptionList) {
@@ -142,8 +149,6 @@ public class SavedOptionsFragment extends Fragment {
                 Utils.showToast(getActivity(), error.getMessage());
             }
         });
-
-        return returnView;
     }
 
     private PaymentOption getItem(int position) {
@@ -167,7 +172,27 @@ public class SavedOptionsFragment extends Fragment {
             } else {
                 proceedToPayment(paymentType, paymentOption);
             }
+        }
 
+        @Override
+        public void onItemLongPress(View childView, int position) {
+            PaymentOption paymentOption = getItem(position);
+
+            citrusClient.deletePaymentOption(paymentOption, new Callback<CitrusResponse>() {
+                @Override
+                public void success(CitrusResponse citrusResponse) {
+                    Utils.showToast(getActivity(), citrusResponse.getMessage());
+
+                    walletList.clear();
+                    savedOptionsAdapter.notifyDataSetChanged();
+                    fetchWallet();
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    Utils.showToast(getActivity(), error.getMessage());
+                }
+            });
         }
     }
 

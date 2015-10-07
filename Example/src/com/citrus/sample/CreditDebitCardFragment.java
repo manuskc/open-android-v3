@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,8 +26,10 @@ import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.CreditCardOption;
 import com.citrus.sdk.payment.DebitCardOption;
+import com.citrus.sdk.payment.PaymentOption;
 import com.citrus.sdk.payment.PaymentType;
 import com.citrus.sdk.response.CitrusError;
+import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.widgets.CardNumberEditText;
 import com.citrus.widgets.ExpiryDate;
 
@@ -36,12 +39,14 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
     private ExpiryDate editExpiryDate = null;
     private EditText editCVV = null, editCardHolderName = null, cardHolderNickName = null, cardHolderNumber = null;
     private TextView submitButton = null;
+    private CheckBox checkBoxSaveCard = null;
     private CType cType = CType.DEBIT;
     private Utils.PaymentType paymentType = null;
     private Utils.DPRequestType dpRequestType = null;
     private Amount amount = null;
     private String couponCode = null;
     private Amount alteredAmount = null;
+    private CitrusClient citrusClient = null;
 
     public CreditDebitCardFragment() {
     }
@@ -90,6 +95,7 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
         View returnView = inflater.inflate(R.layout.fragment_credit_debit_card, container,
                 false);
 
+        citrusClient = CitrusClient.getInstance(getActivity());
         editCardNumber = (CardNumberEditText) returnView
                 .findViewById(R.id.cardHolderNumber);
         editExpiryDate = (ExpiryDate) returnView.findViewById(R.id.cardExpiry);
@@ -97,6 +103,7 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
         cardHolderNickName = (EditText) returnView.findViewById(R.id.cardHolderNickName);
         editCVV = (EditText) returnView.findViewById(R.id.cardCvv);
         submitButton = (TextView) returnView.findViewById(R.id.load);
+        checkBoxSaveCard = (CheckBox) returnView.findViewById(R.id.checkboxSaveCard);
         submitButton.setOnClickListener(this);
 
         switch (paymentType) {
@@ -129,8 +136,10 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
             cardOption = new CreditCardOption(cardHolderName, cardNumber, cardCVV, month, year);
         }
 
-
-        CitrusClient client = CitrusClient.getInstance(getActivity());
+        // Save the card if checkbox is checked.
+        if (checkBoxSaveCard.isChecked()) {
+            savePaymentOption(cardOption);
+        }
 
         if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
             DynamicPricingRequestType dynamicPricingRequestType = null;
@@ -143,7 +152,7 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
                 dynamicPricingRequestType = new DynamicPricingRequestType.ValidateRule(amount, cardOption, couponCode, alteredAmount, null);
             }
 
-            client.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
+            citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
                 @Override
                 public void success(DynamicPricingResponse dynamicPricingResponse) {
                     showPrompt(dynamicPricingResponse);
@@ -172,14 +181,14 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
             try {
                 if (this.paymentType == Utils.PaymentType.LOAD_MONEY) {
                     paymentType = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, cardOption);
-                    client.loadMoney((PaymentType.LoadMoney) paymentType, callback);
+                    citrusClient.loadMoney((PaymentType.LoadMoney) paymentType, callback);
                 } else if (this.paymentType == Utils.PaymentType.PG_PAYMENT) {
-                    paymentType = new PaymentType.PGPayment(amount, Constants.BILL_URL, cardOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
-                    client.pgPayment((PaymentType.PGPayment) paymentType, callback);
+                    paymentType = new PaymentType.PGPayment(amount, Constants.BILL_URL, cardOption, new CitrusUser(citrusClient.getUserEmailId(), citrusClient.getUserMobileNumber()));
+                    citrusClient.pgPayment((PaymentType.PGPayment) paymentType, callback);
                 } else if (this.paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
                     DynamicPricingRequestType dynamicPricingRequestType = new DynamicPricingRequestType.SearchAndApplyRule(amount, cardOption, null);
 
-                    client.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
+                    citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
                         @Override
                         public void success(DynamicPricingResponse dynamicPricingResponse) {
                             showPrompt(dynamicPricingResponse);
@@ -197,6 +206,20 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
                 Utils.showToast(getActivity(), e.getMessage());
             }
         }
+    }
+
+    private void savePaymentOption(PaymentOption paymentOption) {
+        citrusClient.savePaymentOption(paymentOption, new Callback<CitrusResponse>() {
+            @Override
+            public void success(CitrusResponse citrusResponse) {
+                Utils.showToast(getActivity(), citrusResponse.getMessage());
+            }
+
+            @Override
+            public void error(CitrusError error) {
+                Utils.showToast(getActivity(), error.getMessage());
+            }
+        });
     }
 
     private void showPrompt(final DynamicPricingResponse dynamicPricingResponse) {
