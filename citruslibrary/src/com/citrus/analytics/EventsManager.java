@@ -3,6 +3,7 @@ package com.citrus.analytics;
 import android.content.Context;
 import android.os.Build;
 
+import com.citrus.mobile.Config;
 import com.citrus.retrofit.API;
 import com.citrus.retrofit.RetroFitClient;
 import com.citrus.sdk.CitrusClient;
@@ -10,6 +11,7 @@ import com.citrus.sdk.Constants;
 import com.citrus.sdk.Environment;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.orhanobut.logger.Logger;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;

@@ -17,6 +17,7 @@ package com.citrus.analytics;
 
 import android.content.Context;
 
+import com.citrus.mobile.Config;
 import com.citrus.sdk.response.CitrusLogger;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Logger;

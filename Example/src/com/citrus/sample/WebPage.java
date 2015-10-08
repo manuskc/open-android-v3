@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.citrus.mobile.Callback;
+import com.citrus.mobile.CitrusWebViewClient;
 
 public class WebPage extends Activity {
     WebView webView;
