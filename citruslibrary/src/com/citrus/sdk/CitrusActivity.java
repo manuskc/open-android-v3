@@ -169,10 +169,10 @@ public class CitrusActivity extends ActionBarActivity {
         mPaymentWebview.getSettings().setJavaScriptEnabled(true);
 
         // This is done to have horizontal scroll for 2 banks whose page renders improperly in the webview
-        if(mPaymentOption instanceof NetbankingOption){
+        if (mPaymentOption instanceof NetbankingOption) {
 
-            if("CID032".equalsIgnoreCase(((NetbankingOption) mPaymentOption).getBankCID()) // Karur Vyasa
-                    ||"CID051".equalsIgnoreCase(((NetbankingOption) mPaymentOption).getBankCID())) // Canara Bank
+            if ("CID032".equalsIgnoreCase(((NetbankingOption) mPaymentOption).getBankCID()) // Karur Vyasa
+                    || "CID051".equalsIgnoreCase(((NetbankingOption) mPaymentOption).getBankCID())) // Canara Bank
             {
                 mPaymentWebview.getSettings().setUseWideViewPort(true);
             }
@@ -223,6 +223,8 @@ public class CitrusActivity extends ActionBarActivity {
                     proceedToPayment(PaymentBill.toJSONObject(mPaymentType.getPaymentBill()).toString());
                 }
             } else {
+                // Show text while processing payments
+                mPaymentWebview.loadData("<html><body><h5><center>Processing, please wait...<center></h5></body></html>", "text/html", "utf-8");
                 fetchBill();
             }
         } else { //load cash does not requires Bill Generator
