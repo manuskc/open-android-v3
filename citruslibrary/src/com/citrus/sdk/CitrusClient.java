@@ -30,7 +30,6 @@ import android.webkit.CookieSyncManager;
 import com.citrus.analytics.EventsManager;
 import com.citrus.cash.PersistentConfig;
 import com.citrus.citrususer.RandomPassword;
-import com.citrus.mobile.Config;
 import com.citrus.mobile.OAuth2GrantType;
 import com.citrus.mobile.OauthToken;
 import com.citrus.mobile.User;
@@ -130,7 +129,7 @@ public class CitrusClient {
         mContext = context;
 
         initRetrofitClient();
-        oauthToken = new OauthToken(context);
+        oauthToken = new OauthToken(context, this);
     }
 
     public void enableLog(boolean enable) {
@@ -166,20 +165,36 @@ public class CitrusClient {
             }
 
             // TODO: Remove full dependency on this class.
-            Config.setupSignupId(signupId);
-            Config.setupSignupSecret(signupSecret);
+//            Config.setupSignupId(signupId);
+//            Config.setupSignupSecret(signupSecret);
+//
+//            Config.setSigninId(signinId);
+//            Config.setSigninSecret(signinSecret);
+//            Config.setVanity(vanity);
+//            switch (environment) {
+//                case SANDBOX:
+//                    Config.setEnv("sandbox");
+//                    break;
+//                case PRODUCTION:
+//                    Config.setEnv("production");
+//                    break;
+//            }
 
-            Config.setSigninId(signinId);
-            Config.setSigninSecret(signinSecret);
-            Config.setVanity(vanity);
+            setSignupId(signupId);
+            setSignupSecret(signupSecret);
+
+            setSigninId(signinId);
+            setSigninSecret(signinSecret);
+            setVanity(vanity);
             switch (environment) {
                 case SANDBOX:
-                    Config.setEnv("sandbox");
+                    setEnvironment(Environment.SANDBOX);
                     break;
                 case PRODUCTION:
-                    Config.setEnv("production");
+                    setEnvironment(Environment.PRODUCTION);
                     break;
             }
+
             Logger.d("VANITY*** " + vanity);
             EventsManager.logInitSDKEvents(mContext);
 
@@ -390,7 +405,7 @@ public class CitrusClient {
                     Logger.d("accessToken " + accessToken.getJSON().toString());
 
                     if (accessToken.getHeaderAccessToken() != null) {
-                        OauthToken signuptoken = new OauthToken(mContext, SIGNUP_TOKEN);
+                        OauthToken signuptoken = new OauthToken(mContext, SIGNUP_TOKEN, CitrusClient.this);
                         signuptoken.createToken(accessToken.getJSON()); //Oauth Token received
 
                         retrofitClient.getBindResponse(accessToken.getHeaderAccessToken(), emailId, mobileNo, new retrofit.Callback<BindPOJO>() {
@@ -403,7 +418,7 @@ public class CitrusClient {
                                     public void success(AccessToken accessToken, Response response) {
                                         Logger.d("SIGNIN accessToken" + accessToken.getJSON().toString());
                                         if (accessToken.getHeaderAccessToken() != null) {
-                                            OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN);
+                                            OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN,CitrusClient.this);
                                             token.createToken(accessToken.getJSON());
                                             token.saveUserDetails(emailId, mobileNo);//save email and mobile No of the user
                                             Logger.d("USER BIND SUCCESSFULLY***");
@@ -449,7 +464,7 @@ public class CitrusClient {
                                     Logger.d("accessToken " + accessToken.getJSON().toString());
 
                                     if (accessToken.getHeaderAccessToken() != null) {
-                                        OauthToken signuptoken = new OauthToken(mContext, SIGNUP_TOKEN);
+                                        OauthToken signuptoken = new OauthToken(mContext, SIGNUP_TOKEN,CitrusClient.this);
                                         signuptoken.createToken(accessToken.getJSON()); //Oauth Token received
 
                                         retrofitClient.bindUserByMobile(accessToken.getHeaderAccessToken(), emailId, mobileNo, new retrofit.Callback<BindPOJO>() {
@@ -481,7 +496,7 @@ public class CitrusClient {
                                                     public void success(AccessToken accessToken, Response response) {
                                                         Logger.d("SIGNIN accessToken" + accessToken.getJSON().toString());
                                                         if (accessToken.getHeaderAccessToken() != null) {
-                                                            OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN);
+                                                            OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN,CitrusClient.this);
                                                             token.createToken(accessToken.getJSON());
                                                             token.saveUserDetails(emailId, mobileNo);//save email and mobile No of the user
                                                             Logger.d("USER BIND BY MOBILE SUCCESSFULLY***");
@@ -535,7 +550,7 @@ public class CitrusClient {
             @Override
             public void success(AccessToken accessToken, Response response) {
                 if (accessToken.getHeaderAccessToken() != null) {
-                    OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN);
+                    OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN,CitrusClient.this);
                     token.createToken(accessToken.getJSON());///grant Type username token saved
 
                     retrofitClient.getSignInWithPasswordResponse(signinId, signinSecret, emailId, password, OAuth2GrantType.password.toString(), new retrofit.Callback<AccessToken>() {
@@ -546,7 +561,7 @@ public class CitrusClient {
                                 // Fetch the profileInfo
                                 getProfileInfo(null);
 
-                                OauthToken token = new OauthToken(mContext, PREPAID_TOKEN);
+                                OauthToken token = new OauthToken(mContext, PREPAID_TOKEN,CitrusClient.this);
                                 token.createToken(accessToken.getJSON());///grant Type password token saved
                                 token.saveUserDetails(emailId, null);//save email ID of the signed in user
 
@@ -625,7 +640,7 @@ public class CitrusClient {
             @Override
             public void success(AccessToken accessToken, Response response) {
                 if (accessToken.getHeaderAccessToken() != null) {
-                    OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN);
+                    OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN,CitrusClient.this);
                     token.createToken(accessToken.getJSON());///grant Type username token saved
 
                     retrofitClient.getSignInWithPasswordResponse(signinId, signinSecret, mobileNo, password, OAuth2GrantType.password.toString(), new retrofit.Callback<AccessToken>() {
@@ -636,7 +651,7 @@ public class CitrusClient {
 
                             Logger.d("SIGN IN RESPONSE " + accessToken.getJSON().toString());
                             if (accessToken.getHeaderAccessToken() != null) {
-                                final OauthToken token = new OauthToken(mContext, PREPAID_TOKEN);
+                                final OauthToken token = new OauthToken(mContext, PREPAID_TOKEN,CitrusClient.this);
                                 token.createToken(accessToken.getJSON());///grant Type password token saved
 
                                 // Fetch the associated emailId and save the emailId.
@@ -758,7 +773,7 @@ public class CitrusClient {
      */
     public synchronized void signOut(Callback<CitrusResponse> callback) {
         if (validate()) {
-            if (User.logoutUser(mContext)) {
+            if (User.logoutUser(mContext,this)) {
                 CitrusResponse citrusResponse = new CitrusResponse("User Logged Out Successfully.", Status.SUCCESSFUL);
                 sendResponse(callback, citrusResponse);
             } else {
@@ -779,8 +794,8 @@ public class CitrusClient {
     public synchronized void signUp(final String emailId, String mobileNo, final String password, final Callback<CitrusResponse> callback) {
 
         if (validate()) {
-            OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN);
-            JSONObject jsontoken = token.getuserToken();
+            OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN,CitrusClient.this);
+            JSONObject jsontoken = token.getuserToken(this);
             try {
                 String header = "Bearer " + jsontoken.getString("access_token");
                 RandomPassword pwd = new RandomPassword();

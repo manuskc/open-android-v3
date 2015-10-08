@@ -20,7 +20,6 @@ import android.widget.Button;
 
 import com.citrus.sdk.CitrusActivity;
 import com.citrus.sdk.Constants;
-import com.citrus.sdk.PaymentParams;
 import com.citrus.sdk.TransactionResponse;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusException;
