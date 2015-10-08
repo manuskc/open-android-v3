@@ -809,18 +809,19 @@ public class CitrusClient {
      * Signout the existing logged in user.
      */
     public synchronized void signOut(Callback<CitrusResponse> callback) {
-        if (validate()) {
-            if (User.logoutUser(mContext)) {
-                // reset the token validity flag
-                prepaymentTokenValid = false;
+        if (User.logoutUser(mContext)) {
+            // reset the token validity flag
+            prepaymentTokenValid = false;
 
-                CitrusResponse citrusResponse = new CitrusResponse("User Logged Out Successfully.", Status.SUCCESSFUL);
-                sendResponse(callback, citrusResponse);
-            } else {
-                CitrusError citrusError = new CitrusError("Failed to logout.", Status.FAILED);
-                callback.error(citrusError);
-            }
+            CitrusResponse citrusResponse = new CitrusResponse("User Logged Out Successfully.", Status.SUCCESSFUL);
+            sendResponse(callback, citrusResponse);
+        } else {
+            CitrusError citrusError = new CitrusError("Failed to logout.", Status.FAILED);
+            callback.error(citrusError);
         }
+
+        // Making
+        citrusUser = null;
     }
 
     /**
