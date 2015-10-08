@@ -3,7 +3,6 @@ package com.citrus.analytics;
 import android.content.Context;
 import android.os.Build;
 
-import com.citrus.mobile.Config;
 import com.citrus.retrofit.API;
 import com.citrus.retrofit.RetroFitClient;
 import com.citrus.sdk.CitrusClient;

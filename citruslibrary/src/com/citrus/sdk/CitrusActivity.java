@@ -48,17 +48,16 @@ import android.widget.EditText;
 
 import com.citrus.analytics.EventsManager;
 import com.citrus.analytics.WebViewEvents;
-import com.citrus.cash.LoadMoney;
 import com.citrus.cash.PersistentConfig;
 import com.citrus.cash.Prepaid;
 import com.citrus.library.R;
 import com.citrus.mobile.Callback;
-import com.citrus.mobile.Config;
 import com.citrus.payment.Bill;
 import com.citrus.payment.PG;
 import com.citrus.payment.UserDetails;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusConfig;
+import com.citrus.sdk.classes.CitrusException;
 import com.citrus.sdk.classes.Utils;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
@@ -82,7 +81,7 @@ public class CitrusActivity extends ActionBarActivity {
     private ProgressDialog mProgressDialog = null;
 
     @Deprecated
-    private PaymentParams mPaymentParams = null;
+//    private PaymentParams mPaymentParams = null;
     private PaymentType mPaymentType = null;
     private PaymentOption mPaymentOption = null;
     private String mTransactionId = null;
@@ -96,7 +95,7 @@ public class CitrusActivity extends ActionBarActivity {
     private CookieManager cookieManager;
     private String mpiServletUrl = null;
     private Map<String, String> customParametersOriginalMap = null;
-    private CitrusClient mCitrusClient = null;
+    private static CitrusClient mCitrusClient = null;
     private String mActivityTitle = null;
     private int mRequestCode = -1;
 
@@ -118,23 +117,24 @@ public class CitrusActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_citrus);
 
-        mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
         dynamicPricingResponse = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE);
+//        mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
         mCitrusConfig = CitrusConfig.getInstance();
         mActivityTitle = mCitrusConfig.getCitrusActivityTitle();
 
         mCitrusClient = CitrusClient.getInstance(mContext);
 
         // Set payment Params
-        if (mPaymentParams != null) {
-            mPaymentType = mPaymentParams.getPaymentType();
-            mPaymentOption = mPaymentParams.getPaymentOption();
-            mCitrusUser = mPaymentParams.getUser();
-
-            mColorPrimary = mPaymentParams.getColorPrimary();
-            mColorPrimaryDark = mPaymentParams.getColorPrimaryDark();
-            mTextColorPrimary = mPaymentParams.getTextColorPrimary();
-        } else if (mPaymentType != null) {
+//        if (mPaymentParams != null) {
+//            mPaymentType = mPaymentParams.getPaymentType();
+//            mPaymentOption = mPaymentParams.getPaymentOption();
+//            mCitrusUser = mPaymentParams.getUser();
+//
+//            mColorPrimary = mPaymentParams.getColorPrimary();
+//            mColorPrimaryDark = mPaymentParams.getColorPrimaryDark();
+//            mTextColorPrimary = mPaymentParams.getTextColorPrimary();
+//        } else
+        if (mPaymentType != null) {
             mPaymentOption = mPaymentType.getPaymentOption();
             mCitrusUser = mPaymentType.getCitrusUser();
 
@@ -231,7 +231,12 @@ public class CitrusActivity extends ActionBarActivity {
         } else { //load cash does not requires Bill Generator
             Amount amount = mPaymentType.getAmount();
 
-            LoadMoney loadMoney = new LoadMoney(amount.getValue(), mPaymentType.getUrl());
+            PaymentType.LoadMoney loadMoney = null;
+            try {
+                loadMoney = new PaymentType.LoadMoney(amount, mPaymentType.getUrl());
+            } catch (CitrusException e) {
+                e.printStackTrace();
+            }
             PG paymentgateway = new PG(mPaymentOption, loadMoney, new UserDetails(CitrusUser.toJSONObject(mCitrusUser)));
 
             paymentgateway.load(CitrusActivity.this, new Callback() {
@@ -444,12 +449,12 @@ public class CitrusActivity extends ActionBarActivity {
     private void setCookie() {
         cookieManager = CookieManager.getInstance();
         sessionCookie = new PersistentConfig(CitrusActivity.this).getCookieString();
-        cookieManager.setCookie(Config.getBaseURL(), sessionCookie);
+        cookieManager.setCookie( mCitrusClient.getEnvironment().getBaseUrl(), sessionCookie);
     }
 
     private static void removeCookies() {
-        String setCookie = CookieManager.getInstance().getCookie(Config.getBaseURL());
-        CookieManager.getInstance().setCookie(Config.getBaseURL(), Constants.CITRUS_PREPAID_COOKIE);
+        String setCookie = CookieManager.getInstance().getCookie(mCitrusClient.getEnvironment().getBaseUrl());
+        CookieManager.getInstance().setCookie(mCitrusClient.getEnvironment().getBaseUrl(), Constants.CITRUS_PREPAID_COOKIE);
     }
 
     private void sendResult(TransactionResponse transactionResponse) {
@@ -500,7 +505,7 @@ public class CitrusActivity extends ActionBarActivity {
         }
         mPaymentWebview = null;
         mPaymentType = null;
-        mPaymentParams = null;
+//        mPaymentParams = null;
         mCitrusConfig = null;
         mCitrusUser = null;
         mTransactionId = null;
