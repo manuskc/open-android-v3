@@ -125,6 +125,7 @@ public class CitrusClient {
     private Map<String, PGHealth> pgHealthMap = null;
     private boolean initialized = false;
     private CitrusUser citrusUser = null;
+    private boolean showDummyScreen = false;
 
     private CitrusClient(Context context) {
         mContext = context;
@@ -139,6 +140,14 @@ public class CitrusClient {
         } else {
             CitrusLogger.disableLogs();
         }
+    }
+
+    public void showDummyScreenWhilePayments(boolean showDummyScreen) {
+        this.showDummyScreen = showDummyScreen;
+    }
+
+    public boolean isShowDummyScreenWhilePayments() {
+        return showDummyScreen;
     }
 
     public void init(@NonNull String signupId, @NonNull String signupSecret, @NonNull String signinId, @NonNull String signinSecret, @NonNull String vanity, @NonNull Environment environment) {
@@ -232,7 +241,7 @@ public class CitrusClient {
 
                     @Override
                     public void failure(RetrofitError error) {
-                       // Logger.e("Error while fetching the health");
+                        // Logger.e("Error while fetching the health");
                     }
                 }
         );

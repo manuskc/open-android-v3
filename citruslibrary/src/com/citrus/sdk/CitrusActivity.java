@@ -201,7 +201,10 @@ public class CitrusActivity extends ActionBarActivity {
             mActivityTitle = "Processing...";
         }
 
-        setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
+        if (mCitrusClient.isShowDummyScreenWhilePayments()) {
+            setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
+        }
+
         setActionBarBackground();
 
         /*
