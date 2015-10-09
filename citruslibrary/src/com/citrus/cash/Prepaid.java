@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.os.AsyncTask;
 
 import com.citrus.mobile.Callback;
-import com.citrus.mobile.Config;
 import com.citrus.mobile.OauthToken;
 import com.citrus.mobile.RESTclient;
 import com.citrus.mobile.User;
+import com.citrus.sdk.CitrusClient;
 import com.citrus.sdk.payment.PaymentType;
 
 import org.json.JSONException;
@@ -22,7 +22,7 @@ import java.io.IOException;
  */
 @Deprecated
 public class Prepaid {
-
+//
     private String emailId, base_url;
 
     private Callback callback;
@@ -33,7 +33,8 @@ public class Prepaid {
 
     public Prepaid(String email) {
         this.emailId = email;
-        this.base_url = Config.getEnv();
+
+//        this.base_url = Config.getEnv();
     }
 
     public String getUserEmail() {
@@ -76,6 +77,9 @@ public class Prepaid {
                 e.printStackTrace();
                 return "Bind Token not found - Bind user first";
             }
+
+            // Added this to get the url from CitrusClient instead of Config
+            base_url = CitrusClient.getInstance(activity).getEnvironment().getBaseUrl();
 
             RESTclient resTclient = new RESTclient("newbalance", base_url, null, headers);
 

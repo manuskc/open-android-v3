@@ -16,8 +16,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity android:name=".PaymentPage" />
-        <activity android:name=".WebPage" />
         <activity
             android:name="com.citrus.prepaid.PrepaidWallet"
             android:label="@string/title_activity_prepaid"></activity>

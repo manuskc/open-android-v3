@@ -182,6 +182,35 @@ public class CitrusClient {
             Config.setSigninSecret(signinSecret);
             Config.setVanity(vanity);
             Config.setEnv(environment.toString().toLowerCase());
+//            Config.setupSignupId(signupId);
+//            Config.setupSignupSecret(signupSecret);
+//
+//            Config.setSigninId(signinId);
+//            Config.setSigninSecret(signinSecret);
+//            Config.setVanity(vanity);
+//            switch (environment) {
+//                case SANDBOX:
+//                    Config.setEnv("sandbox");
+//                    break;
+//                case PRODUCTION:
+//                    Config.setEnv("production");
+//                    break;
+//            }
+
+//            setSignupId(signupId);
+//            setSignupSecret(signupSecret);
+//
+//            setSigninId(signinId);
+//            setSigninSecret(signinSecret);
+//            setVanity(vanity);
+//            switch (environment) {
+//                case SANDBOX:
+//                    setEnvironment(Environment.SANDBOX);
+//                    break;
+//                case PRODUCTION:
+//                    setEnvironment(Environment.PRODUCTION);
+//                    break;
+//            }
 
             Logger.d("VANITY*** " + vanity);
             EventsManager.logInitSDKEvents(mContext);
@@ -809,15 +838,17 @@ public class CitrusClient {
      * Signout the existing logged in user.
      */
     public synchronized void signOut(Callback<CitrusResponse> callback) {
-        if (User.logoutUser(mContext)) {
-            // reset the token validity flag
-            prepaymentTokenValid = false;
 
-            CitrusResponse citrusResponse = new CitrusResponse("User Logged Out Successfully.", Status.SUCCESSFUL);
-            sendResponse(callback, citrusResponse);
-        } else {
-            CitrusError citrusError = new CitrusError("Failed to logout.", Status.FAILED);
-            callback.error(citrusError);
+        if (validate()) {
+            if (User.logoutUser(mContext)) {
+                // reset the token validity flag
+                prepaymentTokenValid = false;
+                CitrusResponse citrusResponse = new CitrusResponse("User Logged Out Successfully.", Status.SUCCESSFUL);
+                sendResponse(callback, citrusResponse);
+            } else {
+                CitrusError citrusError = new CitrusError("Failed to logout.", Status.FAILED);
+                callback.error(citrusError);
+            }
         }
 
         // Making
