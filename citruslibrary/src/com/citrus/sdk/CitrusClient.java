@@ -180,6 +180,7 @@ public class CitrusClient {
             if (validate()) {
                 initRetrofitClient();
                 initCitrusBaseUrlClient();
+                initDynamicPricingClient();
             }
 
             // TODO: Remove full dependency on this class.
