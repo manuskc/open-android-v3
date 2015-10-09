@@ -60,6 +60,7 @@ import com.citrus.payment.UserDetails;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusConfig;
 import com.citrus.sdk.classes.Utils;
+import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.NetbankingOption;
 import com.citrus.sdk.payment.PaymentBill;
@@ -101,6 +102,7 @@ public class CitrusActivity extends ActionBarActivity {
 
     private boolean isBackKeyPressedByUser = false;
     private boolean passwordPromptShown = false;
+    private DynamicPricingResponse dynamicPricingResponse = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +119,7 @@ public class CitrusActivity extends ActionBarActivity {
         setContentView(R.layout.activity_citrus);
 
         mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
+        dynamicPricingResponse = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE);
         mCitrusConfig = CitrusConfig.getInstance();
         mActivityTitle = mCitrusConfig.getCitrusActivityTitle();
 
@@ -243,6 +246,13 @@ public class CitrusActivity extends ActionBarActivity {
                 }
             });
         }
+
+        if (TextUtils.isEmpty(mActivityTitle)) {
+            mActivityTitle = "Processing...";
+        }
+
+        setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
+        setActionBarBackground();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -317,7 +327,7 @@ public class CitrusActivity extends ActionBarActivity {
             Bill bill = new Bill(billJSON);
             mTransactionId = bill.getTxnId();
 
-            PG paymentgateway = new PG(mPaymentOption, bill, userDetails);
+            PG paymentgateway = new PG(mPaymentOption, bill, userDetails, dynamicPricingResponse);
 
             paymentgateway.charge(new Callback() {
                 @Override

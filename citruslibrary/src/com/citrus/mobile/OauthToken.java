@@ -225,6 +225,11 @@ public class OauthToken {
         getAccessToken(callback);
     }
 
+    public void getPayUsingCitrusCashToken(com.citrus.sdk.Callback<AccessToken> callback) {
+        this.token_type = Constants.PAY_USING_CITRUS_CASH_TOKEN;
+        getAccessToken(callback);
+    }
+
     private void getAccessToken(com.citrus.sdk.Callback<AccessToken> callback) {
 
         JSONObject token = null;

@@ -83,7 +83,9 @@ public class MerchantPaymentOption {
                 creditCardSchemeSet = new HashSet<>();
             }
 
-            creditCardSchemeSet.add(getCardScheme(cardScheme));
+            if (getCardScheme(cardScheme) != null) {
+                creditCardSchemeSet.add(getCardScheme(cardScheme));
+            }
         }
 
         // Parse debit card scheme
@@ -96,7 +98,9 @@ public class MerchantPaymentOption {
                 debitCardSchemeSet = new HashSet<>();
             }
 
-            debitCardSchemeSet.add(getCardScheme(cardScheme));
+            if (getCardScheme(cardScheme) != null) {
+                debitCardSchemeSet.add(getCardScheme(cardScheme));
+            }
         }
 
         // Parse netbanking options
@@ -140,6 +144,14 @@ public class MerchantPaymentOption {
             return CardScheme.MASTER_CARD;
         } else if ("Amex".equalsIgnoreCase(cardScheme)) {
             return CardScheme.AMEX;
+        } else if ("Maestro Card".equalsIgnoreCase(cardScheme)) {
+            return CardScheme.MAESTRO;
+        } else if ("Diners".equalsIgnoreCase(cardScheme)) {
+            return CardScheme.DINERS;
+        } else if ("Discover".equalsIgnoreCase(cardScheme)) {
+            return CardScheme.DISCOVER;
+        } else if ("Jcb".equalsIgnoreCase(cardScheme)) {
+            return CardScheme.JCB;
         } else {
             return null;
         }

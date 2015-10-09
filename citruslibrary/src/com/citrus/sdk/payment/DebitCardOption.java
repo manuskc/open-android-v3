@@ -15,6 +15,7 @@ package com.citrus.sdk.payment;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.citrus.sdk.classes.Month;
 import com.citrus.sdk.classes.Year;
@@ -107,6 +108,16 @@ public final class DebitCardOption extends CardOption implements Parcelable {
     @Override
     public com.citrus.analytics.PaymentType getAnalyticsPaymentType() {
         return com.citrus.analytics.PaymentType.DEBIT_CARD;
+    }
+
+    @Override
+    public String getDynamicPricingPaymentMode() {
+        // In case of tokenized payments. The payment mode is CITRUS_WALLET
+        if (!TextUtils.isEmpty(token)) {
+            return "CITRUS_WALLET";
+        }
+
+        return "DEBIT_CARD";
     }
 
     @Override

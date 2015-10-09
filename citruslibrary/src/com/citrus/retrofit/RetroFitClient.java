@@ -55,9 +55,9 @@ public class
         return billGeneratorClient;
     }
 
-    public static API getCitrusBaseUrlClient(String baseHost){
+    public static API getClientWithUrl(String baseUrl){
         RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(baseHost)
+                .setEndpoint(baseUrl)
                 .setClient(new OkClient(new OkHttpClient()))
                 .setLogLevel(CitrusLogger.isEnableLogs()? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
                 .build();
