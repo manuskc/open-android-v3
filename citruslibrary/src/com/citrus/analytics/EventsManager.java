@@ -37,12 +37,20 @@ public class EventsManager {
      * @param paymentType
      */
     public static void logWebViewEvents(Context context, WebViewEvents webViewEvents, PaymentType paymentType) {
+
+        CitrusClient citrusClient = CitrusClient.getInstance(context);
+
         ConnectionType connectionType = ConnectionManager.getNetworkClass(context);
         Tracker t = (CitrusLibraryApp.getTracker(
                 CitrusLibraryApp.TrackerName.APP_TRACKER, context));
-        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+
+        t.send(new HitBuilders.EventBuilder().setCategory(citrusClient.getVanity())
                 .setAction(WEBVIEW_EVENTS).setLabel(getWebViewEventLabel(webViewEvents, connectionType, paymentType))
                 .setValue(getWebViewEventValue(webViewEvents, connectionType, paymentType)).build());
+
+//        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+//                .setAction(WEBVIEW_EVENTS).setLabel(getWebViewEventLabel(webViewEvents, connectionType, paymentType))
+//                .setValue(getWebViewEventValue(webViewEvents, connectionType, paymentType)).build());
         //WebViewEvent*ConnectionType*PaymentType*BuildVersion
     }
 
@@ -54,30 +62,49 @@ public class EventsManager {
      * @param transactionType
      */
     public static void logPaymentEvents(Context context, PaymentType paymentType, TransactionType transactionType) {
+
+        CitrusClient citrusClient = CitrusClient.getInstance(context);
+
         ConnectionType connectionType = ConnectionManager.getNetworkClass(context);
+
         Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
-        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+        t.send(new HitBuilders.EventBuilder().setCategory(citrusClient.getVanity())
                 .setAction(PAYMENT_EVENTS).setLabel(getPaymentEventLabel(connectionType, paymentType, transactionType))
                 .setValue(getPaymentEventValue(connectionType, paymentType, transactionType)).build());
+
+//        Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
+//        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+//                .setAction(PAYMENT_EVENTS).setLabel(getPaymentEventLabel(connectionType, paymentType, transactionType))
+//                .setValue(getPaymentEventValue(connectionType, paymentType, transactionType)).build());
         //ConnectionType*PaymentType*BuildVersion*TransactionType
     }
 
     public static void logPaymentEvents(Context context, PaymentType paymentType, String failureReason) {
+
+        CitrusClient citrusClient = CitrusClient.getInstance(context);
+
         ConnectionType connectionType = ConnectionManager.getNetworkClass(context);
+
         Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
-        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+        t.send(new HitBuilders.EventBuilder().setCategory(citrusClient.getVanity())
                 .setAction(PAYMENT_EVENTS).setLabel(getPaymentEventLabel(connectionType, paymentType, failureReason))
                 .setValue(getPaymentEventValue(connectionType, paymentType, TransactionType.FAIL)).build());
+
+//        Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
+//        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+//                .setAction(PAYMENT_EVENTS).setLabel(getPaymentEventLabel(connectionType, paymentType, failureReason))
+//                .setValue(getPaymentEventValue(connectionType, paymentType, TransactionType.FAIL)).build());
         //ConnectionType*PaymentType*BuildVersion*TransactionType
     }
 
     public static void logInitSDKEvents(final Context context) {
 
-        CitrusClient client = CitrusClient.getInstance(context);
+        final CitrusClient client = CitrusClient.getInstance(context);
         Environment environment = client.getEnvironment();
         if (environment != null) {
             API citrusBaseURLClient = RetroFitClient.getClientWithUrl(client.getEnvironment().getBaseCitrusUrl());
-            citrusBaseURLClient.getMerchantName(Config.getVanity(), new Callback<Response>() {
+
+            citrusBaseURLClient.getMerchantName(client.getVanity(), new Callback<Response>() {
                 @Override
                 public void success(Response s, Response response) {
 
@@ -86,19 +113,42 @@ public class EventsManager {
                     t.send(new HitBuilders.EventBuilder().setCategory(merchantName)
                             .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
                             .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
-                    
+
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
 
                     Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
-                    t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+                    t.send(new HitBuilders.EventBuilder().setCategory(client.getVanity())
                             .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
                             .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
-                    
+
                 }
             });
+
+//            citrusBaseURLClient.getMerchantName(Config.getVanity(), new Callback<Response>() {
+//                @Override
+//                public void success(Response s, Response response) {
+//
+//                    String merchantName = new String(((TypedByteArray) response.getBody()).getBytes());
+//                    Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
+//                    t.send(new HitBuilders.EventBuilder().setCategory(merchantName)
+//                            .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
+//                            .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
+//
+//                }
+//
+//                @Override
+//                public void failure(RetrofitError error) {
+//
+//                    Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
+//                    t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+//                            .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
+//                            .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
+//
+//                }
+//            });
         }
     }
 

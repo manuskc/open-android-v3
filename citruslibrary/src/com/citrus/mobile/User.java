@@ -192,9 +192,11 @@ public class User {
 //    }
 
 
-    public final static boolean logoutUser(Context context, CitrusClient citrusClient) {
+    public final static boolean logoutUser(Context context) {
 
         CookieSyncManager.createInstance(context);
+
+        CitrusClient citrusClient = CitrusClient.getInstance(context);
 
         String setCookie = CookieManager.getInstance().getCookie(citrusClient.getEnvironment().getBaseUrl());
         CookieManager.getInstance().setCookie(citrusClient.getEnvironment().getBaseUrl(), Constants.CITRUS_PREPAID_COOKIE);//remove App Cookie

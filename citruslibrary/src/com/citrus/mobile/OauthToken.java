@@ -72,12 +72,11 @@ public class OauthToken {
 //    }
 
 
-    public OauthToken(Context context, String token_type, CitrusClient citrusClient) {
+    public OauthToken(Context context, String token_type) {
         this.context = context;
         tokenPrefs = this.context.getSharedPreferences(STORED_VALUES, 0);
 //        base_url = Config.getEnv();
         this.token_type = token_type;
-        this.citrusClient = citrusClient;
     }
 
     public OauthToken(Context context) {
@@ -91,11 +90,6 @@ public class OauthToken {
 //        tokenPrefs = this.context.getSharedPreferences(STORED_VALUES, 0);
 //        base_url = Config.getEnv();
 //    }
-
-    public OauthToken(Context context, CitrusClient citrusClient) {
-        this.context = context;
-        this.citrusClient = citrusClient;
-    }
 
     public boolean createToken(JSONObject usertoken) {
 
@@ -130,7 +124,7 @@ public class OauthToken {
         return editor.commit();
     }
 
-    public JSONObject getuserToken(CitrusClient citrusClient) {
+    public JSONObject getuserToken() {
         JSONObject token = null;
         try {
             if (tokenPrefs.contains(token_type)) {
@@ -145,18 +139,18 @@ public class OauthToken {
         }
 
         if (token.has("refresh_token")) {
-            return refreshToken(token,citrusClient);
+            return refreshToken(token);
         } else {
             return token;
         }
 
     }
 
-    private JSONObject refreshToken(JSONObject token, CitrusClient citrusClient) {
+    private JSONObject refreshToken(JSONObject token) {
 
         if (hasExpired(token)) {
             try {
-                return refresh(token.getString("refresh_token"),citrusClient);
+                return refresh(token.getString("refresh_token"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -174,7 +168,7 @@ public class OauthToken {
         }
     }
 
-    private JSONObject refresh(String refreshToken, CitrusClient citrusClient) {
+    private JSONObject refresh(String refreshToken) {
         JSONObject response = new JSONObject();
 
         JSONObject userJson = new JSONObject();
@@ -182,6 +176,8 @@ public class OauthToken {
         try {
 //            userJson.put("client_id", Config.getSigninId());
 //            userJson.put("client_secret", Config.getSigninSecret());
+
+            citrusClient = CitrusClient.getInstance(context);
 
             userJson.put("client_id", citrusClient.getSigninId());
             userJson.put("client_secret", citrusClient.getSigninSecret());
@@ -291,8 +287,11 @@ public class OauthToken {
 
     //get Refresh TOken from RetroFitClient
     private void getRefreshToken(String refreshToken, final com.citrus.sdk.Callback callback) {
+
+        citrusClient = CitrusClient.getInstance(context);
+
         RetroFitClient.getCitrusRetroFitClient().getRefreshTokenAsync(citrusClient.getSigninId(), citrusClient.getSigninSecret(), OAuth2GrantType.refresh_token.toString(), refreshToken, new Callback<AccessToken>() {
-        RetroFitClient.getCitrusRetroFitClient().getRefreshTokenAsync(Config.getSigninId(), Config.getSigninSecret(), OAuth2GrantType.refresh_token.toString(), refreshToken, new Callback<AccessToken>() {
+//        RetroFitClient.getCitrusRetroFitClient().getRefreshTokenAsync(Config.getSigninId(), Config.getSigninSecret(), OAuth2GrantType.refresh_token.toString(), refreshToken, new Callback<AccessToken>() {
             @Override
             public void success(AccessToken accessToken, Response response) {
                 if (accessToken.getAccessToken() != null) {
