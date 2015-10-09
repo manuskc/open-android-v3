@@ -179,9 +179,7 @@ public class CitrusActivity extends ActionBarActivity {
             {
                 mPaymentWebview.getSettings().setUseWideViewPort(true);
             }
-
         }
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             /*
@@ -230,7 +228,9 @@ public class CitrusActivity extends ActionBarActivity {
                 }
             } else {
                 // Show text while processing payments
-                mPaymentWebview.loadData("<html><body><h5><center>Processing, please wait...<center></h5></body></html>", "text/html", "utf-8");
+                if (mCitrusClient.isShowDummyScreenWhilePayments()) {
+                    mPaymentWebview.loadData("<html><body><h5><center>Processing, please wait...<center></h5></body></html>", "text/html", "utf-8");
+                }
                 fetchBill();
             }
         } else { //load cash does not requires Bill Generator
