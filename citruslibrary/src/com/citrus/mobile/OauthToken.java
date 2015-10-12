@@ -61,21 +61,20 @@ public class OauthToken {
     private String base_url, token_type;
 
     private com.citrus.sdk.Callback callback;
+    private CitrusClient citrusClient;
 
-    CitrusClient citrusClient;
-
-//    public OauthToken(Activity activity, String token_type) {
-//        this.activity = activity;
-//        tokenPrefs = this.activity.getSharedPreferences(STORED_VALUES, 0);
-//        base_url = Config.getEnv();
-//        this.token_type = token_type;
-//    }
+    public OauthToken(Activity activity, String token_type) {
+        this.activity = activity;
+        tokenPrefs = this.activity.getSharedPreferences(STORED_VALUES, 0);
+        base_url = Config.getEnv();
+        this.token_type = token_type;
+    }
 
 
     public OauthToken(Context context, String token_type) {
         this.context = context;
         tokenPrefs = this.context.getSharedPreferences(STORED_VALUES, 0);
-//        base_url = Config.getEnv();
+        base_url = Config.getEnv();
         this.token_type = token_type;
     }
 
@@ -182,7 +181,6 @@ public class OauthToken {
             userJson.put("client_id", citrusClient.getSigninId());
             userJson.put("client_secret", citrusClient.getSigninSecret());
 
-
             userJson.put("grant_type", "refresh_token");
 
             userJson.put("refresh_token", refreshToken);
@@ -287,7 +285,6 @@ public class OauthToken {
 
     //get Refresh TOken from RetroFitClient
     private void getRefreshToken(String refreshToken, final com.citrus.sdk.Callback callback) {
-
         citrusClient = CitrusClient.getInstance(context);
 
         RetroFitClient.getCitrusRetroFitClient().getRefreshTokenAsync(citrusClient.getSigninId(), citrusClient.getSigninSecret(), OAuth2GrantType.refresh_token.toString(), refreshToken, new Callback<AccessToken>() {

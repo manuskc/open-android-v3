@@ -57,7 +57,6 @@ import javax.net.ssl.HttpsURLConnection;
  */
 @Deprecated
 public class RESTclient {
-
     private JSONObject urls;
 
     private JSONObject params, headers;

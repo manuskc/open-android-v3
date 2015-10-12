@@ -132,6 +132,7 @@ public class CitrusClient {
     private Map<String, PGHealth> pgHealthMap = null;
     private boolean initialized = false;
     private CitrusUser citrusUser = null;
+    private boolean showDummyScreen = false;
     private boolean prepaymentTokenValid = false;
 
     private CitrusClient(Context context) {
@@ -147,6 +148,14 @@ public class CitrusClient {
         } else {
             CitrusLogger.disableLogs();
         }
+    }
+
+    public void showDummyScreenWhilePayments(boolean showDummyScreen) {
+        this.showDummyScreen = showDummyScreen;
+    }
+
+    public boolean isShowDummyScreenWhilePayments() {
+        return showDummyScreen;
     }
 
     public void init(@NonNull String signupId, @NonNull String signupSecret, @NonNull String signinId, @NonNull String signinSecret, @NonNull String vanity, @NonNull Environment environment) {
@@ -182,35 +191,7 @@ public class CitrusClient {
             Config.setSigninSecret(signinSecret);
             Config.setVanity(vanity);
             Config.setEnv(environment.toString().toLowerCase());
-//            Config.setupSignupId(signupId);
-//            Config.setupSignupSecret(signupSecret);
-//
-//            Config.setSigninId(signinId);
-//            Config.setSigninSecret(signinSecret);
-//            Config.setVanity(vanity);
-//            switch (environment) {
-//                case SANDBOX:
-//                    Config.setEnv("sandbox");
-//                    break;
-//                case PRODUCTION:
-//                    Config.setEnv("production");
-//                    break;
-//            }
 
-//            setSignupId(signupId);
-//            setSignupSecret(signupSecret);
-//
-//            setSigninId(signinId);
-//            setSigninSecret(signinSecret);
-//            setVanity(vanity);
-//            switch (environment) {
-//                case SANDBOX:
-//                    setEnvironment(Environment.SANDBOX);
-//                    break;
-//                case PRODUCTION:
-//                    setEnvironment(Environment.PRODUCTION);
-//                    break;
-//            }
 
             Logger.d("VANITY*** " + vanity);
             EventsManager.logInitSDKEvents(mContext);
@@ -838,17 +819,15 @@ public class CitrusClient {
      * Signout the existing logged in user.
      */
     public synchronized void signOut(Callback<CitrusResponse> callback) {
+        if (User.logoutUser(mContext)) {
+            // reset the token validity flag
+            prepaymentTokenValid = false;
 
-        if (validate()) {
-            if (User.logoutUser(mContext)) {
-                // reset the token validity flag
-                prepaymentTokenValid = false;
-                CitrusResponse citrusResponse = new CitrusResponse("User Logged Out Successfully.", Status.SUCCESSFUL);
-                sendResponse(callback, citrusResponse);
-            } else {
-                CitrusError citrusError = new CitrusError("Failed to logout.", Status.FAILED);
-                callback.error(citrusError);
-            }
+            CitrusResponse citrusResponse = new CitrusResponse("User Logged Out Successfully.", Status.SUCCESSFUL);
+            sendResponse(callback, citrusResponse);
+        } else {
+            CitrusError citrusError = new CitrusError("Failed to logout.", Status.FAILED);
+            callback.error(citrusError);
         }
 
         // Making

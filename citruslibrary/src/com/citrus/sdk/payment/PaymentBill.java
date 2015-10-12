@@ -99,8 +99,6 @@ public class PaymentBill implements Parcelable {
             throw new CitrusException("requestSignature should not be null or empty.");
         } else if (TextUtils.isEmpty(merchantAccessKey)) {
             throw new CitrusException("merchantAccessKey should not be null or empty.");
-        } else if (TextUtils.isEmpty(dpSignature)) {
-            throw new CitrusException("dpSignature should not be null or empty.");
         }
     }
 
@@ -272,7 +270,7 @@ public class PaymentBill implements Parcelable {
     public static String toJSON(PaymentBill paymentBill) {
         JSONObject jsonObject = toJSONObject(paymentBill);
 
-        return ((paymentBill != null) ? jsonObject.toString(): "");
+        return ((paymentBill != null) ? jsonObject.toString() : "");
     }
 
     public static JSONObject toJSONObject(PaymentBill paymentBill) {

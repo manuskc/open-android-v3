@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 
 import com.citrus.mobile.Callback;
+import com.citrus.mobile.Config;
 import com.citrus.mobile.OauthToken;
 import com.citrus.mobile.RESTclient;
 import com.citrus.mobile.User;
@@ -22,7 +23,6 @@ import java.io.IOException;
  */
 @Deprecated
 public class Prepaid {
-//
     private String emailId, base_url;
 
     private Callback callback;

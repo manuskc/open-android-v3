@@ -18,9 +18,14 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import com.citrus.card.Card;
+import com.citrus.cash.LoadMoney;
 import com.citrus.cash.Prepaid;
 import com.citrus.mobile.Callback;
+import com.citrus.mobile.Config;
+import com.citrus.mobile.Errorclass;
 import com.citrus.mobile.OauthToken;
+import com.citrus.mobile.RESTclient;
+import com.citrus.mobile.User;
 import com.citrus.netbank.Bank;
 import com.citrus.netbank.BankPaymentType;
 import com.citrus.retrofit.RetroFitClient;
@@ -32,13 +37,13 @@ import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.NetbankingOption;
 import com.citrus.sdk.payment.PaymentOption;
-import com.citrus.sdk.payment.PaymentType;
 import com.citrus.sdk.response.CitrusError;
 import com.orhanobut.logger.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit.RetrofitError;
@@ -66,7 +71,7 @@ public class PG {
 
     private JSONObject customParameters = null;
 
-    private PaymentType.LoadMoney loadmoney;
+    private LoadMoney loadmoney;
 
     ArrayList<String> mylist = new ArrayList<String>();
     private DynamicPricingResponse dynamicPricingResponse = null;
@@ -101,7 +106,7 @@ public class PG {
         this.dynamicPricingResponse = dynamicPricingResponse;
     }
 
-    public PG(PaymentOption paymentOption, PaymentType.LoadMoney load, UserDetails userDetails) {
+    public PG(PaymentOption paymentOption, LoadMoney load, UserDetails userDetails) {
         if (paymentOption != null) {
             if (paymentOption instanceof CardOption) {
                 CardOption cardOption = (CardOption) paymentOption;
@@ -164,7 +169,7 @@ public class PG {
         this.customParameters = bill.getCustomParameters();
     }
 
-    public PG(Card card, PaymentType.LoadMoney load, UserDetails userDetails) {
+    public PG(Card card, LoadMoney load, UserDetails userDetails) {
         this.card = card;
         this.userDetails = userDetails;
 
@@ -178,7 +183,7 @@ public class PG {
 
     }
 
-    public PG(Bank bank, PaymentType.LoadMoney load, UserDetails userDetails) {
+    public PG(Bank bank, LoadMoney load, UserDetails userDetails) {
         this.bank = bank;
         this.userDetails = userDetails;
         this.loadmoney = load;
@@ -217,7 +222,7 @@ public class PG {
             }
         };
 
-        getPrepaidBill(loadmoney.getAmount().getValue(), loadmoney.getUrl());
+        getPrepaidBill(loadmoney.getAmount(), loadmoney.getReturl());
     }
 
     private void formprepaidBill(String prepaid_bill) {
@@ -473,66 +478,61 @@ public class PG {
 
         @Override
         protected JSONObject doInBackground(String... params) {
-            return null;
-        }
-//
-//        @Override
-//        protected JSONObject doInBackground(String... params) {
-//            headers = new JSONObject();
-//            OauthToken token = new OauthToken(activity, User.PREPAID_TOKEN);
-//            try {
-//                JSONObject tokenjson = token.getuserToken();
-//                String access_token = null;
-//                if (tokenjson != null) {
-//                    access_token = tokenjson.getString("access_token");
-//                } else {
-//                    return Errorclass.addErrorFlag("Prepaid Oauth Token is missing - did you sign in the user?", null);
-//                }
-//
-//                try {
-//                    headers.put("Authorization", "Bearer " + access_token);
-//                    headers.put("Content-Type", "application/x-www-form-urlencoded");
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//                return Errorclass.addErrorFlag("Prepaid Oauth Token is missing - did you sign in the user?", null);
-//            }
-//
-//            try {
-//                this.params = new JSONObject();
-//                this.params.put("amount", params[0]);
-//                this.params.put("currency", "INR");
-//                this.params.put("redirect", params[1]);
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//                return Errorclass.addErrorFlag("Prepaid bill parameters are missing", null);
-//            }
-//
-//            RESTclient restClient = new RESTclient("prepaidbill", Config.getEnv(), this.params, headers);
-//
-//            try {
-//                response = restClient.makePostrequest();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return Errorclass.addErrorFlag("IO Exception - check if internet is working!", null);
-//            }
+            headers = new JSONObject();
+            OauthToken token = new OauthToken(activity, User.PREPAID_TOKEN);
+            try {
+                JSONObject tokenjson = token.getuserToken();
+                String access_token = null;
+                if (tokenjson != null) {
+                    access_token = tokenjson.getString("access_token");
+                } else {
+                    return Errorclass.addErrorFlag("Prepaid Oauth Token is missing - did you sign in the user?", null);
+                }
 
-//            return response;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(JSONObject result) {
-//            super.onPostExecute(result);
-//
-//            if (result.has("error")) {
-//                internal.onTaskexecuted("", result.toString());
-//            } else {
-//                internal.onTaskexecuted(result.toString(), "");
-//            }
-//        }
+                try {
+                    headers.put("Authorization", "Bearer " + access_token);
+                    headers.put("Content-Type", "application/x-www-form-urlencoded");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return Errorclass.addErrorFlag("Prepaid Oauth Token is missing - did you sign in the user?", null);
+            }
+
+            try {
+                this.params = new JSONObject();
+                this.params.put("amount", params[0]);
+                this.params.put("currency", "INR");
+                this.params.put("redirect", params[1]);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return Errorclass.addErrorFlag("Prepaid bill parameters are missing", null);
+            }
+
+            RESTclient restClient = new RESTclient("prepaidbill", Config.getEnv(), this.params, headers);
+
+            try {
+                response = restClient.makePostrequest();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return Errorclass.addErrorFlag("IO Exception - check if internet is working!", null);
+            }
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            super.onPostExecute(result);
+
+            if (result.has("error")) {
+                internal.onTaskexecuted("", result.toString());
+            } else {
+                internal.onTaskexecuted(result.toString(), "");
+            }
+        }
     }
 
 
