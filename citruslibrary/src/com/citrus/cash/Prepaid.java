@@ -23,6 +23,10 @@ import java.io.IOException;
  */
 @Deprecated
 public class Prepaid {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 35687d4912da57a013af0f3a1aeb7f083d1bcb36
     private String emailId, base_url;
 
     private Callback callback;
@@ -33,8 +37,12 @@ public class Prepaid {
 
     public Prepaid(String email) {
         this.emailId = email;
+<<<<<<< HEAD
 
 //        this.base_url = Config.getEnv();
+=======
+        this.base_url = Config.getEnv();
+>>>>>>> 35687d4912da57a013af0f3a1aeb7f083d1bcb36
     }
 
     public String getUserEmail() {
@@ -78,9 +86,12 @@ public class Prepaid {
                 return "Bind Token not found - Bind user first";
             }
 
+<<<<<<< HEAD
             // Added this to get the url from CitrusClient instead of Config
             base_url = CitrusClient.getInstance(activity).getEnvironment().getBaseUrl();
 
+=======
+>>>>>>> 35687d4912da57a013af0f3a1aeb7f083d1bcb36
             RESTclient resTclient = new RESTclient("newbalance", base_url, null, headers);
 
 

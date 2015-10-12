@@ -192,7 +192,6 @@ public class CitrusClient {
             Config.setVanity(vanity);
             Config.setEnv(environment.toString().toLowerCase());
 
-
             Logger.d("VANITY*** " + vanity);
             EventsManager.logInitSDKEvents(mContext);
 
