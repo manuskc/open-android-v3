@@ -18,6 +18,7 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
 import com.citrus.cash.PersistentConfig;
+import com.citrus.sdk.CitrusClient;
 import com.citrus.sdk.Constants;
 
 import org.json.JSONException;
@@ -184,37 +185,20 @@ public class User {
         CookieManager.getInstance().setCookie(Config.getBaseURL(), Constants.CITRUS_PREPAID_COOKIE);//remove App Cookie
 
         new PersistentConfig(activity).clearToken(); //clear stored cookies
-<<<<<<< HEAD
-=======
 
         OauthToken token = new OauthToken(activity, "");
         return token.clearToken(); //clear stored oauth token
 
-    }
->>>>>>> 35687d4912da57a013af0f3a1aeb7f083d1bcb36
-
-        OauthToken token = new OauthToken(activity, "");
-        return token.clearToken(); //clear stored oauth token
 
     }
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 35687d4912da57a013af0f3a1aeb7f083d1bcb36
     public final static boolean logoutUser(Context context) {
 
         CookieSyncManager.createInstance(context);
 
-<<<<<<< HEAD
         CitrusClient citrusClient = CitrusClient.getInstance(context);
 
         String setCookie = CookieManager.getInstance().getCookie(citrusClient.getEnvironment().getBaseUrl());
         CookieManager.getInstance().setCookie(citrusClient.getEnvironment().getBaseUrl(), Constants.CITRUS_PREPAID_COOKIE);//remove App Cookie
-=======
-        String setCookie = CookieManager.getInstance().getCookie(Config.getBaseURL());
-        CookieManager.getInstance().setCookie(Config.getBaseURL(), Constants.CITRUS_PREPAID_COOKIE);//remove App Cookie
->>>>>>> 35687d4912da57a013af0f3a1aeb7f083d1bcb36
 
         new PersistentConfig(context).clearToken(); //clear stored cookies
 

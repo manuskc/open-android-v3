@@ -118,13 +118,8 @@ public class CitrusActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_citrus);
 
-<<<<<<< HEAD
         dynamicPricingResponse = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE);
 //        mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
-=======
-        mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
-        dynamicPricingResponse = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE);
->>>>>>> 35687d4912da57a013af0f3a1aeb7f083d1bcb36
         mCitrusConfig = CitrusConfig.getInstance();
         mActivityTitle = mCitrusConfig.getCitrusActivityTitle();
 

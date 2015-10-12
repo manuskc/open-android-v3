@@ -15,14 +15,9 @@ public interface Constants {
     String SIGNIN_ID = "test-signin";
     String SIGNIN_SECRET = "52f7e15efd4208cf5345dd554443fd99";
     String VANITY = "testing";
-<<<<<<< HEAD
     Environment environment = Environment.SANDBOX;
 
     boolean enableLogging = false;
-=======
-    Environment environment = Environment.PRODUCTION;
-    boolean enableLogging = true;
->>>>>>> 35687d4912da57a013af0f3a1aeb7f083d1bcb36
 
     String colorPrimaryDark = "#E7961D";
     String colorPrimary = "#F9A323";
