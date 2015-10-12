@@ -132,7 +132,10 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
             resourceId = context.getResources().getIdentifier("city_union_bank", "drawable", context.getPackageName());
         } else if ("Canara Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("canara_bank", "drawable", context.getPackageName());
-        } else if ("DEUTSCHE Bank".equalsIgnoreCase(bankName)) {
+        }else if ("Cosmos Bank".equalsIgnoreCase(bankName)) {
+            resourceId = context.getResources().getIdentifier("cosmos_bank", "drawable", context.getPackageName());
+        }
+        else if ("DEUTSCHE Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("deutsche_bank", "drawable", context.getPackageName());
         } else if ("Federal Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("federal_bank", "drawable", context.getPackageName());
@@ -146,13 +149,20 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
             resourceId = context.getResources().getIdentifier("indian_bank", "drawable", context.getPackageName());
         } else if ("Indian Overseas Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("indian_overseas_bank", "drawable", context.getPackageName());
-        } else if ("Induslnd Bank".equalsIgnoreCase(bankName)) {
+        } else if ("IndusInd Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("indusind_bank", "drawable", context.getPackageName());
         } else if ("ING VYSA".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("ing_vysa", "drawable", context.getPackageName());
         } else if ("Kotak Mahindra Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("kotak_mahindra_bank", "drawable", context.getPackageName());
-        } else if ("Karnataka Bank".equalsIgnoreCase(bankName)) {
+        }
+        else if ("ING Vysya Bank (now Kotak)".equalsIgnoreCase(bankName)) {
+            resourceId = context.getResources().getIdentifier("kotak_mahindra_bank", "drawable", context.getPackageName());
+        }
+        else if ("Karur Vysya Bank".equalsIgnoreCase(bankName)) {
+            resourceId = context.getResources().getIdentifier("karur_vyasa_bank", "drawable", context.getPackageName());
+        }
+        else if ("Karnataka Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("karnataka_bank", "drawable", context.getPackageName());
         } else if ("PNB Retail".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("pnb_retail", "drawable", context.getPackageName());
