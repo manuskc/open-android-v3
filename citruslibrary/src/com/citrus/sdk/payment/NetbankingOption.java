@@ -116,7 +116,11 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
         int resourceId = 0;
         if ("AXIS Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("axis_bank", "drawable", context.getPackageName());
-        } else if ("Bank of India".equalsIgnoreCase(bankName)) {
+        }
+        else if ("Andhra Bank".equalsIgnoreCase(bankName)) {
+            resourceId = context.getResources().getIdentifier("andhra_bank", "drawable", context.getPackageName());
+        }
+        else if ("Bank of India".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("bank_of_india", "drawable", context.getPackageName());
         } else if ("Bank Of Baroda".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("bank_of_baroda", "drawable", context.getPackageName());
@@ -124,15 +128,20 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
             resourceId = context.getResources().getIdentifier("bank_of_maharashtra", "drawable", context.getPackageName());
         } else if ("Central Bank of India".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("central_bank_of_india", "drawable", context.getPackageName());
-        } else if ("CITI Bank".equalsIgnoreCase(bankName)) {
+        } else if ("Citibank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("citi_bank", "drawable", context.getPackageName());
-        } else if ("Corporation Bank".equalsIgnoreCase(bankName)) {
+        }
+        else if ("CITI Bank".equalsIgnoreCase(bankName)) {
+            resourceId = context.getResources().getIdentifier("citi_bank", "drawable", context.getPackageName());
+        }
+        else if ("Corporation Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("corporation_bank", "drawable", context.getPackageName());
         } else if ("City Union Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("city_union_bank", "drawable", context.getPackageName());
         } else if ("Canara Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("canara_bank", "drawable", context.getPackageName());
-        }else if ("Cosmos Bank".equalsIgnoreCase(bankName)) {
+        }
+        else if ("Cosmos Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("cosmos_bank", "drawable", context.getPackageName());
         }
         else if ("DEUTSCHE Bank".equalsIgnoreCase(bankName)) {
@@ -165,9 +174,9 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
         else if ("Karnataka Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("karnataka_bank", "drawable", context.getPackageName());
         } else if ("PNB Retail".equalsIgnoreCase(bankName)) {
-            resourceId = context.getResources().getIdentifier("pnb_retail", "drawable", context.getPackageName());
+            resourceId = context.getResources().getIdentifier("punjab_national", "drawable", context.getPackageName());
         } else if ("PNB Corporate".equalsIgnoreCase(bankName)) {
-            resourceId = context.getResources().getIdentifier("pnb_corporate", "drawable", context.getPackageName());
+            resourceId = context.getResources().getIdentifier("punjab_national", "drawable", context.getPackageName());
         } else if ("SBI Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("sbi_bank", "drawable", context.getPackageName());
         } else if ("State Bank of Bikaner and Jaipur".equalsIgnoreCase(bankName)) {
@@ -180,9 +189,20 @@ public final class NetbankingOption extends PaymentOption implements Parcelable 
             resourceId = context.getResources().getIdentifier("state_bank_of_travancore", "drawable", context.getPackageName());
         } else if ("State Bank of Patiala".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("state_bank_of_patiala", "drawable", context.getPackageName());
-        } else if ("Union Bank Of India".equalsIgnoreCase(bankName)) {
+        }
+        else if ("South Indian Bank".equalsIgnoreCase(bankName)) {
+            resourceId = context.getResources().getIdentifier("south_indian_bank", "drawable", context.getPackageName());
+        }
+        else if ("Union Bank Of India".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("union_bank_of_india", "drawable", context.getPackageName());
-        } else if ("United Bank of India".equalsIgnoreCase(bankName)) {
+        }
+        else if ("Union Bank".equalsIgnoreCase(bankName)) {
+            resourceId = context.getResources().getIdentifier("union_bank", "drawable", context.getPackageName());
+        }
+        else if ("UCO Bank".equalsIgnoreCase(bankName)) {
+            resourceId = context.getResources().getIdentifier("uco", "drawable", context.getPackageName());
+        }
+        else if ("United Bank of India".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("united_bank_of_india", "drawable", context.getPackageName());
         } else if ("Vijaya Bank".equalsIgnoreCase(bankName)) {
             resourceId = context.getResources().getIdentifier("vijaya_bank", "drawable", context.getPackageName());
