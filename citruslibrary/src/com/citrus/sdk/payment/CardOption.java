@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import com.citrus.card.DateUtils;
 import com.citrus.sdk.classes.Month;
 import com.citrus.sdk.classes.PGHealth;
+import com.citrus.sdk.classes.Utils;
 import com.citrus.sdk.classes.Year;
 
 import org.json.JSONArray;
@@ -49,7 +50,7 @@ public abstract class CardOption extends PaymentOption {
      */
     CardOption(String cardHolderName, String cardNumber, String cardCVV, Month cardExpiryMonth, Year cardExpiryYear) {
         if (!android.text.TextUtils.isEmpty(cardHolderName)) {
-            this.cardHolderName = cardHolderName;
+            this.cardHolderName = Utils.removeSpecialCharacters(cardHolderName);
         } else {
             this.cardHolderName = "Card Holder Name";
         }
@@ -96,7 +97,7 @@ public abstract class CardOption extends PaymentOption {
     CardOption(String name, String token, String cardHolderName, String cardNumber, CardScheme cardScheme, String cardExpiry) {
         super(name, token);
         if (!android.text.TextUtils.isEmpty(cardHolderName)) {
-            this.cardHolderName = cardHolderName;
+            this.cardHolderName = Utils.removeSpecialCharacters(cardHolderName);
         } else {
             this.cardHolderName = "Card Holder Name";
         }
@@ -124,7 +125,7 @@ public abstract class CardOption extends PaymentOption {
     }
 
     public String getNickName() {
-        return nickName;
+        return getName();
     }
 
     public String getCardExpiryYear() {
@@ -158,7 +159,7 @@ public abstract class CardOption extends PaymentOption {
     }
 
     public void setNickName(String nickName) {
-        this.nickName = nickName;
+        this.nickName = Utils.removeSpecialCharacters(nickName);
     }
 
     @Override
@@ -384,6 +385,10 @@ public abstract class CardOption extends PaymentOption {
 
             JSONObject option = new JSONObject();
             option.put("owner", cardHolderName);
+            // Set nickname
+            if (!TextUtils.isEmpty(nickName)) {
+                option.put("name", nickName);
+            }
             option.put("number", cardNumber);
             option.put("scheme", cardScheme.toString());
             option.put("expiryDate", cardExpiry);

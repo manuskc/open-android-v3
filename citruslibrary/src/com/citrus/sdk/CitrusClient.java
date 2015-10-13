@@ -124,6 +124,8 @@ public class CitrusClient {
     private BroadcastReceiver paymentEventReceiver = null;
     private Map<String, PGHealth> pgHealthMap = null;
     private boolean initialized = false;
+    private CitrusUser citrusUser = null;
+    private boolean showDummyScreen = false;
 
     private CitrusClient(Context context) {
         mContext = context;
@@ -138,6 +140,14 @@ public class CitrusClient {
         } else {
             CitrusLogger.disableLogs();
         }
+    }
+
+    public void showDummyScreenWhilePayments(boolean showDummyScreen) {
+        this.showDummyScreen = showDummyScreen;
+    }
+
+    public boolean isShowDummyScreenWhilePayments() {
+        return showDummyScreen;
     }
 
     public void init(@NonNull String signupId, @NonNull String signupSecret, @NonNull String signinId, @NonNull String signinSecret, @NonNull String vanity, @NonNull Environment environment) {
@@ -186,6 +196,22 @@ public class CitrusClient {
 
             getMerchantPaymentOptions(null);
 
+            // Fetch profile info if the user is signed in.
+            // If not signed in the information will be fetched once the user signs in.
+            isUserSignedIn(new Callback<Boolean>() {
+                @Override
+                public void success(Boolean signedIn) {
+                    if (signedIn) {
+                        getProfileInfo(null);
+                    }
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    // Not required to handle the error.
+                }
+            });
+
             initialized = true;
         }
     }
@@ -215,7 +241,7 @@ public class CitrusClient {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Logger.e("Error while fetching the health");
+                        // Logger.e("Error while fetching the health");
                     }
                 }
         );
@@ -526,6 +552,9 @@ public class CitrusClient {
                         public void success(AccessToken accessToken, Response response) {
                             Logger.d("SIGN IN RESPONSE " + accessToken.getJSON().toString());
                             if (accessToken.getHeaderAccessToken() != null) {
+                                // Fetch the profileInfo
+                                getProfileInfo(null);
+
                                 OauthToken token = new OauthToken(mContext, PREPAID_TOKEN);
                                 token.createToken(accessToken.getJSON());///grant Type password token saved
                                 token.saveUserDetails(emailId, null);//save email ID of the signed in user
@@ -611,6 +640,9 @@ public class CitrusClient {
                     retrofitClient.getSignInWithPasswordResponse(signinId, signinSecret, mobileNo, password, OAuth2GrantType.password.toString(), new retrofit.Callback<AccessToken>() {
                         @Override
                         public void success(AccessToken accessToken, Response response) {
+                            // Fetch the profileInfo
+                            getProfileInfo(null);
+
                             Logger.d("SIGN IN RESPONSE " + accessToken.getJSON().toString());
                             if (accessToken.getHeaderAccessToken() != null) {
                                 final OauthToken token = new OauthToken(mContext, PREPAID_TOKEN);
@@ -951,6 +983,40 @@ public class CitrusClient {
                     sendError(callback, error);
                 }
             });
+        }
+    }
+
+    /**
+     * @param callback
+     */
+    public synchronized void getProfileInfo(final Callback<CitrusUser> callback) {
+        if (validate()) {
+            if (citrusUser == null) {
+                getPrepaidToken(new Callback<AccessToken>() {
+                    @Override
+                    public void success(AccessToken accessToken) {
+                        retrofitClient.getProfileInfo(accessToken.getHeaderAccessToken(), new retrofit.Callback<JsonElement>() {
+                            @Override
+                            public void success(JsonElement jsonElement, Response response) {
+                                String profileInfo = jsonElement.toString();
+                                citrusUser = CitrusUser.fromJSON(profileInfo);
+
+                                sendResponse(callback, citrusUser);
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                sendError(callback, error);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void error(CitrusError error) {
+                        sendError(callback, error);
+                    }
+                });
+            }
         }
     }
 
@@ -1615,6 +1681,10 @@ public class CitrusClient {
 
     public synchronized String getUserMobileNumber() {
         return oauthToken.getMobileNumber();
+    }
+
+    public synchronized CitrusUser getCitrusUser() {
+        return citrusUser;
     }
 
     // Public APIS end

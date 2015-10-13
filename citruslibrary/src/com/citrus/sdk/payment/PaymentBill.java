@@ -20,6 +20,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.citrus.sdk.classes.Amount;
+import com.citrus.sdk.classes.CitrusException;
 import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
@@ -37,6 +38,9 @@ public class PaymentBill implements Parcelable {
     @SerializedName("amount")
     private
     Amount amount = null;
+    @SerializedName("alteredAmount")
+    private
+    Amount alteredAmount = null;
     @SerializedName("requestSignature")
     private
     String requestSignature = null;
@@ -56,18 +60,53 @@ public class PaymentBill implements Parcelable {
     private
     Map<String, String> customParametersMap = null;
 
+
+    /**
+     * @param amount
+     * @param requestSignature
+     * @param merchantTransactionId
+     * @param merchantAccessKey
+     * @param returnUrl
+     * @throws CitrusException <p> when either transaction amount or transactionId or merchantAccessKey or requestSignature or returnUrl is null or transactionId is more than 24 characters. </p>
+     */
     public PaymentBill(Amount amount, String requestSignature, String merchantTransactionId,
-                       String merchantAccessKey, String returnUrl) {
+                       String merchantAccessKey, String returnUrl) throws CitrusException {
         this.amount = amount;
         this.requestSignature = requestSignature;
         this.merchantTransactionId = merchantTransactionId;
         this.merchantAccessKey = merchantAccessKey;
         this.returnUrl = returnUrl;
+
+        if (amount == null || TextUtils.isEmpty(amount.getValue())) {
+            throw new CitrusException("Transaction Amount should not be null or empty.");
+        } else if (!(amount.getValueAsDouble() > 0)) {
+            throw new CitrusException("Transaction Amount should be greater than 0");
+        } else if (TextUtils.isEmpty(merchantTransactionId)) {
+            throw new CitrusException("merchantTransactionId should not be null or empty.");
+        } else if (merchantTransactionId.length() > 24) {
+            throw new CitrusException("merchantTransactionId should not be more than 24 characters.");
+        } else if (TextUtils.isEmpty(returnUrl)) {
+            throw new CitrusException("Return Url should not be null or empty.");
+        } else if (TextUtils.isEmpty(requestSignature)) {
+            throw new CitrusException("requestSignature should not be null or empty.");
+        } else if (TextUtils.isEmpty(merchantAccessKey)) {
+            throw new CitrusException("merchantAccessKey should not be null or empty.");
+        }
     }
 
+    /**
+     * @param amount
+     * @param requestSignature
+     * @param merchantTransactionId
+     * @param merchantAccessKey
+     * @param returnUrl
+     * @param notifyUrl
+     * @param customParametersMap
+     * @throws CitrusException <p> when either transaction amount or transactionId or merchantAccessKey or requestSignature or returnUrl is null or transactionId is more than 24 characters. </p>
+     */
     public PaymentBill(Amount amount, String requestSignature, String merchantTransactionId,
                        String merchantAccessKey, String returnUrl, String notifyUrl,
-                       Map<String, String> customParametersMap) {
+                       Map<String, String> customParametersMap) throws CitrusException {
         this.amount = amount;
         this.requestSignature = requestSignature;
         this.merchantTransactionId = merchantTransactionId;
@@ -75,6 +114,22 @@ public class PaymentBill implements Parcelable {
         this.returnUrl = returnUrl;
         this.notifyUrl = notifyUrl;
         this.customParametersMap = customParametersMap;
+
+        if (amount == null || TextUtils.isEmpty(amount.getValue())) {
+            throw new CitrusException("Transaction Amount should not be null or empty.");
+        } else if (!(amount.getValueAsDouble() > 0)) {
+            throw new CitrusException("Transaction Amount should be greater than 0");
+        } else if (TextUtils.isEmpty(merchantTransactionId)) {
+            throw new CitrusException("merchantTransactionId should not be null or empty.");
+        } else if (merchantTransactionId.length() > 24) {
+            throw new CitrusException("merchantTransactionId should not be more than 24 characters.");
+        } else if (TextUtils.isEmpty(returnUrl)) {
+            throw new CitrusException("Return Url should not be null or empty.");
+        } else if (TextUtils.isEmpty(requestSignature)) {
+            throw new CitrusException("requestSignature should not be null or empty.");
+        } else if (TextUtils.isEmpty(merchantAccessKey)) {
+            throw new CitrusException("merchantAccessKey should not be null or empty.");
+        }
     }
 
     private PaymentBill() {
@@ -151,8 +206,12 @@ public class PaymentBill implements Parcelable {
             if (amount != null && requestSignature != null && returnUrl != null
                     && merchantAccessKey != null && merchantTransactionId != null) {
 
-                paymentBill = new PaymentBill(amount, requestSignature, merchantTransactionId,
-                        merchantAccessKey, returnUrl, notifyUrl, customParametersMap);
+                try {
+                    paymentBill = new PaymentBill(amount, requestSignature, merchantTransactionId,
+                            merchantAccessKey, returnUrl, notifyUrl, customParametersMap);
+                } catch (CitrusException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -204,6 +263,18 @@ public class PaymentBill implements Parcelable {
         return billObject;
     }
 
+    @Override
+    public String toString() {
+        return "PaymentBill{" +
+                "amount=" + amount +
+                ", requestSignature='" + requestSignature + '\'' +
+                ", merchantTransactionId='" + merchantTransactionId + '\'' +
+                ", merchantAccessKey='" + merchantAccessKey + '\'' +
+                ", returnUrl='" + returnUrl + '\'' +
+                ", notifyUrl='" + notifyUrl + '\'' +
+                ", customParametersMap=" + customParametersMap +
+                '}';
+    }
 
     @Override
     public int describeContents() {
@@ -221,7 +292,7 @@ public class PaymentBill implements Parcelable {
         dest.writeMap(this.customParametersMap);
     }
 
-    private PaymentBill(Parcel in) {
+    protected PaymentBill(Parcel in) {
         this.amount = in.readParcelable(Amount.class.getClassLoader());
         this.requestSignature = in.readString();
         this.merchantTransactionId = in.readString();
@@ -231,7 +302,7 @@ public class PaymentBill implements Parcelable {
         this.customParametersMap = in.readHashMap(String.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<PaymentBill> CREATOR = new Parcelable.Creator<PaymentBill>() {
+    public static final Creator<PaymentBill> CREATOR = new Creator<PaymentBill>() {
         public PaymentBill createFromParcel(Parcel source) {
             return new PaymentBill(source);
         }
@@ -240,17 +311,4 @@ public class PaymentBill implements Parcelable {
             return new PaymentBill[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "PaymentBill{" +
-                "amount=" + amount +
-                ", requestSignature='" + requestSignature + '\'' +
-                ", merchantTxnId='" + merchantTransactionId + '\'' +
-                ", merchantAccessKey='" + merchantAccessKey + '\'' +
-                ", returnUrl='" + returnUrl + '\'' +
-                ", notifyUrl='" + notifyUrl + '\'' +
-                ", customParametersMap=" + customParametersMap +
-                '}';
-    }
 }

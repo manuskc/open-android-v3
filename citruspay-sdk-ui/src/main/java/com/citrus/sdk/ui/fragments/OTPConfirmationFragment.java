@@ -88,9 +88,6 @@ public class OTPConfirmationFragment extends Fragment {
         mobileOtpContainer.setVisibility(View.GONE);
         primaryText.setText(userEmail);
         secondaryText.setText(userMobile);
-        if (userEmail.equals("developercitrus@mailinator.com")) {
-            citrusPassEt.setText("Citrus@123");
-        }
         root.findViewById(R.id.button_sign_in).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

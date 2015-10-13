@@ -61,6 +61,7 @@ import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusConfig;
 import com.citrus.sdk.classes.Utils;
 import com.citrus.sdk.payment.CardOption;
+import com.citrus.sdk.payment.NetbankingOption;
 import com.citrus.sdk.payment.PaymentBill;
 import com.citrus.sdk.payment.PaymentOption;
 import com.citrus.sdk.payment.PaymentType;
@@ -141,10 +142,44 @@ public class CitrusActivity extends ActionBarActivity {
             throw new IllegalArgumentException("Payment Type Should not be null");
         }
 
+        String emailId = mCitrusClient.getUserEmailId();
+        String mobileNo = mCitrusClient.getUserMobileNumber();
+
+        // Set the citrusUser.
+        // Use details from the token in case of load money
+        if (mPaymentType instanceof PaymentType.LoadMoney || mPaymentType instanceof PaymentType.CitrusCash) {
+            if (mCitrusClient.getCitrusUser() != null) {
+                mCitrusUser = mCitrusClient.getCitrusUser();
+            } else if (mCitrusUser == null) {
+                mCitrusUser = new CitrusUser(emailId, mobileNo);
+            }
+        } else {
+            // In case of PG Payment, send the merchant values.
+            if (mCitrusUser == null) {
+                mCitrusUser = new CitrusUser(emailId, mobileNo);
+            }
+        }
+
         mActionBar = getSupportActionBar();
         mProgressDialog = new ProgressDialog(mContext);
         mPaymentWebview = (WebView) findViewById(R.id.payment_webview);
+//        mPaymentWebview.getSettings().setUseWideViewPort(true);
+//        mPaymentWebview.getSettings().setLoadWithOverviewMode(true);
+        mPaymentWebview.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
         mPaymentWebview.getSettings().setJavaScriptEnabled(true);
+
+        // This is done to have horizontal scroll for 2 banks whose page renders improperly in the webview
+        if (mPaymentOption instanceof NetbankingOption) {
+
+            if ("CID032".equalsIgnoreCase(((NetbankingOption) mPaymentOption).getBankCID()) // Karur Vyasa
+                    || "CID051".equalsIgnoreCase(((NetbankingOption) mPaymentOption).getBankCID())) // Canara Bank
+            {
+                mPaymentWebview.getSettings().setUseWideViewPort(true);
+            }
+
+        }
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             /*
             This setting is required to enable redirection of urls from https to http or vice-versa.
@@ -155,7 +190,6 @@ public class CitrusActivity extends ActionBarActivity {
         mPaymentWebview.addJavascriptInterface(new JsInterface(), Constants.JS_INTERFACE_NAME);
 
         mPaymentWebview.setWebChromeClient(new WebChromeClient());
-
         mPaymentWebview.setWebViewClient(new CitrusWebClient());
 
         // Make the webview visible only in case of PGPayment or LoadMoney.
@@ -167,7 +201,10 @@ public class CitrusActivity extends ActionBarActivity {
             mActivityTitle = "Processing...";
         }
 
-        setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
+        if (mCitrusClient.isShowDummyScreenWhilePayments()) {
+            setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
+        }
+
         setActionBarBackground();
 
         /*
@@ -189,6 +226,8 @@ public class CitrusActivity extends ActionBarActivity {
                     proceedToPayment(PaymentBill.toJSONObject(mPaymentType.getPaymentBill()).toString());
                 }
             } else {
+                // Show text while processing payments
+                mPaymentWebview.loadData("<html><body><h5><center>Processing, please wait...<center></h5></body></html>", "text/html", "utf-8");
                 fetchBill();
             }
         } else { //load cash does not requires Bill Generator
@@ -257,14 +296,6 @@ public class CitrusActivity extends ActionBarActivity {
 
         if (mPaymentType instanceof PaymentType.CitrusCash) { //pay using citrus cash
 
-            // analyticsPaymentType = com.citrus.analytics.PaymentType.CITRUS_CASH;
-            String emailId = mCitrusClient.getUserEmailId();
-            String mobileNo = mCitrusClient.getUserMobileNumber();
-
-            if (mCitrusUser == null) {
-                mCitrusUser = new CitrusUser(emailId, mobileNo);
-            }
-
             UserDetails userDetails = new UserDetails(CitrusUser.toJSONObject(mCitrusUser));
             Prepaid prepaid = new Prepaid(userDetails.getEmail());
             Bill bill = new Bill(billJSON);
@@ -281,7 +312,6 @@ public class CitrusActivity extends ActionBarActivity {
                 }
             });
         } else {
-
             showDialog("Redirecting to Citrus. Please wait...", false);
             UserDetails userDetails = new UserDetails(CitrusUser.toJSONObject(mCitrusUser));
             Bill bill = new Bill(billJSON);
@@ -521,7 +551,7 @@ public class CitrusActivity extends ActionBarActivity {
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
 //            super.onReceivedSslError(view, handler, error);
-            handler.proceed();
+            handler.cancel();
         }
     }
 
