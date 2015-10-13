@@ -7,7 +7,11 @@ import com.citrus.sdk.Environment;
  */
 public interface Constants {
 
-    String BILL_URL = "https://salty-plateau-1529.herokuapp.com/billGenerator.sandbox.php";
+    String BILL_URL = "https://salty-plateau-1529.herokuapp.com/billGenerator.production.php";
+//    String BILL_URL = "http://orders-dev.nitefoodie.com/redirectToBill";
+//String BILL_URL = "http://orders-dev.nitefoodie.com/redirectToBill";
+
+
     String RETURN_URL_LOAD_MONEY = "https://salty-plateau-1529.herokuapp.com/redirectUrlLoadCash.php";
 
     String SIGNUP_ID = "test-signup";
@@ -15,7 +19,7 @@ public interface Constants {
     String SIGNIN_ID = "test-signin";
     String SIGNIN_SECRET = "52f7e15efd4208cf5345dd554443fd99";
     String VANITY = "testing";
-    Environment environment = Environment.SANDBOX;
+    Environment environment = Environment.PRODUCTION;
 
     boolean enableLogging = false;
 
