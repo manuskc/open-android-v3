@@ -13,7 +13,6 @@ import android.widget.EditText;
 import com.citrus.sdk.Callback;
 import com.citrus.sdk.CitrusClient;
 import com.citrus.sdk.classes.Amount;
-import com.citrus.sdk.classes.StructResponsePOJO;
 import com.citrus.sdk.response.CitrusError;
 import com.citrus.sdk.ui.events.BalanceUpdateEvent;
 import com.orhanobut.logger.Logger;
@@ -137,6 +136,6 @@ public class Utils {
 
     {
         int amt=Integer.parseInt(stringWithdrawAmount);
-        return amt <= 5000;
+        return amt <= 5000 && amt >= 1;
     }
 }
