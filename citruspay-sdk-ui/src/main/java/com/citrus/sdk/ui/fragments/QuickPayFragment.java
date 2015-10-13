@@ -539,7 +539,14 @@ public class QuickPayFragment extends Fragment {
                     TextView cardType = (TextView) savedCardItem.findViewById(R.id.card_type);
                     ImageView cardImage = (ImageView) savedCardItem.findViewById(R.id.card_image);
                     cardNumber.setText(Utils.getFormattedCardNumber(cardOption.getCardNumber()));
-                    cardType.setText(cardOption.getCardType() + " - " + cardOption.getCardScheme());
+                    if(cardOption.getCardScheme()==null){
+                        cardType.setText(cardOption.getCardType());
+                    }
+                    else
+                    {
+                        cardType.setText(cardOption.getCardType() + " - " + cardOption.getCardScheme());
+                    }
+
                     Drawable cardDrawable = cardOption.getOptionIcon(getActivity());
                     if (cardDrawable != null) {
                         Logger.d(TAG + " Card image found");
@@ -652,7 +659,14 @@ public class QuickPayFragment extends Fragment {
         }
         addMoneyNPay.setVisibility(View.VISIBLE);
         walletAmount = amount.getValue();
-        walletBalance.setText(getString(R.string.rs) + " " + walletAmount);
+        if(walletAmount.equals(".0")){
+            walletAmount="0";
+            walletBalance.setText(getString(R.string.rs) + " " + walletAmount);
+        }
+        else{
+            walletBalance.setText(getString(R.string.rs) + " " + walletAmount.replace(".0",""));
+        }
+
         walletContainer.setVisibility(View.VISIBLE);
         setupWalletText.setVisibility(View.GONE);
     }

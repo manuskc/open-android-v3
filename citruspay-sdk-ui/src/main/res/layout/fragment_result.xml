@@ -1,204 +1,213 @@
-<RelativeLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/citrus_app_background_color"
     android:padding="@dimen/dp8"
-    android:clickable="true"
+    android:fillViewport="true"
+    android:clipToPadding="false"
+    android:background="@color/citrus_app_background_color"
     tools:context="com.citrus.sdk.ui.fragments.ResultFragment">
-
-    <LinearLayout
-        android:id="@+id/result_container"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/citrus_card_background"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:padding="@dimen/dp16">
-        <ImageView
-            android:id="@+id/payment_result_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp10"
-            android:src="@drawable/img_checkmark_green"/>
-        <com.citrus.sdk.ui.widgets.CitrusTextView
-            android:id="@+id/payment_result_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:gravity="center"
-            android:text="@string/text_payment_success"
-            android:textColor="@color/citrus_text_color"
-            android:textSize="24sp"
-            app:textStyle="@integer/ROBOTO_MEDIUM"/>
-        <com.citrus.sdk.ui.widgets.CitrusTextView
-            android:id="@+id/withdrawal_result_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="@string/text_withdraw_success_message"
-            android:visibility="gone"
-            android:gravity="center"
-            android:textColor="@color/citrus_text_color"
-            android:textSize="16sp"
-            app:textStyle="@integer/ROBOTO_MEDIUM"/>
+        android:layout_height="match_parent"
+        android:clickable="true">
 
-        <TextView
-            android:id="@+id/transaction_id_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/text_transaction_id"
-            android:textColor="@color/citrus_label_color"/>
-
-        <TextView
-            android:id="@+id/transaction_id_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="12324321321"
-            android:textColor="@color/citrus_text_color"/>
-
-        <TextView
-            android:id="@+id/amount_paid_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/text_amount_paid"
-            android:textColor="@color/citrus_label_color"/>
-
-        <TextView
-            android:id="@+id/amount_paid_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1200.00"
-            android:textColor="@color/citrus_text_color"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/payment_failure_actions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp16"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:layout_below="@id/result_container"
-        >
-        <Button
-            android:id="@+id/retry_transaction_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selector_button_secondary"
-            android:padding="@dimen/dp16"
-            android:gravity="left|start"
-            android:text="@string/text_retry_transaction"
-            android:textAllCaps="true"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="14sp"/>
-        <Button
-            android:id="@+id/dismiss_transaction_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selector_button_secondary"
-            android:padding="@dimen/dp16"
-            android:gravity="left|start"
-            android:layout_marginTop="5dp"
-            android:text="@string/text_dismiss"
-            android:textAllCaps="true"
-            android:textColor="@color/citrus_text_color"
-            android:textSize="14sp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/no_wallet_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        >
-        <com.citrus.sdk.ui.widgets.CitrusTextView
-            android:id="@+id/wallet_promotion_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_wallet_small"
-            android:drawablePadding="16dp"
-            android:text="@string/text_wallet_switch"
-            android:textColor="@color/citrus_text_color"
-            android:textSize="16sp"
-            app:textStyle="@integer/OPENSANS_REGULAR"/>
-        <Button
-            android:id="@+id/setup_wallet_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp20"
-            android:background="@drawable/selector_button_secondary"
-            android:paddingBottom="@dimen/dp10"
-            android:paddingLeft="@dimen/dp16"
-            android:paddingRight="@dimen/dp16"
-            android:paddingTop="11dp"
-            android:text="@string/text_setup_your_wallet_now"
-            android:textAllCaps="true"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="12sp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="@dimen/dp30"
-            android:text="@string/thanks_text"
-            android:textColor="@color/citrus_text_color"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/wallet_available_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:visibility="gone">
         <LinearLayout
-            android:id="@+id/go_to_wallet_button"
-            android:layout_width="wrap_content"
+            android:id="@+id/result_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/selector_button_secondary"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingBottom="12dp"
-            android:paddingLeft="21dp"
-            android:paddingRight="21dp"
-            android:paddingTop="12dp"
-            >
+            android:background="@drawable/citrus_card_background"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="@dimen/dp16">
             <ImageView
-                android:layout_width="30dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/ic_wallet_small"/>
+                android:id="@+id/payment_result_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp10"
+                android:src="@drawable/img_checkmark_green"/>
+            <com.citrus.sdk.ui.widgets.CitrusTextView
+                android:id="@+id/payment_result_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:text="@string/text_payment_success"
+                android:textColor="@color/citrus_text_color"
+                android:textSize="24sp"
+                app:textStyle="@integer/ROBOTO_MEDIUM"/>
+            <com.citrus.sdk.ui.widgets.CitrusTextView
+                android:id="@+id/withdrawal_result_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/text_withdraw_success_message"
+                android:visibility="gone"
+                android:gravity="center"
+                android:textColor="@color/citrus_text_color"
+                android:textSize="16sp"
+                app:textStyle="@integer/ROBOTO_MEDIUM"/>
+
+            <TextView
+                android:id="@+id/transaction_id_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/text_transaction_id"
+                android:textColor="@color/citrus_label_color"/>
+
+            <TextView
+                android:id="@+id/transaction_id_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12324321321"
+                android:textColor="@color/citrus_text_color"/>
+
+            <TextView
+                android:id="@+id/amount_paid_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/text_amount_paid"
+                android:textColor="@color/citrus_label_color"/>
+
+            <TextView
+                android:id="@+id/amount_paid_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1200.00"
+                android:textColor="@color/citrus_text_color"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/payment_failure_actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp16"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_below="@id/result_container"
+            >
+            <Button
+                android:id="@+id/retry_transaction_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_button_secondary"
+                android:padding="@dimen/dp16"
+                android:gravity="left|start"
+                android:text="@string/text_retry_transaction"
+                android:textAllCaps="true"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="14sp"/>
+            <Button
+                android:id="@+id/dismiss_transaction_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_button_secondary"
+                android:padding="@dimen/dp16"
+                android:gravity="left|start"
+                android:layout_marginTop="5dp"
+                android:text="@string/text_dismiss"
+                android:textAllCaps="true"
+                android:textColor="@color/citrus_text_color"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/no_wallet_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal|bottom"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:layout_below="@id/result_container"
+            android:paddingRight="16dp"
+            android:paddingTop="@dimen/dp10"
+            >
+            <com.citrus.sdk.ui.widgets.CitrusTextView
+                android:id="@+id/wallet_promotion_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_wallet_small"
+                android:drawablePadding="16dp"
+                android:text="@string/text_wallet_signin"
+                android:textColor="@color/citrus_text_color"
+                android:textSize="16sp"
+                app:textStyle="@integer/OPENSANS_REGULAR"/>
+            <Button
+                android:id="@+id/setup_wallet_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp20"
+                android:background="@drawable/selector_button_secondary"
+                android:paddingBottom="@dimen/dp10"
+                android:paddingLeft="@dimen/dp16"
+                android:paddingRight="@dimen/dp16"
+                android:paddingTop="11dp"
+                android:text="@string/text_setup_your_wallet_now"
+                android:textAllCaps="true"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="12sp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/text_go_to_my_wallet"
-                android:textColor="?attr/colorPrimary"/>
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="@dimen/dp30"
+                android:text="@string/thanks_text"
+                android:textColor="@color/citrus_text_color"/>
+
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/wallet_available_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="@dimen/dp30"
-            android:text="@string/thanks_text"
-            android:textColor="@color/citrus_text_color"/>
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:visibility="gone">
+            <LinearLayout
+                android:id="@+id/go_to_wallet_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_button_secondary"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="12dp"
+                android:paddingLeft="21dp"
+                android:paddingRight="21dp"
+                android:paddingTop="12dp"
+                >
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/ic_wallet_small"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_go_to_my_wallet"
+                    android:textColor="?attr/colorPrimary"/>
+            </LinearLayout>
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="@dimen/dp30"
+                android:text="@string/thanks_text"
+                android:textColor="@color/citrus_text_color"/>
 
-</RelativeLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+</ScrollView>
+

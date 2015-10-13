@@ -1,5 +1,6 @@
 package com.citrus.sdk.ui.events;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 import com.citrus.sdk.classes.CashoutInfo;
@@ -25,4 +26,5 @@ public interface FragmentCallbacks {
     public String getAmount();
     public int getStyle();
     public void toggleAmountVisibility(int visibility);
+    public void displayTerms(Activity activity);
 }

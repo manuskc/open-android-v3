@@ -1,5 +1,8 @@
 package com.citrus.sdk.ui.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -59,7 +62,12 @@ public class GetCVVFragment extends Fragment {
     boolean loadMoneyComplete = false;
     ResultModel loadMoneyModel;
     int cvvLength = 3;
+    private TextView enterCVVLabel;
+    ObjectAnimator animChecboxContainer;
+    ObjectAnimator animCVVLabel;
 
+
+    AnimatorSet set;
     public static GetCVVFragment newInstance(CardOption cardOption,String transactionType,String addMoneyAmount) {
         GetCVVFragment fragment = new GetCVVFragment();
         Bundle args = new Bundle();
@@ -81,12 +89,13 @@ public class GetCVVFragment extends Fragment {
             cardOption = getArguments().getParcelable(ARG_CARDOPTION);
             transactionType = getArguments().getString(UIConstants.ARG_TRANSACTION_TYPE);
             addMoneyAmount = getArguments().getString(UIConstants.ARG_ADD_MONEY_AMOUNT);
+
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
         // Inflate the parentLayout for this fragment
 
         mListener.toggleAmountVisibility(View.GONE);
@@ -97,8 +106,9 @@ public class GetCVVFragment extends Fragment {
         textCardNumber = (TextView) layout.findViewById(R.id.card_number_text);
         cardHolderName = (TextView)layout.findViewById(R.id.text_card_holder_name);
         cardExpiry = (TextView)layout.findViewById(R.id.text_card_validity);
-        checkView = (ImageView)layout.findViewById(R.id.check_view);
+        checkView = (ImageView)layout.findViewById(R.id.go_button);
         cvvEditText.requestFocus();
+        enterCVVLabel =(TextView)layout.findViewById(R.id.cvv_lable);
         checkboxContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,9 +135,59 @@ public class GetCVVFragment extends Fragment {
             checkboxContainer.addView(radioButton);
         }
 
+
+
+
+        checkboxContainer.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+
+                enterCVVLabel.setVisibility(View.VISIBLE);
+                if (cvvEditText.length() == cvvLength && animChecboxContainer != null) {
+
+                    animChecboxContainer.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+
+                            checkView.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            cvvEditText.setText("");
+                            Utils.openKeyboard(cvvEditText);
+                            for (int i = 0; i < cvvLength; i++) {
+                                ((RadioButton) checkboxContainer.getChildAt(i))
+                                        .setChecked(false);
+                            }
+                            animator.removeListener(this);
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+                    animChecboxContainer.reverse();
+                    animCVVLabel.reverse();
+
+                } else {
+                    Utils.openKeyboard(cvvEditText);
+                }
+            }
+
+        });
+
         textCardNumber.setText(Utils.getFormattedCardNumber(cardOption.getCardNumber()));
         cardHolderName.setText(Utils.CapitalizeWords(cardOption.getCardHolderName()));
-        cardExpiry.setText(cardOption.getCardExpiryMonth()+"/"+cardOption.getCardExpiryYear());
+        cardExpiry.setText(cardOption.getCardExpiryMonth() + "/" + cardOption.getCardExpiryYear());
         cvvEditText.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
 
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
@@ -154,9 +214,9 @@ public class GetCVVFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int textCount = s.length();
 
-                if(textCount >cvvLength){
-                    cvvEditText.setText(s.subSequence(0,cvvLength));
-                }else {
+                if (textCount > cvvLength) {
+                    cvvEditText.setText(s.subSequence(0, cvvLength));
+                } else {
                     Logger.d(TAG + " new =  " + textCount);
                     Logger.d(TAG + " previous =  " + previousTextCount);
                     if (textCount <= cvvLength) {
@@ -169,10 +229,9 @@ public class GetCVVFragment extends Fragment {
                         }
                     }
 
-                    if (textCount == cvvLength) {
-                        checkView.setVisibility(View.VISIBLE);
-                    } else {
-                        checkView.setVisibility(View.GONE);
+                    if (textCount == cvvLength && previousTextCount != cvvLength) {
+                        checkboxContainer.bringToFront();
+                        startAnimation();
                     }
                     previousTextCount = textCount;
                 }
@@ -198,7 +257,7 @@ public class GetCVVFragment extends Fragment {
                             addMoneyToWallet();
                         }
                         closeKeyBoard();
-                    }else{
+                    } else {
 
                         Logger.d("addMoney failed if condition ");
                     }
@@ -207,11 +266,34 @@ public class GetCVVFragment extends Fragment {
             }
         });
         Utils.openKeyboard(cvvEditText);
+
+
+        checkView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (cvvEditText.getText().toString().trim().length() == cvvLength) {
+                    cardOption.setCardCVV(cvvEditText.getText().toString().trim());
+                    if (transactionType.equals(UIConstants.TRANS_QUICK_PAY)) {
+                        mListener.makeCardPayment(cardOption);
+                    } else {
+                        addMoneyToWallet();
+                    }
+                    closeKeyBoard();
+                }else{
+
+                    Logger.d("addMoney failed if condition ");
+                }
+
+            }
+        });
         return layout;
     }
 
+
+
+
     private void addMoneyToWallet() {
-        Logger.d("addMoneyToWallet "+transactionType);
+        Logger.d("addMoneyToWallet " + transactionType);
         Amount walletLoadAmount = new Amount(addMoneyAmount);
         try {
             CitrusClient.getInstance(getActivity()).loadMoney(new PaymentType.LoadMoney(walletLoadAmount, CitrusFlowManager.returnURL, cardOption), new Callback<TransactionResponse>() {
@@ -260,6 +342,7 @@ public class GetCVVFragment extends Fragment {
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(cvvEditText.getWindowToken(), 0);
     }
+
 //    public interface FragmentCallbacks {
 //        public void onFragmentInteraction(Uri uri);
 //    }
@@ -316,4 +399,44 @@ public class GetCVVFragment extends Fragment {
             }
         }
     }
+
+    public void startAnimation(){
+        animChecboxContainer = ObjectAnimator.ofFloat(checkboxContainer, "translationX", 0, enterCVVLabel.getX() - checkboxContainer.getX());
+        animCVVLabel = ObjectAnimator.ofFloat(enterCVVLabel, "alpha", 0);
+
+        set = new AnimatorSet();
+        set.playTogether(animChecboxContainer, animCVVLabel);
+        set.setDuration(500);
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+                Logger.i("onAnimationStart");
+                checkView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+
+                Logger.i("onAnimationEnd");
+                closeKeyBoard();
+                set.removeListener(this);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+                Logger.i("onAnimationCancel");
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+                Logger.i("onAnimationRepeat");
+            }
+        });
+        set.start();
+
+    }
+
+
 }

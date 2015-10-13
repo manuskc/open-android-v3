@@ -82,28 +82,28 @@
                 android:textSize="17sp"
                 />
         </android.support.design.widget.TextInputLayout>
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|bottom"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/terms_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="70dp"
+                android:layout_marginBottom="@dimen/dp16"
+                android:src="@drawable/img_terms"/>
             <com.citrus.sdk.ui.widgets.CitrusButton
                 android:id="@+id/button_get_started"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp56"
-                android:layout_alignParentBottom="true"
                 android:padding="@dimen/dp15"
                 android:text="@string/text_get_started"
                 android:textColor="@color/citrus_white"
                 android:textSize="14sp"
                 app:textStyle="@integer/OPENSANS_REGULAR"/>
-            <ImageView
-                android:id="@+id/terms_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/button_get_started"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="@dimen/dp16"
-                android:src="@drawable/img_terms"/>
-        </RelativeLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

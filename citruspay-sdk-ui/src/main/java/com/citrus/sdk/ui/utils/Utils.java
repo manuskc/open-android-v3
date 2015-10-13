@@ -13,9 +13,13 @@ import android.widget.EditText;
 import com.citrus.sdk.Callback;
 import com.citrus.sdk.CitrusClient;
 import com.citrus.sdk.classes.Amount;
+import com.citrus.sdk.classes.StructResponsePOJO;
 import com.citrus.sdk.response.CitrusError;
 import com.citrus.sdk.ui.events.BalanceUpdateEvent;
 import com.orhanobut.logger.Logger;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.greenrobot.event.EventBus;
 
@@ -24,6 +28,10 @@ import de.greenrobot.event.EventBus;
  */
 public class Utils {
     public static final String TAG = "Utils$";
+    private static final String EMAIL_PATTERN =
+            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    private static final String IFSC_PATTERN="[A-Z|a-z]{4}[0][\\d|\\w]{6}$";
 
     public static String getFormattedCardNumber(String cardNumber) {
         if (!TextUtils.isEmpty(cardNumber) && cardNumber.length() == 16) {
@@ -44,6 +52,14 @@ public class Utils {
             return android.util.Patterns.EMAIL_ADDRESS.matcher(strEmail).matches();
         }
     }
+
+    public static boolean validate(String email) {
+        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+
+    }
+
 
     public static void getBalance(Context context) {
 
@@ -108,5 +124,19 @@ public class Utils {
     }
     public static String formatPhoneNumber(String phoneNumber){
         return  phoneNumber.replace(UIConstants.PHONE_NUM_PREFIX_UI_FORMATTED,"");
+    }
+
+    public static boolean isValidIFSC(String stringIFSC)
+    {
+        Pattern pattern = Pattern.compile(IFSC_PATTERN);
+        Matcher matcher = pattern.matcher(stringIFSC);
+        return matcher.matches();
+    }
+
+    public static boolean isValidWithdrawAmount(String stringWithdrawAmount)
+
+    {
+        int amt=Integer.parseInt(stringWithdrawAmount);
+        return amt <= 5000;
     }
 }

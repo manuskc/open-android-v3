@@ -18,7 +18,7 @@
             android:id="@+id/card_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/visa"/>
+            android:src="@drawable/ic_card_default"/>
         <com.citrus.sdk.ui.widgets.CitrusTextView
             android:id="@+id/card_number"
             android:layout_width="0dp"

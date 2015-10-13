@@ -1,10 +1,13 @@
 package com.citrus.sdk.ui.activities;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +22,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.PaymentOption;
@@ -102,12 +107,13 @@ public abstract class BaseActivity extends AppCompatActivity  implements Fragmen
         anim.setDuration(300);                              // for 300 ms
 
         final float[] hsv  = new float[3];                  // transition color
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(){
-            @Override public void onAnimationUpdate(ValueAnimator animation) {
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
                 // Transition along each axis of HSV (hue, saturation, value)
-                hsv[0] = from[0] + (to[0] - from[0])*animation.getAnimatedFraction();
-                hsv[1] = from[1] + (to[1] - from[1])*animation.getAnimatedFraction();
-                hsv[2] = from[2] + (to[2] - from[2])*animation.getAnimatedFraction();
+                hsv[0] = from[0] + (to[0] - from[0]) * animation.getAnimatedFraction();
+                hsv[1] = from[1] + (to[1] - from[1]) * animation.getAnimatedFraction();
+                hsv[2] = from[2] + (to[2] - from[2]) * animation.getAnimatedFraction();
 
                 toolbar.setBackgroundColor(Color.HSVToColor(hsv));
             }
@@ -216,20 +222,46 @@ public abstract class BaseActivity extends AppCompatActivity  implements Fragmen
             case UIConstants.SCREEN_ADD_MONEY:
                 setSpannableTitle(getString(R.string.text_my_wallet));
                 toggleAmountVisibility(View.GONE);
+                showWalletBalance("");
                 break;
             case UIConstants.SCREEN_WALLET:
                 setSpannableTitle(getString(R.string.text_my_wallet));
+                toggleAmountVisibility(View.GONE);
                 break;
             case UIConstants.SCREEN_MONEY_OPTION:
                 setSpannableTitle(getString(R.string.text_add_money));
                 break;
             case UIConstants.SCREEN_CARD_LIST:
                 setSpannableTitle(getString(R.string.text_manage_cards));
+                toggleAmountVisibility(View.GONE);
                 break;
             case UIConstants.SCREEN_ACCOUNT_DETAILS:
                 setSpannableTitle(getString(R.string.text_withdraw_money));
+                toggleAmountVisibility(View.GONE);
                 break;
 
+        }
+    }
+
+    public void displayTerms(Activity activity)
+    {
+        String uri= Uri.parse(UIConstants.TERMS_COND_URL).toString();
+        Dialog dialog = new Dialog(activity,R.style.Base_Theme_AppCompat_Dialog);
+        dialog.setContentView(R.layout.layout_terms_condition);
+        WebView wb = (WebView) dialog.findViewById(R.id.webview);
+        wb.getSettings().setJavaScriptEnabled(true);
+        wb.loadUrl(uri);
+        wb.setWebViewClient(new newWebViewClient());
+        dialog.setCancelable(true);
+        dialog.show();
+    }
+
+    private class newWebViewClient extends WebViewClient {
+        @Override
+
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
         }
     }
 
@@ -244,7 +276,9 @@ public abstract class BaseActivity extends AppCompatActivity  implements Fragmen
     public void onBackPressed() {
         Logger.d(TAG+" onBackPressed");
         if (screenStack.size()>1) {
-            if (screenStack.get(screenStack.size()-1) == UIConstants.SCREEN_RESULT && !retry && screenStack.get(0) == UIConstants.QUICK_PAY_FLOW){
+            Logger.d(TAG+"stack top = "+screenStack.get(screenStack.size()-1));
+            Logger.d(TAG+"stack bot = "+screenStack.get(0));
+            if (screenStack.get(screenStack.size()-1) == UIConstants.SCREEN_RESULT && !retry && screenStack.get(0) == UIConstants.SCREEN_SHOPPING){
                 finish();
             }else{
                 super.onBackPressed();

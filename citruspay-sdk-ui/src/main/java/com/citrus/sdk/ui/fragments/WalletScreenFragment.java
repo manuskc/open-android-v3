@@ -3,6 +3,7 @@ package com.citrus.sdk.ui.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import com.citrus.sdk.ui.events.BalanceUpdateEvent;
 import com.citrus.sdk.ui.events.FragmentCallbacks;
 import com.citrus.sdk.ui.utils.UIConstants;
 import com.citrus.sdk.ui.utils.Utils;
+
+import java.text.DecimalFormat;
 
 import de.greenrobot.event.EventBus;
 
@@ -131,7 +134,18 @@ public class WalletScreenFragment extends Fragment {
     }
 
     private void showWalletDetails(Amount amount) {
+
         walletAmount = amount.getValue();
-        walletTextView.setText(getString(R.string.rs) + " " + amount.getValue());
+        if(walletAmount.equals(".0"))
+        {
+            walletAmount="0";
+            Log.d(TAG,walletAmount);
+            walletTextView.setText(getString(R.string.rs) + " " + walletAmount);
+        }
+        else{
+            Log.d(TAG,walletAmount);
+            walletTextView.setText(getString(R.string.rs) + " " + walletAmount.replace(".0", ""));
+        }
+
     }
 }

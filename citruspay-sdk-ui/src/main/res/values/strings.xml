@@ -16,7 +16,7 @@
     <string name="text_credit_debit_promotion">PAY WITH A CREDIT OR DEBIT CARD</string>
     <string name="text_net_banking">Net Banking</string>
     <string name="text_other_banks">SELECT OTHER BANKS</string>
-    <string name="text_shopmatic_tores">Shopmatic Stores</string>
+    <string name="text_shopmatic_tores">Quickpay</string>
     <string name="text_your_balance">Your Balance</string>
     <string name="rs">\u20B9</string>
     <string name="text_my_cards">My Cards</string>
@@ -41,7 +41,7 @@
     <string name="text_error_message">Error Message</string>
     <string name="text_wallet_switch">
         <![CDATA[You can try our wallet for cashless payments & get exciting offers]]></string>
-    <string name="thanks_text">Thank you for using citrus checkout.</string>
+    <string name="thanks_text">Thank you for using Citrus checkout.</string>
     <string name="text_go_to_my_wallet">GO TO MY WALLET</string>
     <string name="text_retry_transaction">Retry Transaction</string>
     <string name="text_dismiss">Dismiss</string>
@@ -66,7 +66,7 @@
     <string name="text_get_started">GET STARTED</string>
     <string name="text_my_wallet">My Wallet</string>
     <string name="ok_got_it">OK, GOT IT!</string>
-    <string name="text_login_dialog_title">Already have a citrus account?</string>
+    <string name="text_login_dialog_title">Already have a Citrus account?</string>
     <string name="text_login_dialog_message">If you already have a Citrus account, then enter
         registered details&#8230;
     </string>
@@ -111,6 +111,7 @@
     <string name="text_show_more">Show More</string>
     <string name="text_show_less">Show Less</string>
     <string name="valid_amount_msg">Please enter valid amount</string>
+    <string name="excess_amount_msg">Amount cannot be greater than INR.5000</string>
     <string name="less_amount_msg">Amount to be added to wallet must not be less than the pay
         amount.
     </string>
@@ -172,5 +173,5 @@
         login to your email account and reset your password.
     </string>
     <string name="text_password_reset_title">Password Reset</string>
-
+    <string name="err_mismatch_password">Username Password mismatch</string>
 </resources>

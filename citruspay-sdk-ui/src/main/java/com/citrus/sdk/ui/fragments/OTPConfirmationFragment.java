@@ -9,8 +9,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +97,27 @@ public class OTPConfirmationFragment extends Fragment {
                 signin();
             }
         });
+
+
+        citrusPassEt.setLongClickable(false);
+        citrusPassEt.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            public void onDestroyActionMode(ActionMode mode) {
+            }
+
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                return false;
+            }
+        });
+
 
         citrusPassEt.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -196,6 +220,7 @@ public class OTPConfirmationFragment extends Fragment {
                         @Override
                         public void error(CitrusError error) {
                             mListener.dismissProgressDialog();
+                            Snackbar.make(root, getString(R.string.err_mismatch_password), Snackbar.LENGTH_SHORT).show();
                         }
                     });
         }

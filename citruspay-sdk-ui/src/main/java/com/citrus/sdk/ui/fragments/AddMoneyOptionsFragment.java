@@ -283,7 +283,13 @@ public class AddMoneyOptionsFragment extends Fragment {
                     TextView cardType = (TextView) savedCardItem.findViewById(R.id.card_type);
                     ImageView cardImage = (ImageView) savedCardItem.findViewById(R.id.card_image);
                     cardNumber.setText(Utils.getFormattedCardNumber(cardOption.getCardNumber()));
-                    cardType.setText(cardOption.getCardType() + " - " + cardOption.getCardScheme());
+                    if(cardOption.getCardScheme()==null){
+                        cardType.setText(cardOption.getCardType());
+                    }
+                    else
+                    {
+                        cardType.setText(cardOption.getCardType() + " - " + cardOption.getCardScheme());
+                    }
                     Drawable cardDrawable = cardOption.getOptionIcon(getActivity());
                     if (cardDrawable != null) {
                         Logger.d(TAG + " Card image found");

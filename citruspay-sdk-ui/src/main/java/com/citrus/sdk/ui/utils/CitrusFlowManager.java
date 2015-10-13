@@ -42,7 +42,12 @@ public class CitrusFlowManager {
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(context, context.getString(R.string.err_email_empty), Toast
                     .LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(phone) || phone.length() != 10) {
+        }
+        else if(!Utils.isValidEmail(email)){
+            Toast.makeText(context, "Email address is not valid", Toast
+                    .LENGTH_SHORT).show();
+        }
+        else if (TextUtils.isEmpty(phone) || phone.length() != 10) {
             Toast.makeText(context, context.getString(R.string.err_phone_empty), Toast
                     .LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(amount) || Double.parseDouble(amount) == 0) {
@@ -74,7 +79,12 @@ public class CitrusFlowManager {
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(context, context.getString(R.string.err_email_empty), Toast
                     .LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(phone) || phone.length() != 10) {
+        }
+        else if(!Utils.isValidEmail(email)){
+            Toast.makeText(context, "Email address is not valid", Toast
+                    .LENGTH_SHORT).show();
+        }
+        else if (TextUtils.isEmpty(phone) || phone.length() != 10) {
             Toast.makeText(context, context.getString(R.string.err_phone_empty), Toast
                     .LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(amount) || Double.parseDouble(amount) == 0) {
@@ -89,6 +99,7 @@ public class CitrusFlowManager {
             intent.putExtra(KEY_AMOUNT, amount);
             context.startActivity(intent);
         }
+
     }
 
     /**
@@ -102,7 +113,12 @@ public class CitrusFlowManager {
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(context, context.getString(R.string.err_email_empty), Toast
                     .LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(phone) || phone.length() != 10) {
+        }
+        else if(!Utils.isValidEmail(email)){
+            Toast.makeText(context, "Email address is not valid", Toast
+                    .LENGTH_SHORT).show();
+        }
+        else if (TextUtils.isEmpty(phone) || phone.length() != 10) {
             Toast.makeText(context, context.getString(R.string.err_phone_empty), Toast
                     .LENGTH_SHORT).show();
         } else if (context != null) {
@@ -165,14 +181,14 @@ public class CitrusFlowManager {
             @Override
             public void success(CitrusResponse citrusResponse) {
                 mProgressDialog.dismiss();
-                Toast.makeText(context, "User is successfully logger out", Toast.LENGTH_SHORT)
+                Toast.makeText(context, "User is successfully logged out", Toast.LENGTH_SHORT)
                         .show();
             }
 
             @Override
             public void error(CitrusError error) {
                 mProgressDialog.dismiss();
-                Toast.makeText(context, "User could not be logger out", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "User could not be logged out", Toast.LENGTH_SHORT).show();
             }
         });
     }
