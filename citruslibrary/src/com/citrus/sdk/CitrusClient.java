@@ -65,7 +65,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.orhanobut.logger.Logger;
 
-import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,6 +72,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -791,7 +791,7 @@ public class CitrusClient {
             public void failure(RetrofitError error) {
                 EventBus.getDefault().unregister(CitrusClient.this);
 
-                if (error.getResponse().getStatus() == HttpStatus.SC_INTERNAL_SERVER_ERROR) { //Invalid Password for COOKIE
+                if (error.getResponse().getStatus() == HttpURLConnection.HTTP_INTERNAL_ERROR) { //Invalid Password for COOKIE
                     CitrusError citrusError = new CitrusError(ResponseMessages.ERROR_MESSAGE_INVALID_PASSWORD, Status.FAILED);
                     callback.error(citrusError);
                 } else {
