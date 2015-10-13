@@ -21,7 +21,7 @@ public interface Constants {
     String VANITY = "testing";
     Environment environment = Environment.PRODUCTION;
 
-    boolean enableLogging = false;
+    boolean enableLogging = true;
 
     String colorPrimaryDark = "#E7961D";
     String colorPrimary = "#F9A323";
