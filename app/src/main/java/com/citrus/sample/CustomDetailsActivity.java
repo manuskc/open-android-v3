@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.citrus.sdk.ui.utils.CitrusFlowManager;
+import com.citrus.sdk.ui.utils.Utils;
 
 public class CustomDetailsActivity extends BaseActivity {
 
@@ -53,7 +54,12 @@ public class CustomDetailsActivity extends BaseActivity {
             Toast.makeText(this,"Email Empty",Toast.LENGTH_SHORT).show();
             emailEt.requestFocus();
             return false;
-        }else{
+        }else if(!Utils.validate(email)) {
+            Toast.makeText(this,"Email address is not valid",Toast.LENGTH_SHORT).show();
+            emailEt.requestFocus();
+            return false;
+        }
+        else{
 
             return true;
         }

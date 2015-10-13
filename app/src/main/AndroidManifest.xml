@@ -21,14 +21,16 @@
             android:name="com.citrus.sdk.ui.activities.CitrusUIActivity"
             android:label="@string/title_activity_citrus"
             android:theme="@style/CitrusAppTheme"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
         </activity>
 
         <activity
             android:name="com.citrus.sdk.ui.activities.LoginFlowActivity"
             android:label="@string/title_activity_login_flow"
             android:theme="@style/CitrusAppTheme"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".CustomDetailsActivity"
