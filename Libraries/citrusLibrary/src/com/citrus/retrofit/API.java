@@ -27,6 +27,7 @@ import com.google.gson.JsonElement;
 
 import retrofit.Callback;
 import retrofit.ResponseCallback;
+import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.Field;
@@ -63,6 +64,10 @@ public interface API {
     @POST("/oauth/token")
     void getSignInWithPasswordResponse(@Field("client_id") String client_ID, @Field("client_secret") String client_Secret, @Field("username") String username, @Field("password") String password, @Field("grant_type") String grantType, Callback<AccessToken> accessTokenPOJOCallback);
 
+    // Get signin with password token, mostly used for pay using citrus cash.
+    @GET("/service/v2/token/validate")
+    void getPrepaymentTokenValidity(@Header("Authorization") String signupToken, @Header("OwnerAuthorization") String prepaymentToken, @Header("OwnerScope") String scope, Callback<JsonElement> callback);
+
     //getCookie
     @FormUrlEncoded
     @POST("/prepaid/pg/_verify")
@@ -96,6 +101,11 @@ public interface API {
     @POST("/service/v2/identity/passwords/reset")
     void resetPassword(@Header("Authorization") String header, @Field("username") String username, Callback<JsonElement> callback);
 
+    //Pay Using Citrus Cash API call
+    @Headers("Content-Type: application/json")
+    @POST("/service/v2/prepayment/prepaid_pay")
+    void payUsingCitrusCash(@Header("Authorization") String header, @Body TypedString body, Callback<JsonElement> callback);
+
     //return url from citrus
     @Headers("Content-Type: application/json")
     @POST("/service/moto/authorize/struct/payment")
@@ -126,10 +136,19 @@ public interface API {
     @GET("/{path}")
     void getBill(@Path(value = "path", encode = false) String path, Callback<JsonElement> callback);
 
+    // Dynamic Pricing
+    @Headers("Content-Type: application/json")
+    @POST("/dynamicpricing/performDynamicPricing")
+    void performDynamicPricing(@Body TypedString body, Callback<JsonElement> callback);
+
     // Save payment option
     @Headers("Content-Type: application/json")
     @PUT("/service/v2/profile/me/payment")
     void savePaymentOption(@Header("Authorization") String header, @Body TypedString body, Callback<CitrusResponse> callback);
+
+    // The response is 200 Ok.
+    @DELETE("/service/v2/profile/me/deletepayment/{token}")
+    void deletePaymentOption(@Header("Authorization") String header, @Path("token") String token, Callback<Response> callback);
 
     // Send money by email
     @FormUrlEncoded
@@ -147,7 +166,7 @@ public interface API {
 
     //get merchant name by vanity  --     //"utility/nagama/merchantName";
     @GET("/utility/{path}/merchantName")
-    void getMerchantName(@Path("path") String path, Callback<String> callback);
+    void getMerchantName(@Path("path") String path, Callback<Response> callback);
 
     // Cashout APIs.
     @FormUrlEncoded
@@ -172,10 +191,6 @@ public interface API {
     @POST("/utility/{path}/pgHealth")
     void getPGHealthForAllBanks(@Path("path") String path, @Field("bankCode") String bankCode, Callback<JsonElement> callback);
 
-    // The response is 204 No Content.
-    @DELETE("/service/v2/profile/me/payment/{last4Digits}:{scheme}")
-    void deleteCard(@Header("Authorization") String header, @Path("last4Digits") String last4Digits, @Path("scheme") String scheme, Callback<CitrusResponse> callback);
-
-    @DELETE("/service/v2/profile/me/payment/{bankToken}")
-    void deleteBank(@Header("Authorization") String header, @Path("bankToken") String bankToken, Callback<CitrusResponse> callback);
+    @GET("/service/um/profile/profileInfo")
+    void getProfileInfo(@Header("Authorization") String token, Callback<JsonElement> callback);
 }

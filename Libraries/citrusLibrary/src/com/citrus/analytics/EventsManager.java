@@ -3,7 +3,6 @@ package com.citrus.analytics;
 import android.content.Context;
 import android.os.Build;
 
-import com.citrus.mobile.Config;
 import com.citrus.retrofit.API;
 import com.citrus.retrofit.RetroFitClient;
 import com.citrus.sdk.CitrusClient;
@@ -11,11 +10,11 @@ import com.citrus.sdk.Constants;
 import com.citrus.sdk.Environment;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.orhanobut.logger.Logger;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 
 /**
  * Created by MANGESH KADAM on 4/24/2015.
@@ -38,12 +37,20 @@ public class EventsManager {
      * @param paymentType
      */
     public static void logWebViewEvents(Context context, WebViewEvents webViewEvents, PaymentType paymentType) {
+
+        CitrusClient citrusClient = CitrusClient.getInstance(context);
+
         ConnectionType connectionType = ConnectionManager.getNetworkClass(context);
         Tracker t = (CitrusLibraryApp.getTracker(
                 CitrusLibraryApp.TrackerName.APP_TRACKER, context));
-        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+
+        t.send(new HitBuilders.EventBuilder().setCategory(citrusClient.getVanity())
                 .setAction(WEBVIEW_EVENTS).setLabel(getWebViewEventLabel(webViewEvents, connectionType, paymentType))
                 .setValue(getWebViewEventValue(webViewEvents, connectionType, paymentType)).build());
+
+//        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+//                .setAction(WEBVIEW_EVENTS).setLabel(getWebViewEventLabel(webViewEvents, connectionType, paymentType))
+//                .setValue(getWebViewEventValue(webViewEvents, connectionType, paymentType)).build());
         //WebViewEvent*ConnectionType*PaymentType*BuildVersion
     }
 
@@ -55,49 +62,93 @@ public class EventsManager {
      * @param transactionType
      */
     public static void logPaymentEvents(Context context, PaymentType paymentType, TransactionType transactionType) {
+
+        CitrusClient citrusClient = CitrusClient.getInstance(context);
+
         ConnectionType connectionType = ConnectionManager.getNetworkClass(context);
+
         Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
-        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+        t.send(new HitBuilders.EventBuilder().setCategory(citrusClient.getVanity())
                 .setAction(PAYMENT_EVENTS).setLabel(getPaymentEventLabel(connectionType, paymentType, transactionType))
                 .setValue(getPaymentEventValue(connectionType, paymentType, transactionType)).build());
+
+//        Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
+//        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+//                .setAction(PAYMENT_EVENTS).setLabel(getPaymentEventLabel(connectionType, paymentType, transactionType))
+//                .setValue(getPaymentEventValue(connectionType, paymentType, transactionType)).build());
         //ConnectionType*PaymentType*BuildVersion*TransactionType
     }
 
     public static void logPaymentEvents(Context context, PaymentType paymentType, String failureReason) {
+
+        CitrusClient citrusClient = CitrusClient.getInstance(context);
+
         ConnectionType connectionType = ConnectionManager.getNetworkClass(context);
+
         Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
-        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+        t.send(new HitBuilders.EventBuilder().setCategory(citrusClient.getVanity())
                 .setAction(PAYMENT_EVENTS).setLabel(getPaymentEventLabel(connectionType, paymentType, failureReason))
                 .setValue(getPaymentEventValue(connectionType, paymentType, TransactionType.FAIL)).build());
+
+//        Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
+//        t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+//                .setAction(PAYMENT_EVENTS).setLabel(getPaymentEventLabel(connectionType, paymentType, failureReason))
+//                .setValue(getPaymentEventValue(connectionType, paymentType, TransactionType.FAIL)).build());
         //ConnectionType*PaymentType*BuildVersion*TransactionType
     }
 
     public static void logInitSDKEvents(final Context context) {
 
-        CitrusClient client = CitrusClient.getInstance(context);
+        final CitrusClient client = CitrusClient.getInstance(context);
         Environment environment = client.getEnvironment();
         if (environment != null) {
-            API citrusBaseURLClient = RetroFitClient.getCitrusBaseUrlClient(client.getEnvironment().getBaseCitrusUrl());
-            citrusBaseURLClient.getMerchantName(Config.getVanity(), new Callback<String>() {
-                @Override
-                public void success(String s, Response response) {
-                    Logger.d("Merchant Name is ****" + s);
+            API citrusBaseURLClient = RetroFitClient.getClientWithUrl(client.getEnvironment().getBaseCitrusUrl());
 
+            citrusBaseURLClient.getMerchantName(client.getVanity(), new Callback<Response>() {
+                @Override
+                public void success(Response s, Response response) {
+
+                    String merchantName = new String(((TypedByteArray) response.getBody()).getBytes());
                     Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
-                    t.send(new HitBuilders.EventBuilder().setCategory(s)
-                            .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
-                            .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
+                    t.send(new HitBuilders.EventBuilder().setCategory(merchantName)
+                            .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION_CODE))
+                            .setValue(Long.valueOf(Constants.SDK_VERSION_CODE)).build());
+
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
-                    Logger.d("Failed to get Merchant name *****");
+
                     Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
-                    t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
-                            .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
-                            .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
+                    t.send(new HitBuilders.EventBuilder().setCategory(client.getVanity())
+                            .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION_CODE))
+                            .setValue(Long.valueOf(Constants.SDK_VERSION_CODE)).build());
+
                 }
             });
+
+//            citrusBaseURLClient.getMerchantName(Config.getVanity(), new Callback<Response>() {
+//                @Override
+//                public void success(Response s, Response response) {
+//
+//                    String merchantName = new String(((TypedByteArray) response.getBody()).getBytes());
+//                    Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
+//                    t.send(new HitBuilders.EventBuilder().setCategory(merchantName)
+//                            .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
+//                            .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
+//
+//                }
+//
+//                @Override
+//                public void failure(RetrofitError error) {
+//
+//                    Tracker t = CitrusLibraryApp.getTracker(CitrusLibraryApp.TrackerName.APP_TRACKER, context);
+//                    t.send(new HitBuilders.EventBuilder().setCategory(Config.getVanity())
+//                            .setAction(INIT_EVENTS).setLabel(String.valueOf(Constants.SDK_VERSION))
+//                            .setValue(Long.valueOf(Constants.SDK_VERSION)).build());
+//
+//                }
+//            });
         }
     }
 
@@ -157,13 +208,13 @@ public class EventsManager {
         String eventLabel = null;
         if (paymentType == PaymentType.NET_BANKING) {
             if (paymentType.getName() != null) {
-                eventLabel = webViewEvents.toString() + "_" + connectionType.toString() + "_" + paymentType.toString() + "_" + paymentType.getName() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + String.valueOf(Constants.SDK_VERSION);
+                eventLabel = webViewEvents.toString() + "_" + connectionType.toString() + "_" + paymentType.toString() + "_" + paymentType.getName() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + Constants.SDK_VERSION_CODE;
             } else {
-                eventLabel = webViewEvents.toString() + "_" + connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + String.valueOf(Constants.SDK_VERSION);
+                eventLabel = webViewEvents.toString() + "_" + connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + Constants.SDK_VERSION_CODE;
             }
 
         } else {
-            eventLabel = webViewEvents.toString() + "_" + connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + String.valueOf(Constants.SDK_VERSION);
+            eventLabel = webViewEvents.toString() + "_" + connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + Constants.SDK_VERSION_CODE;
         }
 
         return eventLabel;
@@ -181,13 +232,13 @@ public class EventsManager {
         String eventLabel = null;
         if (paymentType == PaymentType.NET_BANKING) {
             if (paymentType.getName() != null) {
-                eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + paymentType.getName() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + transactionType.toString() + "_" + String.valueOf(Constants.SDK_VERSION);
+                eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + paymentType.getName() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + transactionType.toString() + "_" + Constants.SDK_VERSION_CODE;
             } else {
-                eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + transactionType.toString() + "_" + String.valueOf(Constants.SDK_VERSION);
+                eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + transactionType.toString() + "_" + Constants.SDK_VERSION_CODE;
             }
 
         } else {
-            eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + transactionType.toString() + "_" + String.valueOf(Constants.SDK_VERSION);
+            eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + transactionType.toString() + "_" + Constants.SDK_VERSION_CODE;
         }
         return eventLabel;
     }
@@ -204,13 +255,13 @@ public class EventsManager {
         String eventLabel = null;
         if (paymentType == PaymentType.NET_BANKING) {
             if (paymentType.getName() != null) {
-                eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + paymentType.getName() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + TransactionType.FAIL.toString() + "_" + failureReason + "_" + String.valueOf(Constants.SDK_VERSION);
+                eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + paymentType.getName() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + TransactionType.FAIL.toString() + "_" + failureReason + "_" + Constants.SDK_VERSION_CODE;
             } else {
-                eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + TransactionType.FAIL.toString() + "_" + failureReason + "_" + String.valueOf(Constants.SDK_VERSION);
+                eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + TransactionType.FAIL.toString() + "_" + failureReason + "_" + Constants.SDK_VERSION_CODE;
             }
 
         } else {
-            eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + TransactionType.FAIL.toString() + "_" + failureReason + "_" + String.valueOf(Constants.SDK_VERSION);
+            eventLabel = connectionType.toString() + "_" + paymentType.toString() + "_" + String.valueOf(Build.VERSION.SDK_INT) + "_" + TransactionType.FAIL.toString() + "_" + failureReason + "_" + Constants.SDK_VERSION_CODE;
         }
         return eventLabel;
     }

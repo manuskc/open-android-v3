@@ -25,7 +25,7 @@ import org.json.JSONObject;
  */
 public final class CitrusUser implements Parcelable {
 
-    public static final CitrusUser DEFAULT_USER = new CitrusUser();
+    public static final CitrusUser DEFAULT_USER = new CitrusUser("developercitrus@gmail.com", "9876543210", "Developer", "Citrus", Address.DEFAULT_ADDRESS);
 
     public static final Creator<CitrusUser> CREATOR = new Creator<CitrusUser>() {
         public CitrusUser createFromParcel(Parcel source) {
@@ -67,12 +67,24 @@ public final class CitrusUser implements Parcelable {
         this.address = in.readParcelable(Address.class.getClassLoader());
     }
 
+    public static CitrusUser fromJSON(String json) {
+        JSONObject jsonObject = null;
+
+        try {
+            jsonObject = new JSONObject(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return fromJSONObject(jsonObject);
+    }
+
     public static CitrusUser fromJSONObject(JSONObject response) {
         CitrusUser user = null;
 
         if (response != null) {
             String email = response.optString("email");
-            String mobileNo = response.optString("mobileNo");
+            String mobileNo = response.optString("mobileNo", response.optString("mobile"));
             String firstName = response.optString("firstName");
             String lastName = response.optString("lastName");
             Address address = Address.fromJSONObject(response);
@@ -113,7 +125,7 @@ public final class CitrusUser implements Parcelable {
             }
 
             if (user == null || TextUtils.isEmpty(user.mobileNo)) {
-                customer.put("mobileNo", "9170164284");
+                customer.put("mobileNo", "9999999999");
             } else {
                 customer.put("mobileNo", user.mobileNo);
             }
@@ -215,6 +227,8 @@ public final class CitrusUser implements Parcelable {
 
     public static class Address implements Parcelable {
 
+        public static Address DEFAULT_ADDRESS = new Address("Street1", "Street2", "Pune", "Maharashtra", "India", "411045");
+
         public static final Creator<Address> CREATOR = new Creator<Address>() {
             public Address createFromParcel(Parcel source) {
                 return new Address(source);
@@ -232,12 +246,12 @@ public final class CitrusUser implements Parcelable {
         private String zip = null;
 
         public Address(String street1, String street2, String city, String state, String country, String zip) {
-            this.street1 = street1;
-            this.street2 = street2;
-            this.city = city;
-            this.state = state;
-            this.country = country;
-            this.zip = zip;
+            this.street1 = normalizeString(street1);
+            this.street2 = normalizeString(street2);
+            this.city = normalizeString(city);
+            this.state = normalizeString(state);
+            this.country = normalizeString(country);
+            this.zip = normalizeString(zip);
         }
 
         private Address(Parcel in) {
@@ -253,12 +267,12 @@ public final class CitrusUser implements Parcelable {
             Address address = null;
 
             if (response != null) {
-                String addressCountry = response.optString("addressCountry");
-                String addressState = response.optString("addressState");
-                String addressCity = response.optString("addressCity");
-                String addressStreet1 = response.optString("addressStreet1");
-                String addressStreet2 = response.optString("addressStreet2");
-                String addressZip = response.optString("addressZip");
+                String addressCountry = response.optString("addressCountry", response.optString("country"));
+                String addressState = response.optString("addressState", response.optString("state"));
+                String addressCity = response.optString("addressCity", response.optString("city"));
+                String addressStreet1 = response.optString("addressStreet1", response.optString("street1"));
+                String addressStreet2 = response.optString("addressStreet2", response.optString("street2"));
+                String addressZip = response.optString("addressZip", response.optString("zip"));
 
                 address = new Address(addressStreet1, addressStreet2, addressCity, addressState, addressCountry, addressZip);
             }
@@ -316,5 +330,9 @@ public final class CitrusUser implements Parcelable {
             dest.writeString(this.country);
             dest.writeString(this.zip);
         }
+    }
+
+    private static String normalizeString(String input) {
+        return (!TextUtils.isEmpty(input) ? input.replaceAll("[\\p{Cntrl}^\r\n\t]+", "") : null);
     }
 }

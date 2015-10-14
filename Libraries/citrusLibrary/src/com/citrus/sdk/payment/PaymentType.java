@@ -22,6 +22,9 @@ import com.citrus.sdk.Constants;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by salil on 24/4/15.
  */
@@ -93,6 +96,8 @@ public abstract class PaymentType implements Parcelable {
 
             if (amount == null || TextUtils.isEmpty(amount.getValue())) {
                 throw new CitrusException("Amount should be not null or blank.");
+            } else if (!(amount.getValueAsDouble() > 0)) {
+                throw new CitrusException("Amount should be greater than 0");
             } else if (returnUrl == null) {
                 throw new CitrusException("returnUrl should be not null.");
             }
@@ -110,6 +115,8 @@ public abstract class PaymentType implements Parcelable {
 
             if (amount == null || TextUtils.isEmpty(amount.getValue())) {
                 throw new CitrusException("Amount should be not null or blank.");
+            } else if (!(amount.getValueAsDouble() > 0)) {
+                throw new CitrusException("Amount should be greater than 0");
             } else if (returnUrl == null) {
                 throw new CitrusException("returnUrl should be not null.");
             } else if (paymentOption == null) {
@@ -176,6 +183,8 @@ public abstract class PaymentType implements Parcelable {
 
             if (amount == null || TextUtils.isEmpty(amount.getValue())) {
                 throw new CitrusException("Amount should be not null or blank.");
+            } else if (!(amount.getValueAsDouble() > 0)) {
+                throw new CitrusException("Amount should be greater than 0");
             } else if (billUrl == null) {
                 throw new CitrusException("billUrl should be not null.");
             }
@@ -188,6 +197,32 @@ public abstract class PaymentType implements Parcelable {
          */
         public CitrusCash(PaymentBill paymentBill) {
             super(paymentBill);
+        }
+
+        public final void setPaymentBill(PaymentBill paymentBill) {
+            this.paymentBill = paymentBill;
+        }
+
+        public final void setCitrusUser(CitrusUser citrusUser) {
+            this.citrusUser = citrusUser;
+        }
+
+        public final String getPaymentJSON() {
+            String json = "";
+
+            JSONObject jsonObject = PaymentBill.toJSONObject(paymentBill);
+            if (jsonObject != null) {
+                try {
+                    jsonObject.put("userDetails", CitrusUser.toJSONObject(citrusUser));
+                    jsonObject.put("requestOrigin", "MSDKW");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                json = jsonObject.toString();
+            }
+
+            return json;
         }
 
         @Override
@@ -244,6 +279,8 @@ public abstract class PaymentType implements Parcelable {
 
             if (amount == null || TextUtils.isEmpty(amount.getValue())) {
                 throw new CitrusException("Amount should be not null or blank.");
+            } else if (!(amount.getValueAsDouble() > 0)) {
+                throw new CitrusException("Amount should be greater than 0");
             } else if (billUrl == null) {
                 throw new CitrusException("Url should be not null.");
             }
@@ -261,6 +298,8 @@ public abstract class PaymentType implements Parcelable {
 
             if (amount == null || TextUtils.isEmpty(amount.getValue())) {
                 throw new CitrusException("Amount should be not null or blank.");
+            } else if (!(amount.getValueAsDouble() > 0)) {
+                throw new CitrusException("Amount should be greater than 0");
             } else if (billUrl == null) {
                 throw new CitrusException("returnUrl should be not null.");
             } else if (paymentOption == null) {
@@ -297,6 +336,7 @@ public abstract class PaymentType implements Parcelable {
             if (paymentOption == null) {
                 throw new CitrusException("PaymentBill should not be null.");
             }
+
         }
 
         /**

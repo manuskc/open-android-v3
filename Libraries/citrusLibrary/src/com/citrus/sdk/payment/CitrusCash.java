@@ -24,19 +24,12 @@ public final class CitrusCash extends PaymentOption {
 
     private String amount = null;
 
-    public CitrusCash() {
-    }
-
-    /**
-     * @param name  - User friendly name of the payment option. e.g. Debit Card (4242) or Net Banking - ICICI Bank
-     * @param token - Token for payment option, used for tokenized payment.
-     */
-    public CitrusCash(String name, String token) {
-        super(name, token);
+    private CitrusCash() {
     }
 
     public CitrusCash(String amount) {
         this.amount = amount;
+        this.name = "Citrus Cash : \u20B9 " + amount;
     }
 
     @Override
@@ -60,6 +53,11 @@ public final class CitrusCash extends PaymentOption {
     @Override
     public com.citrus.analytics.PaymentType getAnalyticsPaymentType() {
         return com.citrus.analytics.PaymentType.CITRUS_CASH;
+    }
+
+    @Override
+    public String getDynamicPricingPaymentMode() {
+        return "PREPAID_CARD";
     }
 
     @Override
