@@ -25,7 +25,7 @@ import org.json.JSONObject;
  */
 public final class CitrusUser implements Parcelable {
 
-    public static final CitrusUser DEFAULT_USER = new CitrusUser();
+    public static final CitrusUser DEFAULT_USER = new CitrusUser("developercitrus@gmail.com", "9876543210", "Developer", "Citrus", Address.DEFAULT_ADDRESS);
 
     public static final Creator<CitrusUser> CREATOR = new Creator<CitrusUser>() {
         public CitrusUser createFromParcel(Parcel source) {
@@ -227,6 +227,8 @@ public final class CitrusUser implements Parcelable {
 
     public static class Address implements Parcelable {
 
+        public static Address DEFAULT_ADDRESS = new Address("Street1", "Street2", "Pune", "Maharashtra", "India", "411045");
+
         public static final Creator<Address> CREATOR = new Creator<Address>() {
             public Address createFromParcel(Parcel source) {
                 return new Address(source);
@@ -265,12 +267,12 @@ public final class CitrusUser implements Parcelable {
             Address address = null;
 
             if (response != null) {
-                String addressCountry = response.optString("addressCountry");
-                String addressState = response.optString("addressState");
-                String addressCity = response.optString("addressCity");
-                String addressStreet1 = response.optString("addressStreet1");
-                String addressStreet2 = response.optString("addressStreet2");
-                String addressZip = response.optString("addressZip");
+                String addressCountry = response.optString("addressCountry", response.optString("country"));
+                String addressState = response.optString("addressState", response.optString("state"));
+                String addressCity = response.optString("addressCity", response.optString("city"));
+                String addressStreet1 = response.optString("addressStreet1", response.optString("street1"));
+                String addressStreet2 = response.optString("addressStreet2", response.optString("street2"));
+                String addressZip = response.optString("addressZip", response.optString("zip"));
 
                 address = new Address(addressStreet1, addressStreet2, addressCity, addressState, addressCountry, addressZip);
             }
