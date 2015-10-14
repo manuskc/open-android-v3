@@ -19,15 +19,12 @@ package com.citrus.sdk;
  * Created by salil on 24/4/15.
  */
 public interface Constants {
-    int SDK_VERSION = 3;
-
-    String SDK_VERSION_CODE = "3.0.3";
+    String SDK_VERSION_CODE = "3.1.0_beta";
 
     String INTENT_EXTRA_TRANSACTION_RESPONSE = "INTENT_EXTRA_TRANSACTION_RESPONSE";
 
-
     String INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE = "INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE";
-    
+
     /**
      * Use this constant to pass the payment type. {@link com.citrus.sdk.payment.PaymentType}
      */
@@ -58,8 +55,6 @@ public interface Constants {
     String colorPrimary = "#F9A323";
     String textColor = "#ffffff";
     String accentColor = "";
-
-    boolean ENABLE_LOGS = false;
 
     String ACTION_LOAD_MONEY = "ACTION_LOAD_MONEY";
     String ACTION_PAY_USING_CASH = "ACTION_PAY_USING_CASH";
