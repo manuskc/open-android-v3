@@ -209,17 +209,17 @@ public class SavedOptionsFragment extends Fragment {
                 dynamicPricingRequestType = new DynamicPricingRequestType.ValidateRule(amount, paymentOption, couponCode, alteredAmount, null);
             }
 
-            citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
-                @Override
-                public void success(DynamicPricingResponse dynamicPricingResponse) {
-                    showPrompt(dynamicPricingResponse);
-                }
-
-                @Override
-                public void error(CitrusError error) {
-                    Utils.showToast(getActivity(), error.getMessage());
-                }
-            });
+//            citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
+//                @Override
+//                public void success(DynamicPricingResponse dynamicPricingResponse) {
+//                    showPrompt(dynamicPricingResponse);
+//                }
+//
+//                @Override
+//                public void error(CitrusError error) {
+//                    Utils.showToast(getActivity(), error.getMessage());
+//                }
+//            });
         } else {
 
             PaymentType paymentType1;

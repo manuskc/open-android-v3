@@ -190,17 +190,17 @@ public final class NetbankingFragment extends Fragment {
                 } else if (dpRequestType == Utils.DPRequestType.VALIDATE_RULE) {
                     dynamicPricingRequestType = new DynamicPricingRequestType.ValidateRule(amount, netbankingOption, couponCode, alteredAmount, null);
                 }
-                client.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
-                    @Override
-                    public void success(DynamicPricingResponse dynamicPricingResponse) {
-                        showPrompt(dynamicPricingResponse);
-                    }
-
-                    @Override
-                    public void error(CitrusError error) {
-                        Utils.showToast(getActivity(), error.getMessage());
-                    }
-                });
+//                client.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
+//                    @Override
+//                    public void success(DynamicPricingResponse dynamicPricingResponse) {
+//                        showPrompt(dynamicPricingResponse);
+//                    }
+//
+//                    @Override
+//                    public void error(CitrusError error) {
+//                        Utils.showToast(getActivity(), error.getMessage());
+//                    }
+//                });
             } else {
 
                 PaymentType paymentType1;

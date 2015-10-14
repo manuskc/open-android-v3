@@ -152,17 +152,17 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
                 dynamicPricingRequestType = new DynamicPricingRequestType.ValidateRule(amount, cardOption, couponCode, alteredAmount, null);
             }
 
-            citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
-                @Override
-                public void success(DynamicPricingResponse dynamicPricingResponse) {
-                    showPrompt(dynamicPricingResponse);
-                }
-
-                @Override
-                public void error(CitrusError error) {
-                    Utils.showToast(getActivity(), error.getMessage());
-                }
-            });
+//            citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
+//                @Override
+//                public void success(DynamicPricingResponse dynamicPricingResponse) {
+//                    showPrompt(dynamicPricingResponse);
+//                }
+//
+//                @Override
+//                public void error(CitrusError error) {
+//                    Utils.showToast(getActivity(), error.getMessage());
+//                }
+//            });
         } else {
             PaymentType paymentType;
 
@@ -188,17 +188,17 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
                 } else if (this.paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
                     DynamicPricingRequestType dynamicPricingRequestType = new DynamicPricingRequestType.SearchAndApplyRule(amount, cardOption, null);
 
-                    citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
-                        @Override
-                        public void success(DynamicPricingResponse dynamicPricingResponse) {
-                            showPrompt(dynamicPricingResponse);
-                        }
-
-                        @Override
-                        public void error(CitrusError error) {
-                            Utils.showToast(getActivity(), error.getMessage());
-                        }
-                    });
+//                    citrusClient.performDynamicPricing(dynamicPricingRequestType, Constants.BILL_URL, new Callback<DynamicPricingResponse>() {
+//                        @Override
+//                        public void success(DynamicPricingResponse dynamicPricingResponse) {
+//                            showPrompt(dynamicPricingResponse);
+//                        }
+//
+//                        @Override
+//                        public void error(CitrusError error) {
+//                            Utils.showToast(getActivity(), error.getMessage());
+//                        }
+//                    });
                 }
             } catch (CitrusException e) {
                 e.printStackTrace();

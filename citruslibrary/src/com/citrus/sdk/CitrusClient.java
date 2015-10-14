@@ -1261,7 +1261,7 @@ public class CitrusClient {
      * @param billUrl                   - billUrl from where we will fetch the bill.
      * @param callback                  - callback
      */
-    public synchronized void performDynamicPricing(@NonNull final DynamicPricingRequestType dynamicPricingRequestType, @NonNull final String billUrl, @NonNull final Callback<DynamicPricingResponse> callback) {
+    private synchronized void performDynamicPricing(@NonNull final DynamicPricingRequestType dynamicPricingRequestType, @NonNull final String billUrl, @NonNull final Callback<DynamicPricingResponse> callback) {
 
         if (validate()) {
             if (dynamicPricingRequestType != null && !TextUtils.isEmpty(billUrl)) {
@@ -1323,7 +1323,7 @@ public class CitrusClient {
      * @param paymentBill               - PaymentBill in case you are fetching bill response from your server.
      * @param callback                  - callback
      */
-    public synchronized void performDynamicPricing(@NonNull final DynamicPricingRequestType dynamicPricingRequestType, @NonNull final PaymentBill paymentBill, @NonNull final Callback<DynamicPricingResponse> callback) {
+    private synchronized void performDynamicPricing(@NonNull final DynamicPricingRequestType dynamicPricingRequestType, @NonNull final PaymentBill paymentBill, @NonNull final Callback<DynamicPricingResponse> callback) {
 
         if (validate()) {
             if (dynamicPricingRequestType != null && paymentBill != null) {
@@ -1634,7 +1634,6 @@ public class CitrusClient {
     /**
      * @param citrusCash
      * @param callback
-     * @deprecated Please use {@link CitrusClient#prepaidPay(PaymentType.CitrusCash, Callback)} instead.
      */
     public synchronized void payUsingCitrusCash(final PaymentType.CitrusCash citrusCash, final Callback<TransactionResponse> callback) {
 
@@ -1708,7 +1707,7 @@ public class CitrusClient {
         }
     }
 
-    public synchronized void prepaidPay(final PaymentType.CitrusCash citrusCash, final Callback<PaymentResponse> callback) {
+    private synchronized void prepaidPay(final PaymentType.CitrusCash citrusCash, final Callback<PaymentResponse> callback) {
 
         final String billUrl;
 

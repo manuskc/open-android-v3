@@ -120,6 +120,7 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         btnWithdraw.setOnClickListener(this);
         btnSendMoney.setOnClickListener(this);
         btnPerformDP.setOnClickListener(this);
+        btnPerformDP.setVisibility(View.GONE);
 
         return rootView;
     }

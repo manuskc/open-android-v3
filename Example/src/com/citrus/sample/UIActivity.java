@@ -33,7 +33,6 @@ import com.citrus.sdk.payment.PaymentType;
 import com.citrus.sdk.response.CitrusError;
 import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.sdk.response.PaymentResponse;
-import com.orhanobut.logger.Logger;
 
 
 public class UIActivity extends ActionBarActivity implements UserManagementFragment.UserManagementInteractionListener, WalletFragmentListener {
@@ -109,23 +108,10 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
         if (paymentType == Utils.PaymentType.CITRUS_CASH) {
 
             try {
-//                citrusClient.payUsingCitrusCash(new PaymentType.CitrusCash(amount, Constants.BILL_URL), new Callback<TransactionResponse>() {
-//                    @Override
-//                    public void success(TransactionResponse transactionResponse) {
-//                        Utils.showToast(getApplicationContext(), transactionResponse.getMessage());
-//                    }
-//
-//                    @Override
-//                    public void error(CitrusError error) {
-//                        Utils.showToast(getApplicationContext(), error.getMessage());
-//                    }
-//                });
-
-                citrusClient.prepaidPay(new PaymentType.CitrusCash(amount, Constants.BILL_URL), new Callback<PaymentResponse>() {
+                citrusClient.payUsingCitrusCash(new PaymentType.CitrusCash(amount, Constants.BILL_URL), new Callback<TransactionResponse>() {
                     @Override
-                    public void success(PaymentResponse paymentResponse) {
-                        Utils.showToast(getApplicationContext(), paymentResponse.getMessage());
-                        Logger.d("PaymentResponse :: " + paymentResponse.toString());
+                    public void success(TransactionResponse transactionResponse) {
+                        Utils.showToast(getApplicationContext(), transactionResponse.getMessage());
                     }
 
                     @Override
