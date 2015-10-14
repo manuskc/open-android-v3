@@ -18,7 +18,7 @@
             android:id="@+id/card_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/visa"/>
+            android:src="@drawable/ic_card_default"/>
         <TextView
             android:id="@+id/card_number"
             android:layout_width="0dp"
@@ -28,7 +28,8 @@
             android:text="XXXX XXXX XXXX 8001"
             android:textColor="@color/citrus_text_color"
             android:textSize="16sp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            app:textStyle="@integer/ROBOTO_CONDENSED_REGULAR"/>
         <ImageView
             android:id="@+id/delete_image"
             android:layout_width="wrap_content"

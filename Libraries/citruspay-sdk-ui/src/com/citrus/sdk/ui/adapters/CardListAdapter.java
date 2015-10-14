@@ -61,7 +61,13 @@ public class CardListAdapter extends BaseAdapter{
             holder = (ViewHolder) convertView.getTag();
         }
         holder.cardNumber.setText(Utils.getFormattedCardNumber(cardOption.getCardNumber()));
-        holder.cardType.setText(cardOption.getCardType() + " - " + cardOption.getCardScheme());
+        if(cardOption.getCardScheme()==null){
+            holder.cardType.setText(cardOption.getCardType());
+        }
+        else{
+            holder.cardType.setText(cardOption.getCardType() + " - " + cardOption.getCardScheme());
+        }
+
         Drawable cardDrawable = cardOption.getOptionIcon(activity);
         if (cardDrawable != null) {
             Logger.d(TAG+" Card image found");

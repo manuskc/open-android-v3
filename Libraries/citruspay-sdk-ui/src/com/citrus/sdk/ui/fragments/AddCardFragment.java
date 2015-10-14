@@ -180,7 +180,6 @@ public class AddCardFragment extends Fragment {
                     @Override
                     public void error(CitrusError error) {
                         Logger.d(TAG + " could not save Card " + error.getMessage());
-                        Snackbar.make(parentLayout, error.getMessage(), Snackbar.LENGTH_SHORT).show();
                         mListener.dismissProgressDialog();
                     }
                 });

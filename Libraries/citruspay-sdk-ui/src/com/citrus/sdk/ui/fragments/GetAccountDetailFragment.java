@@ -90,7 +90,7 @@ public class GetAccountDetailFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) ||
                         (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    Logger.d(TAG+" Enter pressed");
+                    Logger.d(TAG + " Enter pressed");
                     if (validateDetails()) {
                         saveAccountInfo();
                     }
@@ -108,18 +108,23 @@ public class GetAccountDetailFragment extends Fragment {
             @Override
             public void success(CashoutInfo cashoutInfo) {
                 mListener.dismissProgressDialog();
-                Logger.d(TAG+" Got account Info");
+                Logger.d(TAG + " Got account Info");
                 ifscCodeEt.setText(cashoutInfo.getIfscCode());
                 accountNoEt.setText(cashoutInfo.getAccountNo());
                 ownerNameEt.setText(cashoutInfo.getAccountHolderName());
 
-                Utils.openKeyboard(amountEt);
+                if (TextUtils.isEmpty(cashoutInfo.getAccountHolderName())) {
+                    Utils.openKeyboard(ownerNameEt);
+                } else {
+
+                    Utils.openKeyboard(amountEt);
+                }
             }
 
             @Override
             public void error(CitrusError error) {
                 mListener.dismissProgressDialog();
-                Logger.d(TAG+" Account info error " + error.getMessage());
+                Logger.d(TAG + " Account info error " + error.getMessage());
                 Utils.openKeyboard(ownerNameEt);
             }
         });
@@ -128,7 +133,7 @@ public class GetAccountDetailFragment extends Fragment {
     private void saveAccountInfo() {
         Logger.d(TAG+" saving Account Info");
         cashoutInfo =  new CashoutInfo(new Amount(withdrawAmount),accountNumber,ownerName, ifscCode);
-        mListener.showProgressDialog(false,getString(R.string.saving_account_info));
+        mListener.showProgressDialog(false, getString(R.string.saving_account_info));
         CitrusClient.getInstance(getActivity()).saveCashoutInfo(cashoutInfo, new
                 Callback<CitrusResponse>() {
 
@@ -177,27 +182,17 @@ public class GetAccountDetailFragment extends Fragment {
             amountEt.requestFocus();
             return false;
         }
+        else if(!Utils.isValidWithdrawAmount(withdrawAmount)) {
+            Snackbar.make(layout, R.string.excess_amount_msg, Snackbar.LENGTH_SHORT).show();
+            amountEt.requestFocus();
+            return false;
+        }
         return true;
     }
 
     private boolean isValidIfscCode(String ifscCode) {
-        Logger.d(TAG+" checking bank Code validity");
-        if(ifscCode.length()<5){
-
-            return false;
-        }
-        Logger.d(TAG+" fifth char "+ifscCode.charAt(4));
-
-        if(ifscCode.charAt(4) != '0'){
-
-            return false;
-        }
-        String bankCode = ifscCode.substring(0,4);
-        Logger.d(TAG+" bank Code "+bankCode);
-        if(!isAlpha(bankCode)){
-            return false;
-        }
-        return true;
+        Logger.d(TAG + " checking bank Code validity");
+        return ifscCode.length() <= 11 && Utils.isValidIFSC(ifscCode);
     }
     public boolean isAlpha(String name) {
         return name.matches("[a-zA-Z]+");

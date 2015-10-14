@@ -66,11 +66,14 @@
             android:layout_marginTop="2dp"
             android:layout_marginLeft="29dp"
             android:textSize="12sp"
-            android:text="@string/text_card_holder"
+            android:maxLines="2"
+            android:text="CARD HOLDER NAME"
             android:shadowColor="@color/citrus_black"
             android:shadowDx="0"
             android:shadowDy="2"
+            android:ems="10"
             android:shadowRadius="4"
+            android:ellipsize="end"
             />
 
         <TextView
@@ -110,29 +113,31 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/card_details_container"
         android:text="@string/text_enter_cvv"
+        android:layout_alignStart="@+id/card_details_container"
+        android:layout_alignLeft="@+id/card_details_container"
         />
 
+
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/checkbox_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/cvv_lable">
-        <LinearLayout
-            android:id="@+id/checkbox_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-        </LinearLayout>
-        <ImageView
-            android:id="@+id/check_view"
-            android:layout_marginLeft="10dp"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:visibility="gone"
-            android:src="@drawable/img_checkmark_green"/>
+        android:orientation="horizontal"
+        android:layout_alignTop="@+id/cvv_lable"
+        android:layout_alignRight="@+id/card_details_container"
+        android:layout_alignEnd="@+id/card_details_container">
     </LinearLayout>
-
-
+    <ImageView
+        android:id="@+id/go_button"
+        android:layout_width="25dp"
+        android:layout_height="22dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone"
+        android:src="@drawable/selector_go_button"
+        android:layout_alignTop="@+id/checkbox_container"
+        android:layout_alignRight="@+id/card_details_container"
+        android:layout_alignEnd="@+id/card_details_container" />
 </RelativeLayout>
+
+
+

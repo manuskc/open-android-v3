@@ -2,7 +2,7 @@ package com.citrus.sdk.ui.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -15,13 +15,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.citrus.analytics.ConnectionManager;
 import com.citrus.sdk.Callback;
 import com.citrus.sdk.CitrusClient;
 import com.citrus.sdk.response.CitrusError;
 import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.sdk.ui.R;
 import com.citrus.sdk.ui.events.FragmentCallbacks;
-import com.citrus.sdk.ui.utils.UIConstants;
+
 import com.orhanobut.logger.Logger;
 
 
@@ -148,9 +149,19 @@ public class SignUpFragment extends Fragment {
         termsView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(UIConstants
+               /* Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(UIConstants
                         .TERMS_COND_URL));
-                startActivity(browserIntent);
+                startActivity(browserIntent);*/
+                String status = String.valueOf(ConnectionManager.getNetworkClass(getActivity()));
+                if(status.equals("NOT_CONNECTED")||status.equals("UNKNOWN"))
+                {
+                    Snackbar.make(root, "Unable to connect to the network", Snackbar.LENGTH_SHORT)
+                            .show();
+                }
+                else
+                {
+                    mListener.displayTerms(getActivity());
+                }
             }
         });
         return root;

@@ -125,24 +125,29 @@ public class AddMoneyFragment extends Fragment {
         double amountDouble = 0F;
         double payAmount = 0F;
         if (!TextUtils.isEmpty(amount)) {
-            try {
-                amountDouble = Double.parseDouble(amount);
-                if (!TextUtils.isEmpty(mListener.getAmount())) {
-                    payAmount = Double.parseDouble(mListener.getAmount());
-                }
-                if (addMoneyNPay) {
-                    if (amountDouble < (payAmount-walletBalance)) {
-                        Snackbar.make(root, getString(R.string.less_amount_msg),Snackbar.LENGTH_SHORT).show();
-                        amountEt.requestFocus();
+            if (Utils.isValidWithdrawAmount(amount)) {
+                try {
+                    amountDouble = Double.parseDouble(amount);
+                    if (!TextUtils.isEmpty(mListener.getAmount())) {
+                        payAmount = Double.parseDouble(mListener.getAmount());
+                    }
+                    if (addMoneyNPay) {
+                        if (amountDouble < (payAmount-walletBalance)) {
+                            Snackbar.make(root, getString(R.string.less_amount_msg),Snackbar.LENGTH_SHORT).show();
+                            amountEt.requestFocus();
+                        }else{
+                            mListener.navigateTo(AddMoneyOptionsFragment.newInstance(addMoneyNPay,amount), UIConstants.SCREEN_MONEY_OPTION);
+                        }
                     }else{
                         mListener.navigateTo(AddMoneyOptionsFragment.newInstance(addMoneyNPay,amount), UIConstants.SCREEN_MONEY_OPTION);
                     }
-                }else{
-                    mListener.navigateTo(AddMoneyOptionsFragment.newInstance(addMoneyNPay,amount), UIConstants.SCREEN_MONEY_OPTION);
+                } catch (NumberFormatException e) {
+                    Logger.e("NumberFormatException"+e.getStackTrace());
+                    Snackbar.make(root, getString(R.string.valid_amount_msg),Snackbar.LENGTH_SHORT).show();
+                    amountEt.requestFocus();
                 }
-            } catch (NumberFormatException e) {
-                Logger.e("NumberFormatException"+e.getStackTrace());
-                Snackbar.make(root, getString(R.string.valid_amount_msg),Snackbar.LENGTH_SHORT).show();
+            }else{
+                Snackbar.make(root, R.string.excess_amount_msg, Snackbar.LENGTH_SHORT).show();
                 amountEt.requestFocus();
             }
         }else{

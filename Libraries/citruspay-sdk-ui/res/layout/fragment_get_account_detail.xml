@@ -81,7 +81,7 @@
                 android:layout_marginBottom="10dp"
                 android:digits="@string/string_alphanumeric"
                 android:inputType="textCapWords|textNoSuggestions"
-                android:maxLength="70"
+                android:maxLength="11"
                 android:singleLine="true"
                 android:textAllCaps="true"
                 app:textStyle="@integer/ROBOTO_MEDIUM"
