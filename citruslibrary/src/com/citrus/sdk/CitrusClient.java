@@ -878,35 +878,45 @@ public class CitrusClient {
                                     }
                                 });
 
-
-                                RetroFitClient.setInterCeptor();
-                                EventBus.getDefault().register(CitrusClient.this);
-                                retrofitClient.getCookie(emailIdOrMobileNo, otp, "true", new retrofit.Callback<String>() {
+                                activatePrepaidUser(new Callback<Amount>() {
                                     @Override
-                                    public void success(String s, Response response) {
-                                        // NOOP
-                                        // This method will never be called.
+                                    public void success(Amount amount) {
+                                        RetroFitClient.setInterCeptor();
+                                        EventBus.getDefault().register(CitrusClient.this);
+                                        retrofitClient.getCookie(emailIdOrMobileNo, otp, "true", new retrofit.Callback<String>() {
+                                            @Override
+                                            public void success(String s, Response response) {
+                                                // NOOP
+                                                // This method will never be called.
+                                            }
+
+                                            @Override
+                                            public void failure(RetrofitError error) {
+                                                if (prepaidCookie != null) {
+                                                    cookieManager = CookieManager.getInstance();
+                                                    PersistentConfig config = new PersistentConfig(mContext);
+                                                    if (config.getCookieString() != null) {
+                                                        cookieManager.getInstance().removeSessionCookie();
+                                                    }
+                                                    CookieSyncManager.createInstance(mContext);
+                                                    config.setCookie(prepaidCookie);
+                                                } else {
+                                                    Logger.d("PREPAID LOGIN UNSUCCESSFUL");
+                                                }
+                                                EventBus.getDefault().unregister(CitrusClient.this);
+
+                                                // Since we have a got the cookie, we are giving the callback.
+                                                sendResponse(callback, new CitrusResponse(ResponseMessages.SUCCESS_MESSAGE_SIGNIN, Status.SUCCESSFUL));
+                                            }
+                                        });
                                     }
 
                                     @Override
-                                    public void failure(RetrofitError error) {
-                                        if (prepaidCookie != null) {
-                                            cookieManager = CookieManager.getInstance();
-                                            PersistentConfig config = new PersistentConfig(mContext);
-                                            if (config.getCookieString() != null) {
-                                                cookieManager.getInstance().removeSessionCookie();
-                                            }
-                                            CookieSyncManager.createInstance(mContext);
-                                            config.setCookie(prepaidCookie);
-                                        } else {
-                                            Logger.d("PREPAID LOGIN UNSUCCESSFUL");
-                                        }
-                                        EventBus.getDefault().unregister(CitrusClient.this);
-
-                                        // Since we have a got the cookie, we are giving the callback.
-                                        sendResponse(callback, new CitrusResponse(ResponseMessages.SUCCESS_MESSAGE_SIGNIN, Status.SUCCESSFUL));
+                                    public void error(CitrusError error) {
+                                        sendError(callback, error);
                                     }
                                 });
+
                             }
                         }
 
