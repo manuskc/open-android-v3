@@ -213,6 +213,8 @@ public class PaymentBill implements Parcelable {
         PaymentBill paymentBill = null;
 
         JSONObject billObject = null;
+        if (json != null)
+        {
         try {
             billObject = new JSONObject(json);
         } catch (JSONException e) {
@@ -263,7 +265,7 @@ public class PaymentBill implements Parcelable {
                 }
             }
         }
-
+    }
         return paymentBill;
     }
 

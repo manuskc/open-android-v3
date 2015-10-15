@@ -19,7 +19,7 @@ package com.citrus.sdk;
  * Created by salil on 24/4/15.
  */
 public interface Constants {
-    String SDK_VERSION_CODE = "3.1.0_beta";
+    String SDK_VERSION_CODE = "3";
 
     String INTENT_EXTRA_TRANSACTION_RESPONSE = "INTENT_EXTRA_TRANSACTION_RESPONSE";
 
@@ -61,6 +61,7 @@ public interface Constants {
     String ACTION_PG_PAYMENT = "ACTION_PG_PAYMENT";
 
     String PREPAID_VANITY = "prepaid";
+    String SIGNUP_SUCCESS_CODE = "R-201-00";
 }
 
 

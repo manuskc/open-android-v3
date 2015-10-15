@@ -19,6 +19,15 @@ public enum Environment {
         public String getDynamicPricingBaseUrl() {
             return "https://sandboxmars1.citruspay.com/dynamic-pricing/";
         }
+        @Override
+        public String getBinServiceURL() {
+            return "https://citrusapi.citruspay.com";
+        }
+
+        public String getAnalyticsID() {
+            return "UA-33514461-4";
+        }
+
 
         @Override
         public String toString() {
@@ -36,9 +45,20 @@ public enum Environment {
         }
 
         @Override
+        public String getBinServiceURL() {
+            return "https://citrusapi.citruspay.com";
+        }
+
+
+        @Override
         public String getDynamicPricingBaseUrl() {
             return "https://mars.citruspay.com/dynamicpricing";
         }
+
+        public String getAnalyticsID() {
+            return "UA-33514461-5";
+        }
+
 
         @Override
         public String toString() {
@@ -56,9 +76,19 @@ public enum Environment {
         }
 
         @Override
+        public String getBinServiceURL() {
+            return "https://citrusapi.citruspay.com";
+        }
+
+        @Override
         public String getDynamicPricingBaseUrl() {
             return "https://oops.citruspay.com/dynamic-pricing/";
         }
+
+        public String getAnalyticsID() {
+            return "UA-33514461-4";
+        }
+
 
         @Override
         public String toString() {
@@ -79,6 +109,16 @@ public enum Environment {
         @Override
         public String getDynamicPricingBaseUrl() {
             return "https://stgadmin5.citruspay.com/dynamic-pricing/";
+
+        }
+
+        @Override
+        public String getBinServiceURL() {
+            return "https://citrusapi.citruspay.com";
+        }
+
+        public String getAnalyticsID() {
+            return "UA-33514461-4";
         }
 
         @Override
@@ -101,9 +141,18 @@ public enum Environment {
             return "https://stg3admin.citruspay.com/dynamic-pricing/";
         }
 
+        public String getAnalyticsID() {
+            return "UA-33514461-4";
+        }
+
+
         @Override
         public String toString() {
             return "STG5";
+        }
+        @Override
+        public String getBinServiceURL() {
+            return "https://citrusapi.citruspay.com";
         }
     }, NONE {
         @Override
@@ -120,9 +169,18 @@ public enum Environment {
         public String getBaseCitrusUrl() {
             return null;
         }
+        @Override
+        public String getBinServiceURL() {
+            return null;
+        }
 
         @Override
         public String getDynamicPricingBaseUrl() {
+            return null;
+        }
+
+        @Override
+        public String getAnalyticsID() {
             return null;
         }
     };
@@ -131,5 +189,9 @@ public enum Environment {
 
     public abstract String getBaseCitrusUrl();
 
+    public abstract String getBinServiceURL();
     public abstract String getDynamicPricingBaseUrl();
+
+    public abstract String getAnalyticsID();
+
 }
