@@ -2,6 +2,6 @@
 # Specify your BINTRAY LOGIN / API / GPG information
 # ....................................................
 
-bintray.userid=developer
-bintray.apikey=0727689ddcf3f8fc7deb2965f0aa10e8fb182ab0
-bintray.gpgkey=Citrus@123
+bintray.userid=
+bintray.apikey=
+bintray.gpgkey=

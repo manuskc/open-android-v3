@@ -1207,16 +1207,19 @@ public class CitrusClient {
                                     JSONArray paymentOptions = jsonObject.optJSONArray("paymentOptions");
 
                                     if (paymentOptions != null) {
-                                        for (int i = 0; i < paymentOptions.length(); i++) {
-                                            PaymentOption option = PaymentOption.fromJSONObject(paymentOptions.getJSONObject(i));
+                                        // Check whether the merchant supports the user's payment option and then only add this payment option.
+                                        if (merchantPaymentOption != null) {
+                                            Set<CardOption.CardScheme> creditCardSchemeSet = merchantPaymentOption.getCreditCardSchemeSet();
+                                            Set<CardOption.CardScheme> debitCardSchemeSet = merchantPaymentOption.getDebitCardSchemeSet();
+                                            List<NetbankingOption> netbankingOptionList = merchantPaymentOption.getNetbankingOptionList();
 
-                                            // Check whether the merchant supports the user's payment option and then only add this payment option.
-                                            if (merchantPaymentOption != null) {
-                                                Set<CardOption.CardScheme> creditCardSchemeSet = merchantPaymentOption.getCreditCardSchemeSet();
-                                                Set<CardOption.CardScheme> debitCardSchemeSet = merchantPaymentOption.getDebitCardSchemeSet();
-                                                List<NetbankingOption> netbankingOptionList = merchantPaymentOption.getNetbankingOptionList();
+                                            for (int i = 0; i < paymentOptions.length(); i++) {
+                                                PaymentOption option = PaymentOption.fromJSONObject(paymentOptions.getJSONObject(i));
 
-                                                if (option instanceof CreditCardOption && creditCardSchemeSet != null &&
+                                                // For the merchant with only wallet option, do not filter.
+                                                if ((creditCardSchemeSet == null || debitCardSchemeSet == null) && option instanceof CardOption) {
+                                                    walletList.add(option);
+                                                } else if (option instanceof CreditCardOption && creditCardSchemeSet != null &&
                                                         creditCardSchemeSet.contains(((CreditCardOption) option).getCardScheme())) {
                                                     walletList.add(option);
                                                 } else if (option instanceof DebitCardOption && debitCardSchemeSet != null &&
@@ -1232,8 +1235,11 @@ public class CitrusClient {
 
                                                     walletList.add(netbankingOption);
                                                 }
-                                            } else {
-                                                // If the merchant payment options are not found, save all the options.
+                                            }
+                                        } else {
+                                            // If the merchant payment options are not found, save all the options.
+                                            for (int i = 0; i < paymentOptions.length(); i++) {
+                                                PaymentOption option = PaymentOption.fromJSONObject(paymentOptions.getJSONObject(i));
                                                 walletList.add(option);
                                             }
                                         }
