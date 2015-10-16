@@ -627,6 +627,16 @@ public class CitrusActivity extends ActionBarActivity {
             TransactionResponse transactionResponse = TransactionResponse.parseLoadMoneyResponse(response);
             sendResult(transactionResponse);
         }
+
+        @JavascriptInterface
+        public void rawPGResponse(String response) {
+
+            Logger.d("rawPGResponse :: " + response);
+
+            TransactionResponse transactionResponse = new TransactionResponse(TransactionResponse.TransactionStatus.SUCCESSFUL, "", null);
+            transactionResponse.setJsonResponse(response);
+            sendResult(transactionResponse);
+        }
     }
 
     private void showPrompt() {
