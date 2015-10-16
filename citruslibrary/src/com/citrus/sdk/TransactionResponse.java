@@ -317,7 +317,7 @@ public final class TransactionResponse implements Parcelable {
     }
 
 
-    private void setJsonResponse(String jsonResponse) {
+    public void setJsonResponse(String jsonResponse) {
         this.jsonResponse = jsonResponse;
     }
 
