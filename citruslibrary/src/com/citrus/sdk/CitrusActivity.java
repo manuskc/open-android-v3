@@ -27,6 +27,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -77,10 +78,13 @@ import java.util.Map;
 
 public class CitrusActivity extends ActionBarActivity {
 
+    private final int WAIT_TIME = 200;
+    private final String WAIT_MESSAGE = "Processing Payment. Please Wait...";
+    private final String CANCEL_MESSAGE = "Cancelling Transaction. Please Wait...";
+
     private WebView mPaymentWebview = null;
     private Context mContext = this;
     private ProgressDialog mProgressDialog = null;
-
     @Deprecated
     private PaymentParams mPaymentParams = null;
     private PaymentType mPaymentType = null;
@@ -99,7 +103,9 @@ public class CitrusActivity extends ActionBarActivity {
     private CitrusClient mCitrusClient = null;
     private String mActivityTitle = null;
     private int mRequestCode = -1;
-
+    private CountDownTimer mTimer = null;
+    private boolean mLoading = false;
+    private boolean mShowingDialog = false;
     private boolean isBackKeyPressedByUser = false;
     private boolean passwordPromptShown = false;
     private DynamicPricingResponse dynamicPricingResponse = null;
@@ -122,6 +128,20 @@ public class CitrusActivity extends ActionBarActivity {
 //        mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
         mCitrusConfig = CitrusConfig.getInstance();
         mActivityTitle = mCitrusConfig.getCitrusActivityTitle();
+
+        // Timer to dismiss dialog after specific time once the url loading is complete.
+        mTimer = new CountDownTimer(WAIT_TIME, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                if (!mLoading) {
+                    dismissDialog();
+                }
+            }
+        };
 
         mCitrusClient = CitrusClient.getInstance(mContext);
 
@@ -220,6 +240,7 @@ public class CitrusActivity extends ActionBarActivity {
             }
         }
 
+        // For PG Payment or Pay Using Citrus Cash
         if (mPaymentType instanceof PaymentType.PGPayment || mPaymentType instanceof PaymentType.CitrusCash) {
             if (mPaymentType.getPaymentBill() != null) {
                 // TODO Need to refactor the code.
@@ -231,13 +252,18 @@ public class CitrusActivity extends ActionBarActivity {
                 if (mCitrusClient.isShowDummyScreenWhilePayments()) {
                     mPaymentWebview.loadData("<html><body><h5><center>Processing, please wait...<center></h5></body></html>", "text/html", "utf-8");
                 }
+
+                showDialog(WAIT_MESSAGE, true);
                 fetchBill();
             }
-        } else { //load cash does not requires Bill Generator
+        } else {
+            //load cash does not requires Bill Generator
             Amount amount = mPaymentType.getAmount();
 
             LoadMoney loadMoney = new LoadMoney(amount.getValue(), mPaymentType.getUrl());
             PG paymentgateway = new PG(mPaymentOption, loadMoney, new UserDetails(CitrusUser.toJSONObject(mCitrusUser)));
+
+            showDialog(WAIT_MESSAGE, true);
 
             paymentgateway.load(CitrusActivity.this, new Callback() {
                 @Override
@@ -271,8 +297,6 @@ public class CitrusActivity extends ActionBarActivity {
     }
 
     private void fetchBill() {
-        showDialog("Validating Payment Details. Please wait...", false);
-
         String billUrl = mPaymentType.getUrl();
 
         if (billUrl.contains("?")) {
@@ -317,12 +341,10 @@ public class CitrusActivity extends ActionBarActivity {
             paymentgateway.charge(new Callback() {
                 @Override
                 public void onTaskexecuted(String success, String error) {
-                    //showDialog("Redirecting to Citrus. Please wait...", false);
                     prepaidPayment(success, error);
                 }
             });
         } else {
-            showDialog("Redirecting to Citrus. Please wait...", false);
             UserDetails userDetails = new UserDetails(CitrusUser.toJSONObject(mCitrusUser));
             Bill bill = new Bill(billJSON);
             mTransactionId = bill.getTxnId();
@@ -333,7 +355,6 @@ public class CitrusActivity extends ActionBarActivity {
                 @Override
                 public void onTaskexecuted(String success, String error) {
                     processresponse(success, error);
-                    dismissDialog();
                 }
             });
         }
@@ -349,7 +370,6 @@ public class CitrusActivity extends ActionBarActivity {
                 mpiServletUrl = redirect.optString("redirectUrl");
 
                 if (!android.text.TextUtils.isEmpty(mpiServletUrl)) {
-
 
                     mPaymentWebview.loadUrl(mpiServletUrl);
                     if (mPaymentOption != null) {
@@ -403,12 +423,16 @@ public class CitrusActivity extends ActionBarActivity {
             mProgressDialog.setCancelable(cancelable);
             mProgressDialog.setMessage(message);
             mProgressDialog.show();
+
+            mShowingDialog = true;
         }
     }
 
     private void dismissDialog() {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
+
+            mShowingDialog = false;
         }
     }
 
@@ -541,26 +565,31 @@ public class CitrusActivity extends ActionBarActivity {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
-            // Display the message.
+            // Display the message in case of cancelled transaction.
             if (isBackKeyPressedByUser) {
-                showDialog("Cancelling the transaction. Please wait..", true);
-            } else {
-                showDialog("Processing your payment. Please do not refresh the page.", true);
+                // Show cancel message.
+                showDialog(CANCEL_MESSAGE, true);
+            } else if (!mShowingDialog) {
+                // Show dialog is not already shown. Applies when the user clicks on 3DS page.
+                showDialog(WAIT_MESSAGE, true);
             }
+
+            mTimer.cancel();
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
 
-            // Dismiss the progress/message dialog.
-            dismissDialog();
+            mTimer.start();
         }
 
 
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-//            super.onReceivedSslError(view, handler, error);
+            // Dismiss Dialog
+            dismissDialog();
+            // Cancelling loading of the page.
             handler.cancel();
         }
     }
@@ -596,6 +625,16 @@ public class CitrusActivity extends ActionBarActivity {
             Logger.d("Wallet response :: " + response);
 
             TransactionResponse transactionResponse = TransactionResponse.parseLoadMoneyResponse(response);
+            sendResult(transactionResponse);
+        }
+
+        @JavascriptInterface
+        public void rawPGResponse(String response) {
+
+            Logger.d("rawPGResponse :: " + response);
+
+            TransactionResponse transactionResponse = new TransactionResponse(TransactionResponse.TransactionStatus.SUCCESSFUL, "", null);
+            transactionResponse.setJsonResponse(response);
             sendResult(transactionResponse);
         }
     }
