@@ -62,6 +62,7 @@ import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusConfig;
 import com.citrus.sdk.classes.Utils;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
+import com.citrus.sdk.otp.SMSReceiver;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.NetbankingOption;
 import com.citrus.sdk.payment.PaymentBill;
@@ -109,6 +110,7 @@ public class CitrusActivity extends ActionBarActivity {
     private boolean isBackKeyPressedByUser = false;
     private boolean passwordPromptShown = false;
     private DynamicPricingResponse dynamicPricingResponse = null;
+    private SMSReceiver smsReceiver = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,8 +126,9 @@ public class CitrusActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_citrus);
 
+        smsReceiver = new SMSReceiver();
         dynamicPricingResponse = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE);
-//        mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
+        mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
         mCitrusConfig = CitrusConfig.getInstance();
         mActivityTitle = mCitrusConfig.getCitrusActivityTitle();
 
@@ -294,6 +297,10 @@ public class CitrusActivity extends ActionBarActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor(mColorPrimaryDark));
         }
+    }
+
+    private void registerReceiver() {
+//        sm
     }
 
     private void fetchBill() {

@@ -134,6 +134,7 @@ public class CitrusClient {
     private CitrusUser citrusUser = null;
     private boolean showDummyScreen = false;
     private boolean prepaymentTokenValid = false;
+    private boolean autoOtpReading = false;
 
     private CitrusClient(Context context) {
         mContext = context;
@@ -156,6 +157,14 @@ public class CitrusClient {
 
     public boolean isShowDummyScreenWhilePayments() {
         return showDummyScreen;
+    }
+
+    public boolean isAutoOtpReading() {
+        return autoOtpReading;
+    }
+
+    public void enableAutoOtpReading(boolean enable) {
+        this.autoOtpReading = enable;
     }
 
     public void init(@NonNull String signupId, @NonNull String signupSecret, @NonNull String signinId, @NonNull String signinSecret, @NonNull String vanity, @NonNull Environment environment) {
