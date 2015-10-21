@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginTop="@dimen/otp_bottom_bar_layout_top_margin"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textSize="@dimen/otp_bottom_bar_cancel_txn_textsize"
+        android:text="@string/otp_cancel_transaction_text"
+        android:textColor="@android:color/black" />
+
+    <RelativeLayout
+        android:layout_below="@id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/otp_bottom_bar_top_margin"
+        android:background="#e8e8e8">
+
+        <ImageView
+            android:id="@+id/citrusLogoImgViewId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="@dimen/otp_bottom_bar_secured_image_top_margin"
+            android:background="@drawable/secured" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_toRightOf="@id/citrusLogoImgViewId"
+            android:textSize="@dimen/otp_bottom_bar_secured_text_size"
+            android:layout_centerVertical="true"
+            android:text="@string/otp_secured_text"
+            android:textColor="@android:color/black" />
+
+        <ImageView
+            android:id="@+id/bankLogoImgViewId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_margin="@dimen/otp_bottom_bar_bank_logo_margin"
+            android:background="@drawable/secured" />
+
+    </RelativeLayout>
+</RelativeLayout>
