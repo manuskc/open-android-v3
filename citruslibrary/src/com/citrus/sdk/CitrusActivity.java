@@ -36,7 +36,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -49,7 +48,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.citrus.analytics.EventsManager;
 import com.citrus.analytics.WebViewEvents;
@@ -120,10 +119,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private DynamicPricingResponse dynamicPricingResponse = null;
 
     // Auto OTP
-    private SMSReceiver smsReceiver = null;
-    private BroadcastReceiver autoOtpSMSReceiveListener = null;
-    private FrameLayout otpPopupLayout = null;
-    private OTPPopupView otpPopupView = null;
+    private SMSReceiver mSMSReceiver = null;
+    private BroadcastReceiver mAutoOtpSMSReceiveListener = null;
+    private OTPPopupView mOTPPopupView = null;
     private String otpProcessTransactionJS = null;
     private API binServiceClient = null;
 
@@ -143,17 +141,17 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setContentView(R.layout.activity_citrus);
 
-        otpPopupLayout = (FrameLayout) findViewById(R.id.otpDialogLayoutId);
-        otpPopupView = (OTPPopupView)findViewById(R.id.otpPopupViewId);
-        smsReceiver = new SMSReceiver();
-        autoOtpSMSReceiveListener = new BroadcastReceiver() {
+        mOTPPopupView = (OTPPopupView)findViewById(R.id.otpPopupViewId);
+        mOTPPopupView.setListener(this);
+        mSMSReceiver = new SMSReceiver();
+        mAutoOtpSMSReceiveListener = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 autoOtpReceived(intent);
             }
         };
-        registerReceiver(smsReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
-        LocalBroadcastManager.getInstance(this).registerReceiver(autoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
+        registerReceiver(mSMSReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mAutoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
 
         binServiceClient = RetroFitClient.getClientWithUrl("https://citrusapi.citruspay.com");
 
@@ -316,23 +314,19 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     }
 
     private void displayOtpPopup() {
-        otpPopupLayout.setVisibility(View.VISIBLE);
-//        LayoutInflater inflater = LayoutInflater.from(CitrusActivity.this);
-//        View inflatedLayout= inflater.inflate(R.layout.otp_txn_options, null, true);
-//        otpPopupView.addView(inflatedLayout);
+        mOTPPopupView.setVisibility(View.VISIBLE);
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (smsReceiver == null) {
-            smsReceiver = new SMSReceiver();
+        if (mSMSReceiver == null) {
+            mSMSReceiver = new SMSReceiver();
         }
 
-        if (autoOtpSMSReceiveListener == null) {
-            autoOtpSMSReceiveListener = new BroadcastReceiver() {
+        if (mAutoOtpSMSReceiveListener == null) {
+            mAutoOtpSMSReceiveListener = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     autoOtpReceived(intent);
@@ -340,20 +334,20 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             };
         }
 
-        registerReceiver(smsReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
-        LocalBroadcastManager.getInstance(this).registerReceiver(autoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
+        registerReceiver(mSMSReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mAutoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        if (smsReceiver != null) {
-            unregisterReceiver(smsReceiver);
+        if (mSMSReceiver != null) {
+            unregisterReceiver(mSMSReceiver);
         }
 
-        if (autoOtpSMSReceiveListener != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(autoOtpSMSReceiveListener);
+        if (mAutoOtpSMSReceiveListener != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mAutoOtpSMSReceiveListener);
         }
     }
 
@@ -362,7 +356,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         String otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
 
-        otpPopupView.setOTP(otp);
+        mOTPPopupView.setOTP(otp);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -626,12 +620,13 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void onSendOtpClicked() {
-
+        Toast.makeText(this, "onSendOtpClicked", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onGeneratePasswordClicked() {
 
+        Toast.makeText(this, "onGeneratePasswordClicked", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -648,7 +643,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void onResendOTPClicked() {
-        
+        Toast.makeText(this, "onResendOTPClicked", Toast.LENGTH_SHORT).show();
     }
 
     /**
