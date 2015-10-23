@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/otp_auto_detect_header_top_margin"
+        android:gravity="center"
+        android:text="@string/otp_autodetect_header_text"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/otp_auto_detect_header_textsize" />
+
+    <ProgressBar
+        android:id="@+id/otpAutoDetectProgressBarId"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/otp_auto_detect_progress_bar_top_margin" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/otp_auto_detect_enter_otp_layout_right_margin"
+        android:layout_marginLeft="@dimen/otp_auto_detect_enter_otp_layout_left_margin"
+        android:layout_marginRight="@dimen/otp_auto_detect_enter_otp_layout_right_margin"
+        android:layout_marginStart="@dimen/otp_auto_detect_enter_otp_layout_left_margin">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/textbox"
+            android:hint="@string/otp_autodetect_enter_otp_hint_text"
+            android:maxLength="10"
+            android:paddingEnd="@dimen/otp_auto_detect_enter_otp_edtxt_right_padding"
+            android:paddingLeft="@dimen/otp_auto_detect_enter_otp_edtxt_left_padding"
+            android:paddingRight="@dimen/otp_auto_detect_enter_otp_edtxt_right_padding"
+            android:paddingStart="@dimen/otp_auto_detect_enter_otp_edtxt_left_padding" />
+
+        <Button
+            android:layout_width="@dimen/otp_auto_detect_resend_btn_width"
+            android:layout_height="@dimen/otp_auto_detect_resend_btn_height"
+            android:layout_gravity="end|center_vertical"
+            android:textAllCaps="false"
+            android:layout_marginEnd="@dimen/otp_auto_detect_resend_btn_right_margin"
+            android:layout_marginRight="@dimen/otp_auto_detect_resend_btn_right_margin"
+            android:background="@drawable/btn_resend"
+            android:text="@string/otp_autodetect_resend_btn_text" />
+
+    </FrameLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textAllCaps="false"
+        android:layout_marginTop="@dimen/otp_auto_detect_confirm_btn_top_margin"
+        android:background="@drawable/btn_confirm_disabled"
+        android:textColor="@android:color/white"
+        android:text="@string/otp_autodetect_confirm_btn_text" />
+
+
+    <include layout="@layout/otp_txn_bottom_bar" />
+
+</LinearLayout>

@@ -1,10 +1,67 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="com.citrus.sdk.CitrusActivity">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.citrus.sdk.CitrusActivity">
+
 
     <WebView
         android:id="@+id/payment_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></WebView>
+        android:layout_height="match_parent" />
 
-</RelativeLayout>
+    <FrameLayout
+        android:id="@+id/otpDialogLayoutId"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <LinearLayout
+            android:id="@+id/otpOptionsLayoutId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include
+                android:id="@+id/otpTxnOptionsLayoutId"
+                layout="@layout/otp_txn_options"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!--  <include
+                  android:id="@+id/otpAutoDetectLayoutId"
+                  layout="@layout/otp_txn_auto_detect"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent" />-->
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/otpAutoDetectLayoutId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <include
+                android:id="@+id/otpTxnOptionsLayoutId"
+                layout="@layout/otp_txn_auto_detect"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!--  <include
+                  android:id="@+id/otpAutoDetectLayoutId"
+                  layout="@layout/otp_txn_auto_detect"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent" />-->
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/cancelOtpDialogImgViewId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:background="@android:drawable/ic_delete" />
+    </FrameLayout>
+
+</FrameLayout>
