@@ -193,4 +193,7 @@ public interface API {
 
     @GET("/service/um/profile/profileInfo")
     void getProfileInfo(@Header("Authorization") String token, Callback<JsonElement> callback);
+
+    @GET("/binservice/v2/bin/{first6Digits}")
+    void getBinInfo(@Path("first6Digits") String first6Digits, Callback<Response> callback);
 }
