@@ -46,6 +46,8 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener{
         inflate(context, R.layout.otp_txn_options, this);
         this.btnEnterPassword = (ImageButton) findViewById(R.id.enterPasswordImgViewId);
         this.btnSendOTP = (ImageButton) findViewById(R.id.sendOtpImgViewId);
+        this.btnEnterPassword.setOnClickListener(this);
+        this.btnSendOTP.setOnClickListener(this);
     }
 
     public void setOTP(String otp) {
