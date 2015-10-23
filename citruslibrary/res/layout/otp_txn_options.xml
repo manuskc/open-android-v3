@@ -24,7 +24,7 @@
         android:gravity="center_horizontal">
 
         <LinearLayout
-            android:id="@+id/relativeLayout"
+            android:id="@+id/enterPasswordLayoutId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/otp_options_enter_pass_layout_right_margin"

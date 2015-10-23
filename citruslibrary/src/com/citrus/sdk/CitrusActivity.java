@@ -36,6 +36,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -48,6 +49,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.citrus.analytics.EventsManager;
 import com.citrus.analytics.WebViewEvents;
@@ -116,11 +118,16 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private boolean isBackKeyPressedByUser = false;
     private boolean passwordPromptShown = false;
     private DynamicPricingResponse dynamicPricingResponse = null;
+
+    // Auto OTP
     private SMSReceiver smsReceiver = null;
     private BroadcastReceiver autoOtpSMSReceiveListener = null;
+    private FrameLayout otpPopupLayout = null;
     private OTPPopupView otpPopupView = null;
     private String otpProcessTransactionJS = null;
     private API binServiceClient = null;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +143,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setContentView(R.layout.activity_citrus);
 
+        otpPopupLayout = (FrameLayout) findViewById(R.id.otpDialogLayoutId);
+        otpPopupView = (OTPPopupView)findViewById(R.id.otpPopupViewId);
         smsReceiver = new SMSReceiver();
         autoOtpSMSReceiveListener = new BroadcastReceiver() {
             @Override
@@ -163,6 +172,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             public void onFinish() {
                 if (!mLoading) {
                     dismissDialog();
+                    displayOtpPopup();
                 }
             }
         };
@@ -304,6 +314,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
         setActionBarBackground();
     }
+
+    private void displayOtpPopup() {
+        otpPopupLayout.setVisibility(View.VISIBLE);
+//        LayoutInflater inflater = LayoutInflater.from(CitrusActivity.this);
+//        View inflatedLayout= inflater.inflate(R.layout.otp_txn_options, null, true);
+//        otpPopupView.addView(inflatedLayout);
+    }
+
 
     @Override
     protected void onResume() {

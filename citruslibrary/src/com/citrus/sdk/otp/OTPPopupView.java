@@ -8,14 +8,18 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.citrus.library.R;
 
 /**
  * TODO: document your custom view class.
  */
-public class OTPPopupView extends View {
+public class OTPPopupView extends ViewGroup {
     private String mExampleString; // TODO: use a default from R.string...
     private int mExampleColor = Color.RED; // TODO: use a default from R.color...
     private float mExampleDimension = 0; // TODO: use a default from R.dimen...
@@ -24,53 +28,65 @@ public class OTPPopupView extends View {
     private TextPaint mTextPaint;
     private float mTextWidth;
     private float mTextHeight;
+    Context context;
 
     public OTPPopupView(Context context) {
         super(context);
+        this.context = context;
         init(null, 0);
     }
 
     public OTPPopupView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         init(attrs, 0);
     }
 
     public OTPPopupView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.context = context;
         init(attrs, defStyle);
     }
 
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+
+    }
+
     private void init(AttributeSet attrs, int defStyle) {
+
+        inflate(context, R.layout.otp_txn_options, this);
+
         // Load attributes
-        final TypedArray a = getContext().obtainStyledAttributes(
-                attrs, R.styleable.OTPPopupView, defStyle, 0);
-
-        mExampleString = a.getString(
-                R.styleable.OTPPopupView_exampleString);
-        mExampleColor = a.getColor(
-                R.styleable.OTPPopupView_exampleColor,
-                mExampleColor);
-        // Use getDimensionPixelSize or getDimensionPixelOffset when dealing with
-        // values that should fall on pixel boundaries.
-        mExampleDimension = a.getDimension(
-                R.styleable.OTPPopupView_exampleDimension,
-                mExampleDimension);
-
-        if (a.hasValue(R.styleable.OTPPopupView_exampleDrawable)) {
-            mExampleDrawable = a.getDrawable(
-                    R.styleable.OTPPopupView_exampleDrawable);
-            mExampleDrawable.setCallback(this);
-        }
-
-        a.recycle();
-
-        // Set up a default TextPaint object
-        mTextPaint = new TextPaint();
-        mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextAlign(Paint.Align.LEFT);
-
-        // Update TextPaint and text measurements from attributes
-        invalidateTextPaintAndMeasurements();
+//        final TypedArray a = getContext().obtainStyledAttributes(
+//                attrs, R.styleable.OTPPopupView, defStyle, 0);
+//
+//        mExampleString = a.getString(
+//                R.styleable.OTPPopupView_exampleString);
+//        mExampleColor = a.getColor(
+//                R.styleable.OTPPopupView_exampleColor,
+//                mExampleColor);
+//        // Use getDimensionPixelSize or getDimensionPixelOffset when dealing with
+//        // values that should fall on pixel boundaries.
+//        mExampleDimension = a.getDimension(
+//                R.styleable.OTPPopupView_exampleDimension,
+//                mExampleDimension);
+//
+//        if (a.hasValue(R.styleable.OTPPopupView_exampleDrawable)) {
+//            mExampleDrawable = a.getDrawable(
+//                    R.styleable.OTPPopupView_exampleDrawable);
+//            mExampleDrawable.setCallback(this);
+//        }
+//
+//        a.recycle();
+//
+//        // Set up a default TextPaint object
+//        mTextPaint = new TextPaint();
+//        mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
+//        mTextPaint.setTextAlign(Paint.Align.LEFT);
+//
+//        // Update TextPaint and text measurements from attributes
+//        invalidateTextPaintAndMeasurements();
     }
 
     private void invalidateTextPaintAndMeasurements() {
@@ -83,31 +99,38 @@ public class OTPPopupView extends View {
     }
 
     @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+
+
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // TODO: consider storing these as member variables to reduce
-        // allocations per draw cycle.
-        int paddingLeft = getPaddingLeft();
-        int paddingTop = getPaddingTop();
-        int paddingRight = getPaddingRight();
-        int paddingBottom = getPaddingBottom();
-
-        int contentWidth = getWidth() - paddingLeft - paddingRight;
-        int contentHeight = getHeight() - paddingTop - paddingBottom;
-
-        // Draw the text.
-        canvas.drawText(mExampleString,
-                paddingLeft + (contentWidth - mTextWidth) / 2,
-                paddingTop + (contentHeight + mTextHeight) / 2,
-                mTextPaint);
-
-        // Draw the example drawable on top of the text.
-        if (mExampleDrawable != null) {
-            mExampleDrawable.setBounds(paddingLeft, paddingTop,
-                    paddingLeft + contentWidth, paddingTop + contentHeight);
-            mExampleDrawable.draw(canvas);
-        }
+//        // TODO: consider storing these as member variables to reduce
+//        // allocations per draw cycle.
+//        int paddingLeft = getPaddingLeft();
+//        int paddingTop = getPaddingTop();
+//        int paddingRight = getPaddingRight();
+//        int paddingBottom = getPaddingBottom();
+//
+//        int contentWidth = getWidth() - paddingLeft - paddingRight;
+//        int contentHeight = getHeight() - paddingTop - paddingBottom;
+//
+//        // Draw the text.
+//        canvas.drawText(mExampleString,
+//                paddingLeft + (contentWidth - mTextWidth) / 2,
+//                paddingTop + (contentHeight + mTextHeight) / 2,
+//                mTextPaint);
+//
+//        // Draw the example drawable on top of the text.
+//        if (mExampleDrawable != null) {
+//            mExampleDrawable.setBounds(paddingLeft, paddingTop,
+//                    paddingLeft + contentWidth, paddingTop + contentHeight);
+//            mExampleDrawable.draw(canvas);
+//        }
     }
 
     /**
