@@ -18,9 +18,11 @@ package com.citrus.sdk;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -58,10 +60,14 @@ import com.citrus.mobile.Config;
 import com.citrus.payment.Bill;
 import com.citrus.payment.PG;
 import com.citrus.payment.UserDetails;
+import com.citrus.retrofit.API;
+import com.citrus.retrofit.RetroFitClient;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CitrusConfig;
 import com.citrus.sdk.classes.Utils;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
+import com.citrus.sdk.otp.OTPPopupView;
+import com.citrus.sdk.otp.OTPViewListener;
 import com.citrus.sdk.otp.SMSReceiver;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.NetbankingOption;
@@ -77,7 +83,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-public class CitrusActivity extends ActionBarActivity {
+public class CitrusActivity extends ActionBarActivity implements OTPViewListener {
 
     private final int WAIT_TIME = 200;
     private final String WAIT_MESSAGE = "Processing Payment. Please Wait...";
@@ -111,6 +117,10 @@ public class CitrusActivity extends ActionBarActivity {
     private boolean passwordPromptShown = false;
     private DynamicPricingResponse dynamicPricingResponse = null;
     private SMSReceiver smsReceiver = null;
+    private BroadcastReceiver autoOtpSMSReceiveListener = null;
+    private OTPPopupView otpPopupView = null;
+    private String otpProcessTransactionJS = null;
+    private API binServiceClient = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +137,17 @@ public class CitrusActivity extends ActionBarActivity {
         setContentView(R.layout.activity_citrus);
 
         smsReceiver = new SMSReceiver();
+        autoOtpSMSReceiveListener = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                autoOtpReceived(intent);
+            }
+        };
+        registerReceiver(smsReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
+        LocalBroadcastManager.getInstance(this).registerReceiver(autoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
+
+        binServiceClient = RetroFitClient.getClientWithUrl("https://citrusapi.citruspay.com");
+
         dynamicPricingResponse = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE);
         mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
         mCitrusConfig = CitrusConfig.getInstance();
@@ -284,6 +305,48 @@ public class CitrusActivity extends ActionBarActivity {
         setActionBarBackground();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (smsReceiver == null) {
+            smsReceiver = new SMSReceiver();
+        }
+
+        if (autoOtpSMSReceiveListener == null) {
+            autoOtpSMSReceiveListener = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    autoOtpReceived(intent);
+                }
+            };
+        }
+
+        registerReceiver(smsReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
+        LocalBroadcastManager.getInstance(this).registerReceiver(autoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (smsReceiver != null) {
+            unregisterReceiver(smsReceiver);
+        }
+
+        if (autoOtpSMSReceiveListener != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(autoOtpSMSReceiveListener);
+        }
+    }
+
+    private void autoOtpReceived(Intent intent) {
+        otpProcessTransactionJS = intent.getStringExtra(Constants.INTENT_EXTRA_BANK_PAGE_JS);
+
+        String otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
+
+        otpPopupView.setOTP(otp);
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setActionBarBackground() {
         // Set primary color
@@ -297,10 +360,6 @@ public class CitrusActivity extends ActionBarActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.parseColor(mColorPrimaryDark));
         }
-    }
-
-    private void registerReceiver() {
-//        sm
     }
 
     private void fetchBill() {
@@ -545,6 +604,33 @@ public class CitrusActivity extends ActionBarActivity {
         mProgressDialog = null;
         mPaymentOption = null;
         mActivityTitle = null;
+    }
+
+    @Override
+    public void onSendOtpClicked() {
+
+    }
+
+    @Override
+    public void onGeneratePasswordClicked() {
+
+    }
+
+    @Override
+    public void onCancelClicked() {
+        isBackKeyPressedByUser = true;
+        mPaymentWebview.loadUrl(mpiServletUrl);
+    }
+
+    @Override
+    public void onProcessTransactionClicked() {
+        // Load the js to process the transaction.
+        mPaymentWebview.loadUrl(otpProcessTransactionJS);
+    }
+
+    @Override
+    public void onResendOTPClicked() {
+        
     }
 
     /**

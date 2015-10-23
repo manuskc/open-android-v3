@@ -17,7 +17,7 @@ public enum Environment {
 
         @Override
         public String getDynamicPricingBaseUrl() {
-            return "https://sandboxmars1.citruspay.com/dynamic-pricing/";
+            return "https://sandboxmars.citruspay.com/dynamic-pricing/";
         }
 
         @Override

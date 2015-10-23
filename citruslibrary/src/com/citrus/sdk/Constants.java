@@ -63,6 +63,10 @@ public interface Constants {
     String ACTION_PG_PAYMENT = "ACTION_PG_PAYMENT";
 
     String PREPAID_VANITY = "prepaid";
+    String ACTION_SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    String ACTION_AUTO_READ_OTP = "com.citrus.sdk.otp.AUTO_READ_OTP";
+    String INTENT_EXTRA_AUTO_OTP = "INTENT_EXTRA_AUTO_OTP";
+    String INTENT_EXTRA_BANK_PAGE_JS = "INTENT_EXTRA_BANK_PAGE_JS";
 }
 
 
