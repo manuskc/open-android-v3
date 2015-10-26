@@ -7,7 +7,7 @@
 
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/otpAutoDetectHeaderTxtId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -34,7 +34,7 @@
         android:layout_marginStart="@dimen/otp_auto_detect_enter_otp_layout_left_margin">
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/enterOtpEditTxtId"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -47,6 +47,7 @@
             android:paddingStart="@dimen/otp_auto_detect_enter_otp_edtxt_left_padding" />
 
         <Button
+            android:id="@+id/otpResendBtnId"
             android:layout_width="@dimen/otp_auto_detect_resend_btn_width"
             android:layout_height="@dimen/otp_auto_detect_resend_btn_height"
             android:layout_gravity="end|center_vertical"
@@ -59,6 +60,7 @@
     </FrameLayout>
 
     <Button
+        android:id="@+id/otpConfirmBtnId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

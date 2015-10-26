@@ -12,22 +12,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.citrus.library.R;
 
 /**
  * TODO: document your custom view class.
  */
-public class OTPPopupView extends LinearLayout implements View.OnClickListener{
+public class OTPPopupView extends LinearLayout implements View.OnClickListener {
 
     private Context context;
-    private ImageButton btnEnterPassword;
-    private ImageButton btnSendOTP;
     private Button btnCancelTransaction;
     private OTPViewListener listener;
+
+    private TextView otpAutoDetectHeaderTxtView = null;
+    private ProgressBar otpAutoDetectProgressBar = null;
+    private EditText enterOtpEditTxt = null;
+    private Button otpResendBtn = null;
+    private Button otpConfirmBtn = null;
+    private TextView cancelTransactionTxtView = null;
 
     public OTPPopupView(Context context) {
         super(context);
@@ -43,11 +52,14 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener{
 
     private void init(AttributeSet attrs, int defStyle) {
 
+        setOrientation(LinearLayout.HORIZONTAL);
         inflate(context, R.layout.otp_txn_options, this);
-        this.btnEnterPassword = (ImageButton) findViewById(R.id.enterPasswordImgViewId);
-        this.btnSendOTP = (ImageButton) findViewById(R.id.sendOtpImgViewId);
-        this.btnEnterPassword.setOnClickListener(this);
-        this.btnSendOTP.setOnClickListener(this);
+        ImageButton btnEnterPassword = (ImageButton) findViewById(R.id.enterPasswordImgViewId);
+        ImageButton btnSendOTP = (ImageButton) findViewById(R.id.sendOtpImgViewId);
+        this.cancelTransactionTxtView = (TextView) findViewById(R.id.cancelTransactionTxtId);
+        btnEnterPassword.setOnClickListener(this);
+        btnSendOTP.setOnClickListener(this);
+        this.cancelTransactionTxtView.setOnClickListener(this);
     }
 
     public void setOTP(String otp) {
@@ -64,7 +76,33 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener{
         if (i == R.id.enterPasswordImgViewId) {
             listener.onGeneratePasswordClicked();
         } else if (i == R.id.sendOtpImgViewId) {
+            displayOtpAutoDetectPopup();
             listener.onSendOtpClicked();
+        } else if (i == R.id.otpConfirmBtnId) {
+            Toast.makeText(context, "Confirm Btn Clicked", Toast.LENGTH_SHORT).show();
+        } else if (i == R.id.otpResendBtnId) {
+            Toast.makeText(context, "Resend Btn Clicked", Toast.LENGTH_SHORT).show();
+        } else if (i == R.id.cancelTransactionTxtId) {
+            Toast.makeText(context, "Cancel Transaction clicked", Toast.LENGTH_SHORT).show();
+            listener.onCancelClicked();
         }
     }
+
+    private void displayOtpAutoDetectPopup() {
+        removeAllViews();
+        inflate(context, R.layout.otp_txn_auto_detect, this);
+
+        this.otpAutoDetectHeaderTxtView = (TextView) findViewById(R.id.otpAutoDetectHeaderTxtId);
+        this.otpAutoDetectProgressBar = (ProgressBar) findViewById(R.id.otpAutoDetectProgressBarId);
+        this.enterOtpEditTxt = (EditText) findViewById(R.id.enterOtpEditTxtId);
+        this.otpResendBtn = (Button) findViewById(R.id.otpResendBtnId);
+        this.otpConfirmBtn = (Button) findViewById(R.id.otpConfirmBtnId);
+        this.cancelTransactionTxtView = (TextView) findViewById(R.id.cancelTransactionTxtId);
+
+        this.otpResendBtn.setOnClickListener(this);
+        this.otpConfirmBtn.setOnClickListener(this);
+        this.cancelTransactionTxtView.setOnClickListener(this);
+    }
+
+
 }
