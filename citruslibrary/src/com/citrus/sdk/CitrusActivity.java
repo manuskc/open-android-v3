@@ -50,6 +50,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.citrus.analytics.EventsManager;
@@ -125,8 +127,10 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private BroadcastReceiver mAutoOtpSMSReceiveListener = null;
     private OTPPopupView mOTPPopupView = null;
     private String otpProcessTransactionJS = null;
+    private ImageView otpPopupCancelImgView = null;
     private boolean autoOTPEnabled = false;
     private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +153,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         setContentView(R.layout.activity_citrus);
 
         mOTPPopupView = (OTPPopupView) findViewById(R.id.otpPopupViewId);
+        mOTPPopupView = (OTPPopupView)findViewById(R.id.otpPopupViewId);
+        otpPopupCancelImgView = (ImageView)findViewById(R.id.otpPopupCancelImgViewId);
+        otpPopupCancelImgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {otpPopupCancelImgView.setVisibility(View.GONE);
+             dismissOtpPopup();
+            }
+        });
         mOTPPopupView.setListener(this);
         mSMSReceiver = new SMSReceiver();
         mAutoOtpSMSReceiveListener = new BroadcastReceiver() {
@@ -173,6 +185,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             public void onFinish() {
                 if (!mLoading) {
                     dismissDialog();
+                    otpPopupCancelImgView.setVisibility(View.VISIBLE);
                     displayOtpPopup();
                 }
             }
@@ -321,6 +334,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         setActionBarBackground();
     }
 
+    
     @Override
     protected void onResume() {
         super.onResume();
@@ -545,6 +559,10 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         }
     }
 
+    private void dismissOtpPopup() {
+        mOTPPopupView.setVisibility(View.GONE);
+    }
+    
     private void fetchBinRequestData(CardOption cardOption) {
         mCitrusClient.getBINDetails(cardOption, new com.citrus.sdk.Callback<BinServiceResponse>() {
             @Override
@@ -680,6 +698,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void onCancelClicked() {
+        dismissOtpPopup();
         isBackKeyPressedByUser = true;
         mPaymentWebview.loadUrl(mpiServletUrl);
     }
