@@ -30,12 +30,14 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
+import android.view.ActionMode;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -61,12 +63,12 @@ import com.citrus.mobile.Config;
 import com.citrus.payment.Bill;
 import com.citrus.payment.PG;
 import com.citrus.payment.UserDetails;
-import com.citrus.retrofit.API;
-import com.citrus.retrofit.RetroFitClient;
 import com.citrus.sdk.classes.Amount;
+import com.citrus.sdk.classes.BinServiceResponse;
 import com.citrus.sdk.classes.CitrusConfig;
 import com.citrus.sdk.classes.Utils;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
+import com.citrus.sdk.otp.NetBankForOTP;
 import com.citrus.sdk.otp.OTPPopupView;
 import com.citrus.sdk.otp.OTPViewListener;
 import com.citrus.sdk.otp.SMSReceiver;
@@ -123,15 +125,20 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private BroadcastReceiver mAutoOtpSMSReceiveListener = null;
     private OTPPopupView mOTPPopupView = null;
     private String otpProcessTransactionJS = null;
-    private API binServiceClient = null;
-
-
+    private boolean autoOTPEnabled = false;
+    private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         mPaymentType = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_TYPE);
         mRequestCode = getIntent().getIntExtra(Constants.INTENT_EXTRA_REQUEST_CODE_PAYMENT, -1);
+
+        // Initialize CitrusClient.
+        mCitrusClient = CitrusClient.getInstance(mContext);
+
+        // Initialize things.
+        autoOTPEnabled = mCitrusClient.isAutoOtpReading();
 
         if (!(mPaymentType instanceof PaymentType.CitrusCash)) {
             setTheme(R.style.Base_Theme_AppCompat_Light_DarkActionBar);
@@ -141,7 +148,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setContentView(R.layout.activity_citrus);
 
-        mOTPPopupView = (OTPPopupView)findViewById(R.id.otpPopupViewId);
+        mOTPPopupView = (OTPPopupView) findViewById(R.id.otpPopupViewId);
         mOTPPopupView.setListener(this);
         mSMSReceiver = new SMSReceiver();
         mAutoOtpSMSReceiveListener = new BroadcastReceiver() {
@@ -150,10 +157,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 autoOtpReceived(intent);
             }
         };
-        registerReceiver(mSMSReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mAutoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
-
-        binServiceClient = RetroFitClient.getClientWithUrl("https://citrusapi.citruspay.com");
 
         dynamicPricingResponse = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE);
         mPaymentParams = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_PARAMS);
@@ -175,8 +178,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             }
         };
 
-        mCitrusClient = CitrusClient.getInstance(mContext);
-
         // Set payment Params
         if (mPaymentParams != null) {
             mPaymentType = mPaymentParams.getPaymentType();
@@ -196,6 +197,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         } else {
             throw new IllegalArgumentException("Payment Type Should not be null");
         }
+
+        registerSMSReceivers();
 
         String emailId = mCitrusClient.getUserEmailId();
         String mobileNo = mCitrusClient.getUserMobileNumber();
@@ -260,6 +263,11 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setActionBarBackground();
 
+        // Get BIN Details required for autoOTP
+        if (autoOTPEnabled && mPaymentOption instanceof CardOption) {
+            fetchBinRequestData((CardOption) mPaymentOption);
+        }
+
         /*
          * Validations and Process payments
          */
@@ -313,50 +321,18 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         setActionBarBackground();
     }
 
-    private void displayOtpPopup() {
-        mOTPPopupView.setVisibility(View.VISIBLE);
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (mSMSReceiver == null) {
-            mSMSReceiver = new SMSReceiver();
-        }
-
-        if (mAutoOtpSMSReceiveListener == null) {
-            mAutoOtpSMSReceiveListener = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    autoOtpReceived(intent);
-                }
-            };
-        }
-
-        registerReceiver(mSMSReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mAutoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
+        registerSMSReceivers();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        if (mSMSReceiver != null) {
-            unregisterReceiver(mSMSReceiver);
-        }
-
-        if (mAutoOtpSMSReceiveListener != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mAutoOtpSMSReceiveListener);
-        }
-    }
-
-    private void autoOtpReceived(Intent intent) {
-        otpProcessTransactionJS = intent.getStringExtra(Constants.INTENT_EXTRA_BANK_PAGE_JS);
-
-        String otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
-
-        mOTPPopupView.setOTP(otp);
+        unregisterSMSReceivers();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -514,6 +490,75 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         }
     }
 
+    private void registerSMSReceivers() {
+        // Register receivers only if the autoOTP is enabled and payment mode is Credit/Debit Card.
+        if (autoOTPEnabled && mPaymentOption instanceof CardOption) {
+            Logger.d("Registering SMS receivers");
+
+            if (mSMSReceiver == null) {
+                mSMSReceiver = new SMSReceiver();
+            }
+
+            if (mAutoOtpSMSReceiveListener == null) {
+                mAutoOtpSMSReceiveListener = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        autoOtpReceived(intent);
+                    }
+                };
+            }
+
+            registerReceiver(mSMSReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
+            LocalBroadcastManager.getInstance(this).registerReceiver(mAutoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
+        }
+    }
+
+    private void unregisterSMSReceivers() {
+
+        // Unregister receivers only if the autoOTP is enabled and payment mode is Credit/Debit Card.
+        if (autoOTPEnabled && mPaymentOption instanceof CardOption) {
+
+            Logger.d("Unregistering SMS receivers");
+
+            if (mSMSReceiver != null) {
+                unregisterReceiver(mSMSReceiver);
+            }
+
+            if (mAutoOtpSMSReceiveListener != null) {
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(mAutoOtpSMSReceiveListener);
+            }
+        }
+    }
+
+    private void autoOtpReceived(Intent intent) {
+        String otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
+        otpProcessTransactionJS = String.format(netBankForOTP.getTransactionJS(), otp);
+
+        Logger.d("OTP : %s, js : %s", otp, otpProcessTransactionJS);
+        mOTPPopupView.setOTP(otp);
+    }
+
+    private void displayOtpPopup() {
+        // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
+        if (autoOTPEnabled && mPaymentOption instanceof CardOption) {
+            mOTPPopupView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void fetchBinRequestData(CardOption cardOption) {
+        mCitrusClient.getBINDetails(cardOption, new com.citrus.sdk.Callback<BinServiceResponse>() {
+            @Override
+            public void success(BinServiceResponse binServiceResponse) {
+                netBankForOTP = binServiceResponse.getNetBankForOTP();
+            }
+
+            @Override
+            public void error(CitrusError error) {
+                // NOOP
+            }
+        });
+    }
+
     @Override
     public void onBackPressed() {
 
@@ -613,6 +658,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         mTransactionId = null;
 
         dismissDialog();
+        netBankForOTP = NetBankForOTP.UNKNOWN;
         mProgressDialog = null;
         mPaymentOption = null;
         mActivityTitle = null;
@@ -621,6 +667,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onSendOtpClicked() {
         Toast.makeText(this, "onSendOtpClicked", Toast.LENGTH_SHORT).show();
+
+        NetBankForOTP netBankForOTP = NetBankForOTP.KOTAK;
+        mPaymentWebview.loadUrl(netBankForOTP.getTransactionJS());
     }
 
     @Override

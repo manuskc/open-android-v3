@@ -1,5 +1,7 @@
 package com.citrus.sdk.otp;
 
+import android.text.TextUtils;
+
 /**
  * This class will contain the JS related to sendOTP, enterPassword and processTransaction for every bank.
  * <p/>
@@ -27,6 +29,11 @@ public enum NetBankForOTP {
         }
 
         @Override
+        public String getReSendOTPJS() {
+            return null;
+        }
+
+        @Override
         public int getOTPLength() {
             // TODO:
             return 6;
@@ -35,12 +42,12 @@ public enum NetBankForOTP {
         @Override
         public String getBankNameForParsing() {
             // TODO:
-            return null;
+            return "SBI";
         }
 
         @Override
-        public String getBankCID() {
-            return "CID005";
+        public String getBankIconName() {
+            return "sbi_bank";
         }
     },
 
@@ -64,6 +71,11 @@ public enum NetBankForOTP {
         }
 
         @Override
+        public String getReSendOTPJS() {
+            return null;
+        }
+
+        @Override
         public int getOTPLength() {
             // TODO:
             return 6;
@@ -72,12 +84,12 @@ public enum NetBankForOTP {
         @Override
         public String getBankNameForParsing() {
             // TODO:
-            return null;
+            return "ICICIB";
         }
 
         @Override
-        public String getBankCID() {
-            return "CID001";
+        public String getBankIconName() {
+            return "icici_bank";
         }
     }, HDFC {
         @Override
@@ -99,6 +111,11 @@ public enum NetBankForOTP {
         }
 
         @Override
+        public String getReSendOTPJS() {
+            return null;
+        }
+
+        @Override
         public int getOTPLength() {
             // TODO:
             return 6;
@@ -107,18 +124,23 @@ public enum NetBankForOTP {
         @Override
         public String getBankNameForParsing() {
             // TODO:
-            return null;
+            return "HDFCBK";
         }
 
         @Override
-        public String getBankCID() {
-            return "CID010";
+        public String getBankIconName() {
+            return "hdfc_bank";
         }
     }, KOTAK {
         @Override
         public String getTransactionJS() {
             // TODO:
-            return null;
+            //return "javascript:document.getElementById(\"cmdSubmit\").click();";
+            return "javascript: " +
+                    "var inputs = document.querySelectorAll('input[type=password]');" +
+                    "var forms = document.getElementsByTagName('form');" +
+                    "inputs[inputs.length - 1].value='%s';" +
+                    "forms[forms.length - 1].submit();";
         }
 
         @Override
@@ -134,6 +156,12 @@ public enum NetBankForOTP {
         }
 
         @Override
+        public String getReSendOTPJS() {
+            // TODO:
+            return "javascript:reSendOtp();";
+        }
+
+        @Override
         public int getOTPLength() {
             // TODO:
             return 6;
@@ -142,18 +170,17 @@ public enum NetBankForOTP {
         @Override
         public String getBankNameForParsing() {
             // TODO:
-            return null;
+            return "KOTAKB";
         }
 
         @Override
-        public String getBankCID() {
-            return "CID033";
+        public String getBankIconName() {
+            return "kotak_mahindra_bank";
         }
     }, CITI {
         @Override
         public String getTransactionJS() {
-            // TODO:
-            return null;
+            return "javascript:document.optInForm.otp.value='%s'; validateOTP(1);";
         }
 
         @Override
@@ -169,6 +196,11 @@ public enum NetBankForOTP {
         }
 
         @Override
+        public String getReSendOTPJS() {
+            return null;
+        }
+
+        @Override
         public int getOTPLength() {
             // TODO:
             return 6;
@@ -177,12 +209,47 @@ public enum NetBankForOTP {
         @Override
         public String getBankNameForParsing() {
             // TODO:
-            return null;
+            return "CITIBK";
         }
 
         @Override
-        public String getBankCID() {
-            return "CID003";
+        public String getBankIconName() {
+            return "citi_bank";
+        }
+    }, UNKNOWN {
+        @Override
+        public String getTransactionJS() {
+            return "";
+        }
+
+        @Override
+        public String getEnterPasswordJS() {
+            return "";
+        }
+
+        @Override
+        public String getSendOTPJS() {
+            return "";
+        }
+
+        @Override
+        public String getReSendOTPJS() {
+            return "";
+        }
+
+        @Override
+        public int getOTPLength() {
+            return 0;
+        }
+
+        @Override
+        public String getBankNameForParsing() {
+            return "";
+        }
+
+        @Override
+        public String getBankIconName() {
+            return "";
         }
     };
 
@@ -192,12 +259,29 @@ public enum NetBankForOTP {
 
     public abstract String getSendOTPJS();
 
+    public abstract String getReSendOTPJS();
+
     public abstract int getOTPLength();
 
     public abstract String getBankNameForParsing();
 
-    public abstract String getBankCID();
+    public abstract String getBankIconName();
 
+    public static NetBankForOTP getNetBankForOTP(String bankName) {
+        if (TextUtils.equals(bankName, "Kotak Mahindra Bank Ltd")) {
+            return KOTAK;
+        } else if (TextUtils.equals(bankName, "ICICI BANK LTD")) {
+            return ICICI;
+        } else if (TextUtils.equals(bankName, "State Bank of India")) {
+            return SBI;
+        } else if (TextUtils.equals(bankName, "HDFC BANK LIMITED")) {
+            return HDFC;
+        } else if (TextUtils.equals(bankName, "CITI BANK LTD")) {
+            return CITI;
+        } else {
+            return UNKNOWN;
+        }
+    }
 }
 
 

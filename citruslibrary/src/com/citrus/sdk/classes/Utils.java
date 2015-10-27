@@ -5,6 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
 
+import com.citrus.sdk.otp.NetBankForOTP;
+
 /**
  * Created by salil on 8/7/15.
  */
@@ -32,5 +34,22 @@ public class Utils {
         }
 
         return str;
+    }
+
+    public static String getOTP(String message, NetBankForOTP netBankForOTP) {
+        String otp = "";
+        int length = netBankForOTP.getOTPLength();
+
+        String[] nbs = message.split("\\D+");
+
+        if (nbs.length != 0) {
+            for (String number : nbs) {
+                if (number.length() == length) {
+                    return number;
+                }
+            }
+        }
+
+        return otp;
     }
 }
