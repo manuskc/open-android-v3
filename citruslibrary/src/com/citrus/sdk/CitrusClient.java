@@ -40,11 +40,16 @@ import com.citrus.retrofit.RetroFitClient;
 import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.BindPOJO;
+import com.citrus.sdk.classes.CardBinDetails;
 import com.citrus.sdk.classes.CashoutInfo;
 import com.citrus.sdk.classes.CitrusException;
+import com.citrus.sdk.classes.CitrusUMResponse;
+import com.citrus.sdk.classes.LinkUserResponse;
 import com.citrus.sdk.classes.MemberInfo;
 import com.citrus.sdk.classes.PGHealth;
 import com.citrus.sdk.classes.PGHealthResponse;
+import com.citrus.sdk.classes.UpdateMobileResponse;
+import com.citrus.sdk.classes.VerifyMobileResponse;
 import com.citrus.sdk.dynamicPricing.DynamicPricingRequest;
 import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
@@ -61,6 +66,7 @@ import com.citrus.sdk.response.CitrusError;
 import com.citrus.sdk.response.CitrusLogger;
 import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.sdk.response.PaymentResponse;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.orhanobut.logger.Logger;
@@ -78,6 +84,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -369,27 +376,28 @@ public class CitrusClient {
                         try {
                             jsonObject.put("email", emailId);
                             jsonObject.put("mobile", mobileNo);
+
+                            retrofitClient.getMemberInfo(accessToken.getHeaderAccessToken(), new TypedString(jsonObject.toString()), new retrofit.Callback<JsonElement>() {
+                                @Override
+                                public void success(JsonElement jsonElement, Response response) {
+                                    MemberInfo memberInfo = MemberInfo.fromJSON(jsonElement.toString());
+
+                                    if (memberInfo != null) {
+                                        sendResponse(callback, memberInfo);
+                                    } else {
+                                        sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_MEMBER_INFO, Status.FAILED));
+                                    }
+                                }
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    sendError(callback, error);
+                                }
+                            });
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_MEMBER_INFO, Status.FAILED));
                         }
-
-                        retrofitClient.getMemberInfo(accessToken.getHeaderAccessToken(), new TypedString(jsonObject.toString()), new retrofit.Callback<JsonElement>() {
-                            @Override
-                            public void success(JsonElement jsonElement, Response response) {
-                                MemberInfo memberInfo = MemberInfo.fromJSON(jsonElement.toString());
-
-                                if (memberInfo != null) {
-                                    sendResponse(callback, memberInfo);
-                                } else {
-                                    sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_MEMBER_INFO, Status.FAILED));
-                                }
-                            }
-
-                            @Override
-                            public void failure(RetrofitError error) {
-                                sendError(callback, error);
-                            }
-                        });
                     } else {
                         sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_SIGNUP_TOKEN, Status.FAILED));
                     }
@@ -553,7 +561,58 @@ public class CitrusClient {
     }
 
     /**
+     * This method will enable the user to Sign in with OTP.
+     * <li>
+     * <ol>If user's mobileNo no is verified then OTP will be sent on the mobileNo and user will be able to sign in using mOTP. </ol>
+     * <ol>If the mobileNo no is not found/unverified and email is found then OTP is sent on the emailId and user will be able to sign in using eOTP. </ol>
+     * <ol>If the emailId and mobileNo no are not found then the user's account is created.</ol>
+     * </li>
+     *
      * @param emailId
+     * @param mobileNo
+     * @param callback
+     */
+    public synchronized void linkUserWithOTP(final String emailId, final String mobileNo, final boolean forceMobileVerification, final Callback<LinkUserResponse> callback) {
+
+        if (validate()) {
+            retrofitClient.getSignUpToken(signupId, signupSecret, OAuth2GrantType.implicit.toString(), new retrofit.Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken, Response response) {
+                    if (accessToken != null && accessToken.getHeaderAccessToken() != null) {
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("email", emailId);
+                            jsonObject.put("mobile", mobileNo);
+                            jsonObject.put("force_mobile_verification", forceMobileVerification);
+
+                            retrofitClient.linkUser(accessToken.getHeaderAccessToken(), new TypedString(jsonObject.toString()), new retrofit.Callback<LinkUserResponse>() {
+                                @Override
+                                public void success(LinkUserResponse linkUserResponse, Response response) {
+                                    sendResponse(callback, linkUserResponse);
+                                }
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    sendError(callback, error);
+                                }
+                            });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_LINK_USER, Status.FAILED));
+                        }
+                    } else {
+                        sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_SIGNUP_TOKEN, Status.FAILED));
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    sendError(callback, error);
+                }
+            });
+        }
+    }
+    /** * @param emailId
      * @param password
      * @param callback
      */
@@ -777,6 +836,105 @@ public class CitrusClient {
         });
     }
 
+    /**
+     * Signin with mobile no and password.
+     *
+     * @param emailIdOrMobileNo
+     * @param otp
+     * @param callback
+     */
+    public synchronized void signInWithOTP(final String emailIdOrMobileNo, final String otp, final Callback<CitrusResponse> callback) {
+
+        //grant Type username token saved
+        retrofitClient.getSignInToken(signinId, signinSecret, emailIdOrMobileNo, OAuth2GrantType.username.toString(), new retrofit.Callback<AccessToken>() {
+
+            @Override
+            public void success(AccessToken accessToken, Response response) {
+                if (accessToken.getHeaderAccessToken() != null) {
+                    OauthToken token = new OauthToken(mContext, SIGNIN_TOKEN);
+                    token.createToken(accessToken.getJSON());///grant Type username token saved
+
+                    retrofitClient.getSignInWithPasswordResponse(signinId, signinSecret, emailIdOrMobileNo, otp, OAuth2GrantType.onetimepass.toString(), new retrofit.Callback<AccessToken>() {
+                        @Override
+                        public void success(AccessToken accessToken, Response response) {
+                            Logger.d("SIGN IN RESPONSE " + accessToken.getJSON().toString());
+                            if (accessToken.getHeaderAccessToken() != null) {
+                                final OauthToken token = new OauthToken(mContext, PREPAID_TOKEN);
+                                token.createToken(accessToken.getJSON());///grant Type one time password token saved
+                                // Fetch the associated emailId and save the emailId.
+                                getMemberInfo(null, emailIdOrMobileNo, new Callback<MemberInfo>() {
+                                    @Override
+                                    public void success(MemberInfo memberInfo) {
+                                        if (memberInfo != null && memberInfo.getProfileByMobile() != null) {
+
+                                            token.saveUserDetails(memberInfo.getProfileByMobile().getEmailId(), emailIdOrMobileNo);//save email ID of the signed in user
+                                        }
+                                    }
+
+                                    @Override
+                                    public void error(CitrusError error) {
+                                        // NOOP
+                                        // Do nothing
+                                    }
+                                });
+
+                                activatePrepaidUser(new Callback<Amount>() {
+                                    @Override
+                                    public void success(Amount amount) {
+                                        RetroFitClient.setInterCeptor();
+                                        EventBus.getDefault().register(CitrusClient.this);
+                                        retrofitClient.getCookie(emailIdOrMobileNo, otp, "true", new retrofit.Callback<String>() {
+                                            @Override
+                                            public void success(String s, Response response) {
+                                                // NOOP
+                                                // This method will never be called.
+                                            }
+
+                                            @Override
+                                            public void failure(RetrofitError error) {
+                                                if (prepaidCookie != null) {
+                                                    cookieManager = CookieManager.getInstance();
+                                                    PersistentConfig config = new PersistentConfig(mContext);
+                                                    if (config.getCookieString() != null) {
+                                                        cookieManager.getInstance().removeSessionCookie();
+                                                    }
+                                                    CookieSyncManager.createInstance(mContext);
+                                                    config.setCookie(prepaidCookie);
+                                                } else {
+                                                    Logger.d("PREPAID LOGIN UNSUCCESSFUL");
+                                                }
+                                                EventBus.getDefault().unregister(CitrusClient.this);
+
+                                                // Since we have a got the cookie, we are giving the callback.
+                                                sendResponse(callback, new CitrusResponse(ResponseMessages.SUCCESS_MESSAGE_SIGNIN, Status.SUCCESSFUL));
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void error(CitrusError error) {
+                                        sendError(callback, error);
+                                    }
+                                });
+
+                            }
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            Logger.d("SIGN IN RESPONSE ERROR **" + error.getMessage());
+                            sendError(callback, error);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                sendError(callback, error);
+            }
+        });
+    }
     public synchronized void getCookie(String email, String password, final Callback<CitrusResponse> callback) {
         RetroFitClient.setInterCeptor();
         EventBus.getDefault().register(CitrusClient.this);
@@ -926,6 +1084,114 @@ public class CitrusClient {
     }
 
     /**
+     * Update or Change or Verify mobile no.
+     *
+     * @param mobileNo
+     * @param callback
+     */
+    public synchronized void updateMobile(final String mobileNo, final Callback<String> callback) {
+        if (validate()) {
+
+            if (!TextUtils.isEmpty(mobileNo)) {
+                getPrepaidToken(new Callback<AccessToken>() {
+                                    @Override
+                                    public void success(AccessToken accessToken) {
+                                        String header;
+                                        if (accessToken != null && (header = accessToken.getHeaderAccessToken()) != null) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            try {
+                                                jsonObject.put("mobile", mobileNo);
+
+                                                retrofitClient.updateMobile(header, new TypedString(jsonObject.toString()), new retrofit.Callback<UpdateMobileResponse>() {
+                                                    @Override
+                                                    public void success(UpdateMobileResponse updateMobileResponse, Response response) {
+                                                        if (updateMobileResponse.getResponseCode() == UpdateMobileResponse.VERIFICATION_CODE_SENT_SUCCESSFULLY) {
+                                                            sendResponse(callback, updateMobileResponse.getResponseMessage());
+                                                        } else {
+                                                            sendError(callback, new CitrusError(updateMobileResponse.getResponseMessage(), Status.FAILED));
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void failure(RetrofitError error) {
+                                                        sendError(callback, error);
+                                                    }
+                                                });
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_UPDATE_MOBILE, Status.FAILED));
+                                            }
+                                        } else {
+                                            sendError(callback, new CitrusError(ResponseMessages.ERROR_SIGNIN_TOKEN_NOT_FOUND, Status.FAILED));
+                                        }
+                                    }
+
+                                    @Override
+                                    public void error(CitrusError error) {
+                                        sendError(callback, error);
+                                    }
+                                }
+                );
+            }
+        } else {
+            sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_BLANK_MOBILE_NO, Status.FAILED));
+        }
+    }
+    /**
+     * Verify mobile no.
+     *
+     * @param verificationCode
+     * @param callback
+     */
+    public synchronized void verifyMobile(final String verificationCode, final Callback<String> callback) {
+        if (validate()) {
+
+            if (!TextUtils.isEmpty(verificationCode)) {
+                getPrepaidToken(new Callback<AccessToken>() {
+                                    @Override
+                                    public void success(AccessToken accessToken) {
+                                        String header;
+                                        if (accessToken != null && (header = accessToken.getHeaderAccessToken()) != null) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            try {
+                                                jsonObject.put("verificationCode", verificationCode);
+
+                                                retrofitClient.verifyMobile(header, new TypedString(jsonObject.toString()), new retrofit.Callback<VerifyMobileResponse>() {
+                                                    @Override
+                                                    public void success(VerifyMobileResponse verifyMobileResponse, Response response) {
+                                                        if (verifyMobileResponse.getResponseCode() == VerifyMobileResponse.MOBILE_VERIFIED_SUCCESSFULLY) {
+                                                            sendResponse(callback, verifyMobileResponse.getResponseMessage());
+                                                        } else {
+                                                            sendError(callback, new CitrusError(verifyMobileResponse.getResponseMessage(), Status.FAILED));
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void failure(RetrofitError error) {
+                                                        sendError(callback, error);
+                                                    }
+                                                });
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_UPDATE_MOBILE, Status.FAILED));
+                                            }
+                                        } else {
+                                            sendError(callback, new CitrusError(ResponseMessages.ERROR_SIGNIN_TOKEN_NOT_FOUND, Status.FAILED));
+                                        }
+                                    }
+
+                                    @Override
+                                    public void error(CitrusError error) {
+                                        sendError(callback, error);
+                                    }
+                                }
+                );
+            }
+        } else {
+            sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_BLANK_VERIFICATION_CODE, Status.FAILED));
+        }
+    }
+    /**
      * Get the user saved payment options.
      *
      * @param callback - callback
@@ -1016,6 +1282,121 @@ public class CitrusClient {
         }
     }
 
+
+
+
+    /**
+     * Get the user saved payment options. If you want any specific bank at 0th position pass BankCID
+     *
+     * @param callback - callback
+     */
+    public synchronized void getWalletWithDefaultBank(final Callback<List<PaymentOption>> callback, final BankCID bankCID) {
+        /*
+         * Get the saved payment options of the user.
+         */
+        if (validate()) {
+
+            oauthToken.getSignInToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+//18004252069
+                    retrofitClient.getWallet(accessToken.getHeaderAccessToken(), new retrofit.Callback<JsonElement>() {
+                        @Override
+                        public void success(JsonElement element, Response response) {
+                            if (element != null) {
+                                ArrayList<PaymentOption> walletList = new ArrayList<>();
+                                try {
+
+                                    JSONObject jsonObject = new JSONObject(element.toString());
+                                    JSONArray paymentOptions = jsonObject.optJSONArray("paymentOptions");
+                                    String defaultOption = null;
+                                    if (jsonObject.has("defaultOption")) {
+                                        defaultOption = jsonObject.getString("defaultOption");
+                                    }
+                                    if (paymentOptions != null) {
+                                        for (int i = 0; i < paymentOptions.length(); i++) {
+                                            PaymentOption option = PaymentOption.fromJSONObject(paymentOptions.getJSONObject(i));
+
+                                            // Check whether the merchant supports the user's payment option and then only add this payment option.
+                                            if (merchantPaymentOption != null) {
+                                                Set<CardOption.CardScheme> creditCardSchemeSet = merchantPaymentOption.getCreditCardSchemeSet();
+                                                Set<CardOption.CardScheme> debitCardSchemeSet = merchantPaymentOption.getDebitCardSchemeSet();
+                                                List<NetbankingOption> netbankingOptionList = merchantPaymentOption.getNetbankingOptionList();
+
+                                                if (option instanceof CreditCardOption && creditCardSchemeSet != null &&
+                                                        creditCardSchemeSet.contains(((CreditCardOption) option).getCardScheme())) {
+                                                    walletList.add(option);
+                                                } else if (option instanceof DebitCardOption && debitCardSchemeSet != null &&
+                                                        debitCardSchemeSet.contains(((DebitCardOption) option).getCardScheme())) {
+                                                    walletList.add(option);
+                                                } else if (option instanceof NetbankingOption && netbankingOptionList != null &&
+                                                        netbankingOptionList.contains(option)) {
+                                                    NetbankingOption netbankingOption = (NetbankingOption) option;
+
+                                                    if (pgHealthMap != null) {
+                                                        netbankingOption.setPgHealth(pgHealthMap.get(netbankingOption.getBankCID()));
+                                                    }
+
+                                                    walletList.add(netbankingOption);
+                                                }
+                                            } else {
+                                                // If the merchant payment options are not found, save all the options.
+                                                walletList.add(option);
+                                            }
+                                        }
+                                    }
+                                    if (defaultOption != null && !TextUtils.isEmpty(defaultOption)) { //if Default is Set
+                                        Iterator<PaymentOption> paymentOptionIterator = walletList.iterator();
+                                        PaymentOption iteratorPaymentOption = null;
+                                        while (paymentOptionIterator.hasNext()) {
+                                            iteratorPaymentOption = paymentOptionIterator.next();
+                                            if (iteratorPaymentOption.getName().equalsIgnoreCase(defaultOption)) {
+                                                Logger.d("FOUND DEFAUT AT ***" + walletList.indexOf(iteratorPaymentOption));
+                                                Collections.swap(walletList, 0, walletList.indexOf(iteratorPaymentOption));
+                                                break;//we found default option in WalletList
+                                            }
+                                        }
+                                    }
+                                    if (bankCID != null) {
+                                        NetbankingOption netbankingOption = new NetbankingOption(bankCID.getName(), bankCID.getCID());
+                                        netbankingOption.setName("Net Banking - " + bankCID.getName());
+                                        walletList.add(0, netbankingOption);
+
+                                        int length = walletList.size();
+                                        for (int i = 1; i < length; i++) {
+                                            if (walletList.get(i).getName().equalsIgnoreCase(netbankingOption.getName())) {
+                                                walletList.remove(i);
+                                                break;
+                                            }
+                                        } //remove duplicate bank if exists
+                                    }
+                                    sendResponse(callback, walletList);
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+
+                                    sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INVALID_JSON, Status.FAILED));
+                                }
+                            } else {
+                                sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INVALID_JSON, Status.FAILED));
+                            }
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            sendError(callback, new CitrusError(error.getMessage(), Status.FAILED));
+                        }
+                    });
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    sendError(callback, error);
+                }
+            });
+        }
+    }
+
     /**
      * Activate the prepaid user.
      *
@@ -1079,53 +1460,34 @@ public class CitrusClient {
                     }
                 });
             }
+            else {
+                sendResponse(callback, citrusUser);
+            }
         }
     }
 
     /**
      * Get the balance of the user.
-     *
+     * POST method - we are passing empty parameter
      * @param callback
      */
     public synchronized void getBalance(final Callback<Amount> callback) {
         if (validate()) {
-//            oauthToken.getSignInToken(new Callback<AccessToken>() {
-//                @Override
-//                public void success(AccessToken accessToken) {
-//
-//                    retrofitClient.getBalance(accessToken.getHeaderAccessToken(), new retrofit.Callback<Amount>() {
-//                        @Override
-//                        public void success(Amount amount, Response response) {
-//                            sendResponse(callback, amount);
-//                        }
-//
-//                        @Override
-//                        public void failure(RetrofitError error) {
-//                            sendError(callback, error);
-//                        }
-//                    });
-//                }
-//
-//                @Override
-//                public void error(CitrusError error) {
-//                    sendError(callback, error);
-//                }
-//            });
-
             oauthToken.getSignInToken(new Callback<AccessToken>() {
                 @Override
                 public void success(AccessToken accessToken) {
-                    new GetBalanceAsync(accessToken.getHeaderAccessToken(), new GetBalanceListener() {
+
+                    retrofitClient.getBalance(accessToken.getHeaderAccessToken(), "", new retrofit.Callback<Amount>() {
                         @Override
-                        public void success(Amount amount) {
+                        public void success(Amount amount, Response response) {
                             sendResponse(callback, amount);
                         }
 
                         @Override
-                        public void error(CitrusError error) {
+                        public void failure(RetrofitError error) {
                             sendError(callback, error);
                         }
-                    }).execute();
+                    });
                 }
 
                 @Override
@@ -2156,6 +2518,257 @@ public class CitrusClient {
             sendError(callback, citrusError);
         }
     }
+
+    /*
+    NEW APIS for Cube starts here
+     */
+
+    public synchronized void getSignUPToken(final Callback<AccessToken> callback) {
+
+        if (validate()) {
+            retrofitClient.getSignUpToken(signupId, signupSecret, OAuth2GrantType.implicit.toString(), new retrofit.Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken, Response response) {
+                    callback.success(accessToken);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    sendError(callback, error);
+                }
+            });
+        }
+    }
+
+
+    /**
+     * Reset the user password. The password reset link will be sent to the user. UM implementation
+     *
+     * @param emailId
+     * @param callback
+     */
+    public synchronized void resetUserPassword(final String emailId, @NonNull final Callback<CitrusUMResponse> callback) {
+        if (validate()) {
+            getSignUPToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+                    retrofitClient.resetUMPassword(accessToken.getHeaderAccessToken(), emailId, new retrofit.Callback<CitrusUMResponse>() {
+                        @Override
+                        public void success(CitrusUMResponse resetPasswordResponse, Response response) {
+                            sendResponse(callback, resetPasswordResponse);
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            sendError(callback, new CitrusError(error.getMessage(), Status.FAILED));
+                        }
+                    });
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    sendError(callback, error);
+                }
+            });
+        }
+    }
+
+    public synchronized void setDefaultPaymentOption(final PaymentOption defaultPaymentOption, final Callback<CitrusResponse> callback) {
+        if(validate()) {
+            oauthToken.getSignInToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+
+                    retrofitClient.setDefaultPaymentOption(accessToken.getHeaderAccessToken(), new TypedString(defaultPaymentOption.getSaveDefaultPaymentOptionObject()), new retrofit.Callback<CitrusResponse>() {
+                        @Override
+                        public void success(CitrusResponse citrusResponse, Response response) {
+                            sendResponse(callback, new CitrusResponse(ResponseMessages.SUCCESS_MESSAGE_SAVED_PAYMENT_OPTIONS, Status.SUCCESSFUL));
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            sendError(callback, error);
+                        }
+                    });
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    sendError(callback, error);
+                }
+            });
+        }
+    }
+
+
+
+    public synchronized void signUpUser(final String email, final String mobile, final String password, final String firstName, final String lastName,
+                                        final String sourceType, final boolean markMobileVerified, final boolean markEmailVerified,
+                                        final Callback<CitrusResponse> callback) {
+        if (validate()) {
+            getSignUPToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+                    retrofitClient.signUpUser(accessToken.getHeaderAccessToken(), email,
+                            mobile, password, firstName, lastName, sourceType, String.valueOf(markMobileVerified), String.valueOf(markEmailVerified),
+                            new retrofit.Callback<CitrusUMResponse>() {
+                                @Override
+                                public void success(CitrusUMResponse signUpUMResponse, Response response) {
+                                    if (signUpUMResponse.getResponseCode().equalsIgnoreCase(Constants.SIGNUP_SUCCESS_CODE)) {
+                                        signIn(email, password, callback);
+                                    } else {
+                                        JSONObject errorJSON = new JSONObject();
+                                        try {
+                                            errorJSON.put("responseCode", signUpUMResponse.getResponseCode());
+                                            errorJSON.put("responseMessage", signUpUMResponse.getResponseMessage());
+
+                                            sendError(callback, new CitrusError(errorJSON.toString(), Status.FAILED));
+                                        } catch (JSONException e) {
+                                            sendError(callback, new CitrusError(ResponseMessages.ERROR_SIGN_UP, Status.FAILED));
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    sendError(callback, error);
+                                }
+                            });
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    sendError(callback, error);
+                }
+            });
+        }
+
+    }
+
+
+    public synchronized void changePassword(final String oldPassword, final String newPassword, final Callback<CitrusUMResponse> changePasswordResponseCallback) {
+        if (validate()) {
+            oauthToken.getSignInToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+                    retrofitClient.changePassword(accessToken.getHeaderAccessToken(), oldPassword, newPassword, new retrofit.Callback<CitrusUMResponse>() {
+                        @Override
+                        public void success(CitrusUMResponse changePasswordResponse, Response response) {
+                            sendResponse(changePasswordResponseCallback, changePasswordResponse);
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+                            sendError(changePasswordResponseCallback, error);
+                        }
+                    });
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    sendError(changePasswordResponseCallback, error);
+                }
+            });
+        }
+
+    }
+
+
+
+    public synchronized void updateProfileInfo(final String firstName, final String lastName, final Callback<CitrusUMResponse> citrusUMResponseCallback) {
+        if (validate()) {
+            getPrepaidToken(new Callback<AccessToken>() {
+                @Override
+                public void success(AccessToken accessToken) {
+                    JSONObject profileInfoJSON = new JSONObject();
+                    try {
+                        profileInfoJSON.put("firstName", firstName);
+                        profileInfoJSON.put("lastName", lastName);
+                        retrofitClient.updateUserProfileDetails(accessToken.getHeaderAccessToken(), new TypedString(profileInfoJSON.toString()), new retrofit.Callback<CitrusUMResponse>() {
+                            @Override
+                            public void success(CitrusUMResponse userProfileDetails, Response response) {
+                                sendResponse(citrusUMResponseCallback, userProfileDetails);
+                                citrusUser = null;
+                                getProfileInfo(null);
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                sendError(citrusUMResponseCallback, error);
+                            }
+                        });
+                    } catch (JSONException e) {
+                        sendError(citrusUMResponseCallback, new CitrusError(ResponseMessages.ERROR_UPDATE_MEMBER_INFO, Status.FAILED));
+                    }
+                }
+
+                @Override
+                public void error(CitrusError error) {
+                    sendError(citrusUMResponseCallback, error);
+                }
+            });
+        }
+
+    }
+
+
+
+    public synchronized void sendOneTimePassword(String source, String otpType, String identity, final Callback<CitrusUMResponse> umResponseCallback) {
+        if (validate()) {
+            JSONObject rawObject = new JSONObject();
+            try {
+                rawObject.put("source", source);
+                rawObject.put("otpType", otpType);
+                rawObject.put("identity", identity);
+                retrofitClient.sendOneTimePassword(new TypedString(rawObject.toString()), new retrofit.Callback<CitrusUMResponse>() {
+                    @Override
+                    public void success(CitrusUMResponse citrusUMResponse, Response response) {
+                        sendResponse(umResponseCallback, citrusUMResponse);
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        sendError(umResponseCallback, error);
+                    }
+                });
+            } catch (JSONException e) {
+                sendError(umResponseCallback, new CitrusError(ResponseMessages.ERROR_SEND_OTP, Status.FAILED));
+            }
+        }
+    }
+
+
+
+    public synchronized void getCardType(final String first6Digits, final Callback<CardBinDetails> cardDetailsCallback) {
+        API binServiceClient = RetroFitClient.getCardBinServiceClient(environment.getBinServiceURL());
+        binServiceClient.getCardType(first6Digits, new retrofit.Callback<JsonElement>() {
+            @Override
+            public void success(JsonElement jsonElement, Response response) {
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(jsonElement.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(jsonObject.has("error_desc")) {
+                    CitrusError citrusError = new CitrusError(ResponseMessages.ERROR_INVALID_CARD_NUMBER, Status.FAILED);
+                    cardDetailsCallback.error(citrusError);
+                }
+                else {
+                    Gson gson = new Gson();
+                    CardBinDetails cardBinDetails = gson.fromJson(jsonElement, CardBinDetails.class);
+                    cardDetailsCallback.success(cardBinDetails);
+                }
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                sendError(cardDetailsCallback, error);
+            }
+        });
+    }
+
 
     // Getters and setters.
     public String getSigninId() {

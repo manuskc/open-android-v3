@@ -32,6 +32,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -75,6 +76,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
+
+import static android.text.InputType.*;
 
 public class CitrusActivity extends ActionBarActivity {
 
@@ -664,6 +667,7 @@ public class CitrusActivity extends ActionBarActivity {
 
             public void onClick(DialogInterface dialog, int whichButton) {
                 String password = input.getText().toString();
+                input.setInputType(TYPE_TEXT_VARIATION_PASSWORD);
 
                 if (!TextUtils.isEmpty(password)) {
                     mPaymentWebview.loadUrl("javascript:(function() { " +

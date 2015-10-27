@@ -158,4 +158,30 @@ public class Amount implements Parcelable {
                 ", currency='" + currency + '\'' +
                 '}';
     }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o instanceof Amount) {
+            Amount amount = (Amount) o;
+            if(this.getValueAsDouble() == amount.getValueAsDouble() &&
+                    this.currency.equalsIgnoreCase(amount.getCurrency())
+                    )
+            {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
 }
