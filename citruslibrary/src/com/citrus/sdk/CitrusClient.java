@@ -39,6 +39,7 @@ import com.citrus.retrofit.API;
 import com.citrus.retrofit.RetroFitClient;
 import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.Amount;
+import com.citrus.sdk.classes.BinServiceResponse;
 import com.citrus.sdk.classes.BindPOJO;
 import com.citrus.sdk.classes.CashoutInfo;
 import com.citrus.sdk.classes.CitrusException;
@@ -48,6 +49,7 @@ import com.citrus.sdk.classes.PGHealthResponse;
 import com.citrus.sdk.dynamicPricing.DynamicPricingRequest;
 import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
+import com.citrus.sdk.otp.NetBankForOTP;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.CreditCardOption;
 import com.citrus.sdk.payment.DebitCardOption;
@@ -135,6 +137,7 @@ public class CitrusClient {
     private boolean showDummyScreen = false;
     private boolean prepaymentTokenValid = false;
     private boolean autoOtpReading = false;
+    private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
 
     private CitrusClient(Context context) {
         mContext = context;
@@ -2028,7 +2031,54 @@ public class CitrusClient {
                 }
             });
         }
+    }
 
+    /**
+     * Internal.
+     * Returns the bank details using the card number.
+     *
+     * @param cardOption
+     */
+    public void getBINDetails(CardOption cardOption, final Callback<BinServiceResponse> callback) {
+
+        if (cardOption != null && !TextUtils.isEmpty(cardOption.getCardNumber())) {
+            String cardNumber = cardOption.getCardNumber();
+            String first6Digits = cardNumber.length() > 6 ? cardNumber.substring(0, 6) : "";
+            if (!TextUtils.isEmpty(first6Digits)) {
+                API binServiceClient = RetroFitClient.getClientWithUrl("https://citrusapi.citruspay.com");
+                binServiceClient.getBinInfo(first6Digits, new retrofit.Callback<Response>() {
+                    @Override
+                    public void success(Response response, Response response2) {
+                        String binServiceJSON = new String(((TypedByteArray) response.getBody()).getBytes());
+                        BinServiceResponse binServiceResponse = BinServiceResponse.fromJSON(binServiceJSON);
+                        if (binServiceResponse != null) {
+                            netBankForOTP = binServiceResponse.getNetBankForOTP();
+                            // Send Response.
+                            sendResponse(callback, binServiceResponse);
+                        } else {
+                            sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        sendError(callback, error);
+                    }
+                });
+            } else {
+                sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
+            }
+        } else {
+            sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
+        }
+    }
+
+    /**
+     * Internal.
+     * Returns the netbank for OTP which will be used to detect the bank for which auto OTP is being processed.
+     */
+    public NetBankForOTP getNetBankForOTP() {
+        return netBankForOTP;
     }
 
     public synchronized String getUserEmailId() {
@@ -2068,6 +2118,9 @@ public class CitrusClient {
             @Override
             public void onReceive(Context context, Intent intent) {
                 unregisterReceiver(this);
+
+                // Reset it to unknown.
+                netBankForOTP = NetBankForOTP.UNKNOWN;
 
                 TransactionResponse transactionResponse = intent.getParcelableExtra(Constants.INTENT_EXTRA_TRANSACTION_RESPONSE);
                 if (transactionResponse != null) {
