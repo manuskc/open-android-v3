@@ -37,6 +37,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     private Button otpResendBtn = null;
     private Button otpConfirmBtn = null;
     private TextView cancelTransactionTxtView = null;
+    private boolean otpViewToggleStatus = false;
 
     public OTPPopupView(Context context) {
         super(context);
@@ -64,6 +65,14 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
 
     public void setOTP(String otp) {
 
+    }
+
+    public void setOtpViewToggleStatus(boolean toggle){
+        this.otpViewToggleStatus = toggle;
+    }
+
+    public boolean getOtpViewToggleStatus(){
+        return otpViewToggleStatus;
     }
 
     public void setListener(OTPViewListener listener) {

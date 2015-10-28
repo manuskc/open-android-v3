@@ -36,9 +36,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -50,6 +53,7 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.citrus.analytics.EventsManager;
@@ -143,12 +147,22 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setContentView(R.layout.activity_citrus);
 
+
         mOTPPopupView = (OTPPopupView)findViewById(R.id.otpPopupViewId);
         otpPopupCancelImgView = (ImageView)findViewById(R.id.otpPopupCancelImgViewId);
         otpPopupCancelImgView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {otpPopupCancelImgView.setVisibility(View.GONE);
-             dismissOtpPopup();
+            public void onClick(View v) {
+                if(mOTPPopupView.getOtpViewToggleStatus()){
+                    mOTPPopupView.setVisibility(View.VISIBLE);
+                    mOTPPopupView.setOtpViewToggleStatus(false);
+                    otpPopupCancelImgView.setBackgroundResource(R.drawable.arrow_down_icon);
+                }else{
+                    mOTPPopupView.setVisibility(View.GONE);
+                    mOTPPopupView.setOtpViewToggleStatus(true);
+                    otpPopupCancelImgView.setBackgroundResource(R.drawable.arrow_up_icon);
+                }
+
             }
         });
         mOTPPopupView.setListener(this);
@@ -327,7 +341,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         mOTPPopupView.setVisibility(View.GONE);
     }
 
-    private void displayOtpPopup() {
+    private void
+    displayOtpPopup() {
         mOTPPopupView.setVisibility(View.VISIBLE);
     }
 
@@ -531,6 +546,10 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onBackPressed() {
 
+        handleCancelTransaction();
+    }
+
+    private void handleCancelTransaction() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // Add the buttons
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -645,10 +664,43 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void onCancelClicked() {
-        dismissOtpPopup();
         isBackKeyPressedByUser = true;
-        mPaymentWebview.loadUrl(mpiServletUrl);
+//        mPaymentWebview.loadUrl(mpiServletUrl);
+        handleCancelTransaction();
     }
+
+//    private void showOtpView() {
+//        TranslateAnimation slideUp;
+//
+//        DisplayMetrics displaymetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+//        int screenHeight = displaymetrics.heightPixels;
+//
+//        slideUp = new TranslateAnimation(0,0,screenHeight,-mOTPPopupView.getY());
+//        slideUp.setDuration(500);
+//        slideUp.setFillAfter(true);
+//        slideUp.setFillEnabled(true);
+//
+//        mOTPPopupView.startAnimation(slideUp);
+//        mOTPPopupView.setOtpViewToggleStatus(false);
+//    }
+//
+//    private void hideOtpView() {
+//
+//        TranslateAnimation slideDown;
+//
+//        DisplayMetrics displaymetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+//        int screenHeight = displaymetrics.heightPixels;
+//
+//        slideDown = new TranslateAnimation(0,0,mOTPPopupView.getY(),screenHeight+mOTPPopupView.getY());
+//        slideDown.setDuration(500);
+//        slideDown.setFillAfter(true);
+//        slideDown.setFillEnabled(true);
+//
+//        mOTPPopupView.startAnimation(slideDown);
+//        mOTPPopupView.setOtpViewToggleStatus(true);
+//    }
 
     @Override
     public void onProcessTransactionClicked() {
