@@ -193,9 +193,9 @@ public class CitrusClient {
             Config.setEnv(environment.toString().toLowerCase());
 
             Logger.d("VANITY*** " + vanity);
-            EventsManager.logInitSDKEvents(mContext);
+//            EventsManager.logInitSDKEvents(mContext);
 
-            fetchPGHealthForAllBanks();
+//            fetchPGHealthForAllBanks();
 
             getMerchantPaymentOptions(null);
 
