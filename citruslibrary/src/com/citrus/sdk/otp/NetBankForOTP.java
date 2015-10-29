@@ -186,13 +186,14 @@ public enum NetBankForOTP {
         @Override
         public String getEnterPasswordJS() {
             // TODO:
-            return null;
+            return "javascript:document.getElementById('uid_tb_r').checked=true; showdiv('uid_tb');";
+//            return null;
         }
 
         @Override
         public String getSendOTPJS() {
             // TODO:
-            return null;
+            return "javascript:document.getElementById('otp_tb_r').checked=true; OnSubmitHandler1();";
         }
 
         @Override

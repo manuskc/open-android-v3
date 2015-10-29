@@ -127,6 +127,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private ImageView otpPopupCancelImgView = null;
     private boolean autoOTPEnabled = false;
     private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
+    private String otp;
 
 
     @Override
@@ -149,16 +150,16 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setContentView(R.layout.activity_citrus);
 
-        mOTPPopupView = (OTPPopupView)findViewById(R.id.otpPopupViewId);
-        otpPopupCancelImgView = (ImageView)findViewById(R.id.otpPopupCancelImgViewId);
+        mOTPPopupView = (OTPPopupView) findViewById(R.id.otpPopupViewId);
+        otpPopupCancelImgView = (ImageView) findViewById(R.id.otpPopupCancelImgViewId);
         otpPopupCancelImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mOTPPopupView.getOtpViewToggleStatus()){
+                if (mOTPPopupView.getOtpViewToggleStatus()) {
                     mOTPPopupView.setVisibility(View.VISIBLE);
                     mOTPPopupView.setOtpViewToggleStatus(false);
                     otpPopupCancelImgView.setBackgroundResource(R.drawable.arrow_down_icon);
-                }else{
+                } else {
                     mOTPPopupView.setVisibility(View.GONE);
                     mOTPPopupView.setOtpViewToggleStatus(true);
                     otpPopupCancelImgView.setBackgroundResource(R.drawable.arrow_up_icon);
@@ -549,7 +550,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     }
 
     private void autoOtpReceived(Intent intent) {
-        String otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
+        otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
         otpProcessTransactionJS = String.format(netBankForOTP.getTransactionJS(), otp);
 
         Logger.d("OTP : %s, js : %s", otp, otpProcessTransactionJS);
@@ -558,7 +559,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     private void displayOtpPopup() {
         // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
-        if (autoOTPEnabled && mPaymentOption instanceof CardOption) {
+        if (autoOTPEnabled && mPaymentOption instanceof CardOption && netBankForOTP != NetBankForOTP.UNKNOWN) {
             mOTPPopupView.setVisibility(View.VISIBLE);
         }
     }
@@ -566,7 +567,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private void dismissOtpPopup() {
         mOTPPopupView.setVisibility(View.GONE);
     }
-    
+
     private void fetchBinRequestData(CardOption cardOption) {
         mCitrusClient.getBINDetails(cardOption, new com.citrus.sdk.Callback<BinServiceResponse>() {
             @Override
@@ -693,14 +694,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onSendOtpClicked() {
         Toast.makeText(this, "onSendOtpClicked", Toast.LENGTH_SHORT).show();
-
-        NetBankForOTP netBankForOTP = NetBankForOTP.KOTAK;
-        mPaymentWebview.loadUrl(netBankForOTP.getTransactionJS());
+        mPaymentWebview.loadUrl(netBankForOTP.getSendOTPJS());
     }
 
     @Override
     public void onGeneratePasswordClicked() {
 
+        String enterPwdJS = netBankForOTP.getEnterPasswordJS();
+        mPaymentWebview.loadUrl(enterPwdJS);
         Toast.makeText(this, "onGeneratePasswordClicked", Toast.LENGTH_SHORT).show();
     }
 
@@ -709,6 +710,21 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         isBackKeyPressedByUser = true;
 //        mPaymentWebview.loadUrl(mpiServletUrl);
         handleCancelTransaction();
+    }
+
+    @Override
+    public void onProcessTransactionClicked() {
+        // Load the js to process the transaction.
+
+        String js = String.format(netBankForOTP.getTransactionJS(), otp);
+        mPaymentWebview.loadUrl(js
+
+        );
+    }
+
+    @Override
+    public void onResendOTPClicked() {
+        Toast.makeText(this, "onResendOTPClicked", Toast.LENGTH_SHORT).show();
     }
 
 //    private void showOtpView() {
@@ -744,16 +760,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 //        mOTPPopupView.setOtpViewToggleStatus(true);
 //    }
 
-    @Override
-    public void onProcessTransactionClicked() {
-        // Load the js to process the transaction.
-        mPaymentWebview.loadUrl(otpProcessTransactionJS);
-    }
-
-    @Override
-    public void onResendOTPClicked() {
-        Toast.makeText(this, "onResendOTPClicked", Toast.LENGTH_SHORT).show();
-    }
 
     /**
      * Handle all the Webview loading in custom webview client.
