@@ -146,7 +146,7 @@ public class SavedOptionsFragment extends Fragment {
 
             @Override
             public void error(CitrusError error) {
-                Utils.showToast(getActivity(), error.getMessage());
+                ((UIActivity) getActivity()).showSnackBar(error.getMessage());
             }
         });
     }
@@ -181,7 +181,7 @@ public class SavedOptionsFragment extends Fragment {
             citrusClient.deletePaymentOption(paymentOption, new Callback<CitrusResponse>() {
                 @Override
                 public void success(CitrusResponse citrusResponse) {
-                    Utils.showToast(getActivity(), citrusResponse.getMessage());
+                    ((UIActivity) getActivity()).showSnackBar(citrusResponse.getMessage());
 
                     walletList.clear();
                     savedOptionsAdapter.notifyDataSetChanged();
@@ -190,7 +190,7 @@ public class SavedOptionsFragment extends Fragment {
 
                 @Override
                 public void error(CitrusError error) {
-                    Utils.showToast(getActivity(), error.getMessage());
+                    ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                 }
             });
         }
@@ -232,7 +232,7 @@ public class SavedOptionsFragment extends Fragment {
 
                 @Override
                 public void error(CitrusError error) {
-                    Utils.showToast(getActivity(), error.getMessage());
+                    ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                 }
             };
 
@@ -247,7 +247,7 @@ public class SavedOptionsFragment extends Fragment {
             } catch (CitrusException e) {
                 e.printStackTrace();
 
-                Utils.showToast(getActivity(), e.getMessage());
+                ((UIActivity) getActivity()).showSnackBar(e.getMessage());
             }
         }
     }
@@ -320,12 +320,12 @@ public class SavedOptionsFragment extends Fragment {
                     CitrusClient.getInstance(getActivity()).pgPayment(dynamicPricingResponse, new Callback<TransactionResponse>() {
                         @Override
                         public void success(TransactionResponse transactionResponse) {
-                            Utils.showToast(getActivity(), transactionResponse.getMessage());
+                            ((UIActivity) getActivity()).showSnackBar(transactionResponse.getMessage());
                         }
 
                         @Override
                         public void error(CitrusError error) {
-                            Utils.showToast(getActivity(), error.getMessage());
+                            ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                         }
                     });
 

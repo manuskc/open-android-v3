@@ -214,7 +214,7 @@ public final class NetbankingFragment extends Fragment {
 
                     @Override
                     public void error(CitrusError error) {
-                        Utils.showToast(getActivity(), error.getMessage());
+                        ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                     }
                 };
 
@@ -229,7 +229,7 @@ public final class NetbankingFragment extends Fragment {
                 } catch (CitrusException e) {
                     e.printStackTrace();
 
-                    Utils.showToast(getActivity(), e.getMessage());
+                    ((UIActivity) getActivity()).showSnackBar(e.getMessage());
                 }
             }
         }
@@ -267,12 +267,12 @@ public final class NetbankingFragment extends Fragment {
                     CitrusClient.getInstance(getActivity()).pgPayment(dynamicPricingResponse, new Callback<TransactionResponse>() {
                         @Override
                         public void success(TransactionResponse transactionResponse) {
-                            Utils.showToast(getActivity(), transactionResponse.getMessage());
+                            ((UIActivity) getActivity()).showSnackBar(transactionResponse.getMessage());
                         }
 
                         @Override
                         public void error(CitrusError error) {
-                            Utils.showToast(getActivity(), error.getMessage());
+                            ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                         }
                     });
 

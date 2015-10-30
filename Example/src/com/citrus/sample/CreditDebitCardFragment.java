@@ -3,6 +3,7 @@ package com.citrus.sample;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -174,7 +175,7 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
 
                 @Override
                 public void error(CitrusError error) {
-                    Utils.showToast(getActivity(), error.getMessage());
+                    ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                 }
             };
 
@@ -203,7 +204,7 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
             } catch (CitrusException e) {
                 e.printStackTrace();
 
-                Utils.showToast(getActivity(), e.getMessage());
+                ((UIActivity) getActivity()).showSnackBar(e.getMessage());
             }
         }
     }
@@ -212,12 +213,12 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
         citrusClient.savePaymentOption(paymentOption, new Callback<CitrusResponse>() {
             @Override
             public void success(CitrusResponse citrusResponse) {
-                Utils.showToast(getActivity(), citrusResponse.getMessage());
+                ((UIActivity) getActivity()).showSnackBar(citrusResponse.getMessage());
             }
 
             @Override
             public void error(CitrusError error) {
-                Utils.showToast(getActivity(), error.getMessage());
+                ((UIActivity) getActivity()).showSnackBar(error.getMessage());
             }
         });
     }
@@ -254,12 +255,12 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
                     CitrusClient.getInstance(getActivity()).pgPayment(dynamicPricingResponse, new Callback<TransactionResponse>() {
                         @Override
                         public void success(TransactionResponse transactionResponse) {
-                            Utils.showToast(getActivity(), transactionResponse.getMessage());
+                            ((UIActivity) getActivity()).showSnackBar(transactionResponse.getMessage());
                         }
 
                         @Override
                         public void error(CitrusError error) {
-                            Utils.showToast(getActivity(), error.getMessage());
+                            ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                         }
                     });
 
