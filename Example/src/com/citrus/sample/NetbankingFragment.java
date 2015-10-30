@@ -205,7 +205,6 @@ public final class NetbankingFragment extends Fragment {
 //                });
             } else {
 
-                PaymentType paymentType1;
                 Callback<TransactionResponse> callback = new Callback<TransactionResponse>() {
                     @Override
                     public void success(TransactionResponse transactionResponse) {
