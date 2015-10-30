@@ -1,5 +1,7 @@
 package com.citrus.sample;
 
+import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.citrus.sdk.payment.CardOption;
+import com.citrus.sdk.payment.CitrusCash;
 import com.citrus.sdk.payment.NetbankingOption;
 import com.citrus.sdk.payment.PaymentOption;
 
@@ -18,8 +21,10 @@ import java.util.ArrayList;
 final class SavedOptionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ArrayList<PaymentOption> mWalletList = null;
+    Activity mActivity = null;
 
-    public SavedOptionsAdapter(ArrayList<PaymentOption> walletList) {
+    public SavedOptionsAdapter(Activity activity,ArrayList<PaymentOption> walletList) {
+        this.mActivity = activity;
         this.mWalletList = walletList;
     }
 
@@ -47,11 +52,18 @@ final class SavedOptionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             if (paymentOption instanceof NetbankingOption) {
                 itemHolder.paymentOptionName.setText(((NetbankingOption) paymentOption).getBankName());
-                itemHolder.paymentOptionBankName.setVisibility(View.GONE);
+                Drawable mNetBankIconDrawable = paymentOption.getOptionIcon(mActivity);
+                itemHolder.paymentOptionName.setCompoundDrawablesWithIntrinsicBounds(mNetBankIconDrawable, null, null, null);
 
             } else if (paymentOption instanceof CardOption) {
                 itemHolder.paymentOptionName.setText(((CardOption) paymentOption).getCardNumber());
+                Drawable mCardIconDrawable = paymentOption.getOptionIcon(mActivity);
+                itemHolder.paymentOptionName.setCompoundDrawablesWithIntrinsicBounds(mCardIconDrawable, null, null, null);
                 itemHolder.paymentOptionBankName.setText(paymentOption.getName());
+            }
+            if (paymentOption instanceof CitrusCash) {
+                itemHolder.paymentOptionName.setText(paymentOption.getName());
+                itemHolder.paymentOptionBankName.setVisibility(View.GONE);
             }
         }
     }

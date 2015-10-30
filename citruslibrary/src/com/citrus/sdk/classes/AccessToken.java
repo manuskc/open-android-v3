@@ -38,6 +38,13 @@ public class AccessToken {
     private int expiresIn;
     @Expose
     private String scope;
+    @SerializedName("refresh_token")
+    private String refreshToken;
+    @SerializedName("client_type")
+    @Expose
+    private String clientType;
+    @SerializedName("Prepaid_Pay_Token")
+    private AccessToken prepaidPayToken;
 
     public String getRefreshToken() {
         return refreshToken;
@@ -47,13 +54,8 @@ public class AccessToken {
         this.refreshToken = refreshToken;
     }
 
-    @SerializedName("refresh_token")
-    private String refreshToken;
-
     /**
-     *
-     * @return
-     * The accessToken
+     * @return The accessToken
      */
     public String getAccessToken() {
         return accessToken;
@@ -64,69 +66,69 @@ public class AccessToken {
     }
 
     /**
-     *
-     * @param accessToken
-     * The access_token
+     * @param accessToken The access_token
      */
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
     /**
-     *
-     * @return
-     * The tokenType
+     * @return The tokenType
      */
     public String getTokenType() {
         return tokenType;
     }
 
     /**
-     *
-     * @param tokenType
-     * The token_type
+     * @param tokenType The token_type
      */
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
     }
 
     /**
-     *
-     * @return
-     * The expiresIn
+     * @return The expiresIn
      */
     public int getExpiresIn() {
         return expiresIn;
     }
 
     /**
-     *
-     * @param expiresIn
-     * The expires_in
+     * @param expiresIn The expires_in
      */
     public void setExpiresIn(int expiresIn) {
         this.expiresIn = expiresIn;
     }
 
     /**
-     *
-     * @return
-     * The scope
+     * @return The scope
      */
     public String getScope() {
         return scope;
     }
 
     /**
-     *
-     * @param scope
-     * The scope
+     * @param scope The scope
      */
     public void setScope(String scope) {
         this.scope = scope;
     }
 
+    public String getClientType() {
+        return clientType;
+    }
 
+    public void setClientType(String clientType) {
+        this.clientType = clientType;
+    }
+
+    public AccessToken getPrepaidPayToken() {
+        return prepaidPayToken;
+    }
+
+    public void setPrepaidPayToken(AccessToken prepaidPayToken) {
+        this.prepaidPayToken = prepaidPayToken;
+    }
 
     public JSONObject getJSON() {
         final Gson gson = new Gson();

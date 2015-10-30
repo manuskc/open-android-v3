@@ -52,6 +52,11 @@ public final class TransactionResponse implements Parcelable {
     private boolean COD = false; // Cash On Delivery
     private Map<String, String> customParamsMap = null;
     private String jsonResponse = null;
+    private Amount originalAmount = null;
+    private Amount adjustedAmount = null;
+    private String dpRuleName = null;
+    private String couponCode = null;
+    private String dpRuleType = null;
 
     private TransactionResponse() {
 
@@ -104,69 +109,41 @@ public final class TransactionResponse implements Parcelable {
         this.customParamsMap = customParamsMap;
     }
 
+
+    private TransactionResponse(Amount transactionAmount, String message, String responseCode, TransactionStatus transactionStatus, TransactionDetails transactionDetails, CitrusUser citrusUser, PaymentMode paymentMode, String issuerCode, String impsMobileNumber, String impsMmid, String authIdCode, String signature, boolean COD, String maskedCardNumber, Map<String, String> customParamsMap, Amount originalAmount, Amount adjustedAmount, String dpRuleName, String couponCode, String dpRuleType) {
+        this.transactionAmount = transactionAmount;
+        this.message = message;
+        this.responseCode = responseCode;
+        this.transactionStatus = transactionStatus;
+        this.transactionDetails = transactionDetails;
+        this.citrusUser = citrusUser;
+        this.paymentMode = paymentMode;
+        this.issuerCode = issuerCode;
+        this.impsMobileNumber = impsMobileNumber;
+        this.impsMmid = impsMmid;
+        this.authIdCode = authIdCode;
+        this.signature = signature;
+        this.maskedCardNumber = maskedCardNumber;
+        this.COD = COD;
+        this.customParamsMap = customParamsMap;
+        this.originalAmount = originalAmount;
+        this.adjustedAmount = adjustedAmount;
+        this.dpRuleName = dpRuleName;
+        this.couponCode = couponCode;
+        this.dpRuleType = dpRuleType;
+    }
+
     public static TransactionResponse fromJSON(String response, Map<String, String> customParamsOriginalMap) {
         TransactionResponse transactionResponse = null;
-
         try {
-            if (response != null) {
-                JSONObject jsonObject = new JSONObject(response);
 
-                // If there is an error.
-                if (jsonObject.optString("Error", null) != null) {
-                    String reason = jsonObject.optString("Reason", "Transaction Failed");
-                    transactionResponse = new TransactionResponse(TransactionStatus.FAILED, reason, null);
-                } else {
-                    PaymentMode paymentMode = PaymentMode.getPaymentMode(jsonObject.optString("paymentMode"));
-                    TransactionStatus transactionStatus = TransactionStatus.getTransactionStatus(jsonObject.optString("TxStatus"));
-                    String currency = jsonObject.optString("currency");
-                    String amount = jsonObject.optString("amount");
-                    String responseCode = jsonObject.optString("pgRespCode");
-                    String message;
-                    // If the transaction is cancelled by the user, change the message.
-                    if (transactionStatus == TransactionStatus.CANCELLED) {
-                        message = "Transaction Cancelled.";
-                    } else {
-                        message = jsonObject.optString("TxMsg");
-                    }
-
-                    String isCOD = jsonObject.optString("isCOD");
-                    String signature = jsonObject.optString("signature");
-                    String issuerCode = jsonObject.optString("issuerCode");
-                    String impsMmid = jsonObject.optString("impsMmid");
-                    String impsMobileNumber = jsonObject.optString("impsMobileNumber");
-                    String authIdCode = jsonObject.optString("authIdCode");
-                    String maskedcardNumber = jsonObject.optString("maskedcardNumber");
-                    // TODO Need to parse custom parameters
-                    Map<String, String> customParamsMap = null;
-
-                    if (customParamsOriginalMap != null) {
-                        Set<String> keys = customParamsOriginalMap.keySet();
-                        for (String key : keys) {
-                            if (customParamsMap == null) {
-                                customParamsMap = new HashMap<>();
-                            }
-
-                            customParamsMap.put(key, jsonObject.optString(key));
-                        }
-                    }
-
-                    TransactionDetails transactionDetails = TransactionDetails.fromJSONObject(jsonObject);
-                    CitrusUser citrusUser = CitrusUser.fromJSONObject(jsonObject);
-                    boolean cod = "true".equalsIgnoreCase(isCOD);
-
-                    Amount transactionAmount = new Amount(amount, currency);
-
-                    transactionResponse = new TransactionResponse(transactionAmount, message, responseCode, transactionStatus, transactionDetails, citrusUser, paymentMode, issuerCode, impsMobileNumber, impsMmid, authIdCode, signature, cod, maskedcardNumber, customParamsMap);
-                    transactionResponse.setJsonResponse(jsonObject.toString());
-
-                }
-            }
+            JSONObject jsonObject = new JSONObject(response);
+            transactionResponse = fromJSONObject(jsonObject, customParamsOriginalMap);
         } catch (JSONException ex) {
             ex.printStackTrace();
             transactionResponse = new TransactionResponse();
             transactionResponse.setJsonResponse(response);
         }
-
         return transactionResponse;
     }
 
@@ -174,8 +151,74 @@ public final class TransactionResponse implements Parcelable {
         return fromJSON(response, null);
     }
 
+    public static TransactionResponse fromJSONObject(JSONObject jsonObject, Map<String, String> customParamsOriginalMap) {
+        TransactionResponse transactionResponse = null;
+
+        if (jsonObject != null) {
+            // If there is an error.
+            if (jsonObject.optString("Error", null) != null) {
+                String reason = jsonObject.optString("Reason", "Transaction Failed");
+                transactionResponse = new TransactionResponse(TransactionStatus.FAILED, reason, null);
+            } else {
+                PaymentMode paymentMode = PaymentMode.getPaymentMode(jsonObject.optString("paymentMode"));
+                TransactionStatus transactionStatus = TransactionStatus.getTransactionStatus(jsonObject.optString("TxStatus"));
+                String currency = jsonObject.optString("currency");
+                String amount = jsonObject.optString("amount");
+                String responseCode = jsonObject.optString("pgRespCode");
+                String message;
+                // If the transaction is cancelled by the user, change the message.
+                if (transactionStatus == TransactionStatus.CANCELLED) {
+                    message = "Transaction Cancelled.";
+                } else {
+                    message = jsonObject.optString("TxMsg");
+                }
+
+                String isCOD = jsonObject.optString("isCOD");
+                String signature = jsonObject.optString("signature");
+                String issuerCode = jsonObject.optString("issuerCode");
+                String impsMmid = jsonObject.optString("impsMmid");
+                String impsMobileNumber = jsonObject.optString("impsMobileNumber");
+                String authIdCode = jsonObject.optString("authIdCode");
+                String maskedcardNumber = jsonObject.optString("maskedcardNumber");
+                // TODO Need to parse custom parameters
+                Map<String, String> customParamsMap = null;
+
+                if (customParamsOriginalMap != null) {
+                    Set<String> keys = customParamsOriginalMap.keySet();
+                    for (String key : keys) {
+                        if (customParamsMap == null) {
+                            customParamsMap = new HashMap<>();
+                        }
+
+                        customParamsMap.put(key, jsonObject.optString(key));
+                    }
+                }
+
+                TransactionDetails transactionDetails = TransactionDetails.fromJSONObject(jsonObject);
+                CitrusUser citrusUser = CitrusUser.fromJSONObject(jsonObject);
+                boolean cod = "true".equalsIgnoreCase(isCOD);
+
+                Amount transactionAmount = new Amount(amount, currency);
+
+                transactionResponse = new TransactionResponse(transactionAmount, message, responseCode, transactionStatus, transactionDetails, citrusUser, paymentMode, issuerCode, impsMobileNumber, impsMmid, authIdCode, signature, cod, maskedcardNumber, customParamsMap);
+                transactionResponse.setJsonResponse(jsonObject.toString());
+
+            }
+        }
+
+        return transactionResponse;
+    }
+
     public TransactionStatus getTransactionStatus() {
         return transactionStatus;
+    }
+
+    public String getTransactionId() {
+        if (transactionDetails != null) {
+            return transactionDetails.getTransactionId();
+        }
+
+        return null;
     }
 
     public CitrusUser getCitrusUser() {
@@ -230,6 +273,30 @@ public final class TransactionResponse implements Parcelable {
         return signature;
     }
 
+    public String getMaskedCardNumber() {
+        return maskedCardNumber;
+    }
+
+    public Amount getOriginalAmount() {
+        return originalAmount;
+    }
+
+    public Amount getAdjustedAmount() {
+        return adjustedAmount;
+    }
+
+    public String getDpRuleName() {
+        return dpRuleName;
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public String getDpRuleType() {
+        return dpRuleType;
+    }
+
     public Map<String, String> getCustomParamsMap() {
         return customParamsMap;
     }
@@ -250,7 +317,7 @@ public final class TransactionResponse implements Parcelable {
     }
 
 
-    private void setJsonResponse(String jsonResponse) {
+    public void setJsonResponse(String jsonResponse) {
         this.jsonResponse = jsonResponse;
     }
 
@@ -271,13 +338,20 @@ public final class TransactionResponse implements Parcelable {
                 ", impsMmid='" + impsMmid + '\'' +
                 ", authIdCode='" + authIdCode + '\'' +
                 ", signature='" + signature + '\'' +
+                ", maskedCardNumber='" + maskedCardNumber + '\'' +
                 ", COD=" + COD +
                 ", customParamsMap=" + customParamsMap +
+                ", jsonResponse='" + jsonResponse + '\'' +
+                ", originalAmount=" + originalAmount +
+                ", adjustedAmount=" + adjustedAmount +
+                ", dpRuleName='" + dpRuleName + '\'' +
+                ", couponCode='" + couponCode + '\'' +
+                ", dpRuleType='" + dpRuleType + '\'' +
                 '}';
     }
 
     public enum PaymentMode {
-        NET_BANKING, CREDIT_CARD, DEBIT_CARD;
+        NET_BANKING, CREDIT_CARD, DEBIT_CARD, PREPAID_CARD;
 
         public static PaymentMode getPaymentMode(String paymentMode) {
             PaymentMode mode = null;
@@ -287,6 +361,8 @@ public final class TransactionResponse implements Parcelable {
                 mode = CREDIT_CARD;
             } else if (TextUtils.equals(paymentMode, "DEBIT_CARD")) {
                 mode = DEBIT_CARD;
+            } else if (TextUtils.equals(paymentMode, "PREPAID_CARD")) {
+                mode = PREPAID_CARD;
             }
 
             return mode;
@@ -298,7 +374,7 @@ public final class TransactionResponse implements Parcelable {
 
         public static TransactionStatus getTransactionStatus(String transactionStatus) {
             TransactionStatus status = UNKNOWN;
-            if (TextUtils.equals(transactionStatus, "SUCCESS")) {
+            if (TextUtils.equals(transactionStatus, "SUCCESS") || TextUtils.equals(transactionStatus, "SUCCESSFUL")) {
                 status = SUCCESSFUL;
             } else if (TextUtils.equals(transactionStatus, "FAIL")) {
                 status = FAILED;

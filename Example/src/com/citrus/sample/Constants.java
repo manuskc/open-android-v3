@@ -16,7 +16,12 @@ public interface Constants {
     String SIGNIN_SECRET = "f66e1821ddf5c01e77f720c81a9fb7bd";
     String VANITY = "81el60uyh9";
     Environment environment = Environment.SANDBOX;
+<<<<<<< HEAD
+
+    boolean enableLogging = false;
+=======
     boolean enableLogging = true;
+>>>>>>> origin/automation
 
     String colorPrimaryDark = "#E7961D";
     String colorPrimary = "#F9A323";

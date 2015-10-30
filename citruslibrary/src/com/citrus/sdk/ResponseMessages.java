@@ -37,11 +37,11 @@ public interface ResponseMessages {
     String ERROR_MESSAGE_BLANK_EMAIL_ID_MOBILE_NO = "Please enter emaild id or the mobile no of your friend to send the money";
     String ERROR_MESSAGE_BLANK_MOBILE_NO = "Please enter the mobile no of your friend to send the money";
     String ERROR_MESSAGE_BLANK_AMOUNT = "Please enter the amount to be sent.";
-    String ERROR_MESSAGE_INVALID_JSON = "ERROR: Invlid json received.";
+    String ERROR_MESSAGE_INVALID_JSON = "ERROR: Invalid json received.";
     String ERROR_MESSAGE_FAILED_MERCHANT_PAYMENT_OPTIONS = "ERROR: Unable to fetch merchant payment options";
     String ERROR_MESSAGE_BLANK_CONFIG_PARAMS = "Please make sure SignIn Id, SignIn Secret, SignUp Id, SignUp Secret & Vanity";
     String ERROR_MESSAGE_INVALID_MOBILE_NO = "Invalid Mobile No";
-    String ERROR_MESSAGE_NULL_PAYMENT_OPTION = "ERROR: PaymentOption is null.";
+    String ERROR_MESSAGE_NULL_PAYMENT_OPTION = "PaymentOption is null.";
     String ERROR_SIGNUP_TOKEN_NOT_FOUND = "Have you done SignUp? Token not found.!!!";
     String ERROR_SIGNIN_TOKEN_NOT_FOUND = "Have you done SignIn? Token not found.!!!";
 
@@ -62,5 +62,6 @@ public interface ResponseMessages {
     String ERROR_MESSAGE_INVALID_CASHOUT_INFO = "Please make sure amount, accoutNo, accountHolderName and ifscCode are not null or empty.";
 
     String ERROR_MESSAGE_INVALID_PASSWORD = "Invalid Credentials!!! Please check your passsword.";
-
+    String ERROR_MESSAGE_BLANK_NULL_DP_PARAMS = "DynamicPriceRequestType, Bill Url or PaymentBill should not be null";
+    String ERROR_MESSAGE_NULL_DYNAMIC_RESPONSE = "Dynamic Pricing Response can not be null";
 }

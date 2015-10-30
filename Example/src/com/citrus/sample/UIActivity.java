@@ -31,6 +31,7 @@ import com.citrus.sdk.TransactionResponse;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.CashoutInfo;
 import com.citrus.sdk.classes.CitrusConfig;
+import com.citrus.sdk.classes.CitrusException;
 import com.citrus.sdk.payment.PaymentType;
 import com.citrus.sdk.response.CitrusError;
 import com.citrus.sdk.response.CitrusResponse;
@@ -132,8 +133,10 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
                         showSnackBar(error.getMessage());
                     }
                 });
-            } catch (Exception e) {
+            } catch (CitrusException e) {
                 e.printStackTrace();
+
+                Utils.showToast(UIActivity.this, e.getMessage());
             }
         } else {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
@@ -143,6 +146,16 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }
+    }
+
+    @Override
+    public void onPaymentTypeSelected(Utils.DPRequestType dpRequestType, Amount originalAmount, String couponCode, Amount alteredAmount) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .replace(R.id.container, CardPaymentFragment.newInstance(dpRequestType, originalAmount, couponCode, alteredAmount));
+
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override

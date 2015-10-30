@@ -29,7 +29,10 @@ public class CardPaymentFragment extends Fragment {
 
     private static final String[] OPTIONS = new String[]{"SAVED\nACCOUNTS", "CREDIT\nCARD", "DEBIT\nCARD", "NET\nBANKING"};
     private Utils.PaymentType paymentType = null;
+    private Utils.DPRequestType dpRequestType = null;
     private Amount amount = null;
+    private String couponCode = null;
+    private Amount alteredAmount = null;
 
     /**
      * Use this factory method to create a new instance of
@@ -47,6 +50,18 @@ public class CardPaymentFragment extends Fragment {
         return fragment;
     }
 
+    public static CardPaymentFragment newInstance(Utils.DPRequestType dpRequestType, Amount originalAmount, String couponCode, Amount alteredAmount) {
+        CardPaymentFragment fragment = new CardPaymentFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("paymentType", Utils.PaymentType.DYNAMIC_PRICING);
+        bundle.putSerializable("dpRequestType", dpRequestType);
+        bundle.putParcelable("amount", originalAmount);
+        bundle.putParcelable("alteredAmount", alteredAmount);
+        bundle.putString("couponCode", couponCode);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     public CardPaymentFragment() {
         // Required empty public constructor
     }
@@ -58,7 +73,10 @@ public class CardPaymentFragment extends Fragment {
         if (getArguments() != null) {
             Bundle bundle = getArguments();
             paymentType = (Utils.PaymentType) bundle.getSerializable("paymentType");
+            dpRequestType = (Utils.DPRequestType) bundle.getSerializable("dpRequestType");
             amount = bundle.getParcelable("amount");
+            alteredAmount = bundle.getParcelable("alteredAmount");
+            couponCode = bundle.getString("couponCode");
         }
     }
 
@@ -94,14 +112,30 @@ public class CardPaymentFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return SavedOptionsFragment.newInstance(paymentType, amount);
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    return SavedOptionsFragment.newInstance(dpRequestType, amount, couponCode, alteredAmount);
+                } else {
+                    return SavedOptionsFragment.newInstance(paymentType, amount);
+                }
             } else if (position == 1) {
-                return CreditDebitCardFragment.newInstance(paymentType, CType.CREDIT, amount);
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    return CreditDebitCardFragment.newInstance(dpRequestType, CType.CREDIT, amount, couponCode, alteredAmount);
+                } else {
+                    return CreditDebitCardFragment.newInstance(paymentType, CType.CREDIT, amount);
+                }
             }
             if (position == 2) {
-                return CreditDebitCardFragment.newInstance(paymentType, CType.DEBIT, amount);
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    return CreditDebitCardFragment.newInstance(dpRequestType, CType.DEBIT, amount, couponCode, alteredAmount);
+                } else {
+                    return CreditDebitCardFragment.newInstance(paymentType, CType.DEBIT, amount);
+                }
             } else {
-                return NetbankingFragment.newInstance(paymentType, amount);
+                if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
+                    return NetbankingFragment.newInstance(dpRequestType, amount, couponCode, alteredAmount);
+                } else {
+                    return NetbankingFragment.newInstance(paymentType, amount);
+                }
             }
         }
 

@@ -1,0 +1,2 @@
+include ':payment-sdk'
+project(':payment-sdk').projectDir = new File('citruslibrary')

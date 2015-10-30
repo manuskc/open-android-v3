@@ -26,9 +26,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.citrus.sdk.Callback;
@@ -65,6 +68,7 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
     private Button btnGetWithdrawInfo = null;
     private Button btnWithdraw = null;
     private Button btnSendMoney = null;
+    private Button btnPerformDP = null;
 
     /**
      * Use this factory method to create a new instance of
@@ -106,6 +110,7 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         btnWithdraw = (Button) rootView.findViewById(R.id.btn_cashout);
         btnGetWithdrawInfo = (Button) rootView.findViewById(R.id.btn_get_cashout_info);
         btnSendMoney = (Button) rootView.findViewById(R.id.btn_send_money);
+        btnPerformDP = (Button) rootView.findViewById(R.id.btn_perform_dp);
 
         btnGetBalance.setOnClickListener(this);
         btnLoadMoney.setOnClickListener(this);
@@ -114,6 +119,8 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         btnGetWithdrawInfo.setOnClickListener(this);
         btnWithdraw.setOnClickListener(this);
         btnSendMoney.setOnClickListener(this);
+        btnPerformDP.setOnClickListener(this);
+        btnPerformDP.setVisibility(View.GONE);
 
         return rootView;
     }
@@ -159,6 +166,9 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
                 break;
             case R.id.btn_send_money:
                 sendMoney();
+                break;
+            case R.id.btn_perform_dp:
+                performDP();
                 break;
         }
     }
@@ -212,6 +222,10 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         showSendMoneyPrompt();
     }
 
+    private void performDP() {
+        showDynamicPricingPrompt();
+    }
+
     private void showPrompt(final Utils.PaymentType paymentType) {
         final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         String message = null;
@@ -234,11 +248,6 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
 
         LinearLayout linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        final EditText amount = new EditText(getActivity());
-        final EditText accountNo = new EditText(getActivity());
-        final EditText accountHolderName = new EditText(getActivity());
-        final EditText ifscCode = new EditText(getActivity());
-
 
         alert.setTitle("Transaction Amount?");
         alert.setMessage(message);
@@ -420,6 +429,79 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         });
 
         editAmount.requestFocus();
+        alert.show();
+    }
+
+    private void showDynamicPricingPrompt() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        String message = "Apply Dynamic Pricing";
+        String positiveButtonText = "Apply";
+        final Utils.DPRequestType[] dpRequestType = new Utils.DPRequestType[1];
+        ScrollView scrollView = new ScrollView(getActivity());
+        LinearLayout linearLayout = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.dynamic_pricing_input_layout, null);
+        final EditText editTransactionAmount = (EditText) linearLayout.findViewById(R.id.edit_txn_amount);
+        final EditText editCouponCode = (EditText) linearLayout.findViewById(R.id.edit_coupon_code);
+        final EditText editAlteredAmount = (EditText) linearLayout.findViewById(R.id.edit_altered_amount);
+        final LinearLayout layoutCouponCode = (LinearLayout) linearLayout.findViewById(R.id.layout_for_coupon_code);
+        final LinearLayout layoutAlteredAmount = (LinearLayout) linearLayout.findViewById(R.id.layout_for_altered_amount);
+        Spinner spinner = (Spinner) linearLayout.findViewById(R.id.spinner_dp_request_type);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                switch (position) {
+                    case 0:
+                        dpRequestType[0] = Utils.DPRequestType.SEARCH_AND_APPLY;
+                        layoutCouponCode.setVisibility(View.GONE);
+                        layoutAlteredAmount.setVisibility(View.GONE);
+                        break;
+                    case 1:
+                        dpRequestType[0] = Utils.DPRequestType.CALCULATE_PRICING;
+                        layoutCouponCode.setVisibility(View.VISIBLE);
+                        layoutAlteredAmount.setVisibility(View.GONE);
+                        break;
+                    case 2:
+                        dpRequestType[0] = Utils.DPRequestType.VALIDATE_RULE;
+                        layoutCouponCode.setVisibility(View.VISIBLE);
+                        layoutAlteredAmount.setVisibility(View.VISIBLE);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        alert.setTitle("Perform Dynamic Pricing");
+        alert.setMessage(message);
+
+        scrollView.addView(linearLayout);
+        alert.setView(scrollView);
+        alert.setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String amount = editTransactionAmount.getText().toString();
+                String alteredAmount = editAlteredAmount.getText().toString();
+                String couponCode = editCouponCode.getText().toString();
+
+                mListener.onPaymentTypeSelected(dpRequestType[0], new Amount(amount), couponCode, new Amount(alteredAmount));
+
+                // Hide the keyboard.
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(editTransactionAmount.getWindowToken(), 0);
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        });
+
+        editTransactionAmount.requestFocus();
         alert.show();
     }
 }

@@ -14,8 +14,8 @@ package com.citrus.card;
 
 
 import com.citrus.mobile.CType;
-import com.citrus.mobile.Month;
-import com.citrus.mobile.Year;
+import com.citrus.sdk.classes.Month;
+import com.citrus.sdk.classes.Year;
 
 /**
  * @deprecated in v3
@@ -40,7 +40,7 @@ public class Card {
      * @param cvv
      * @param name
      * @param crdr
-     * @deprecated use {@link #Card(String, com.citrus.mobile.Month, com.citrus.mobile.Year, String, String, com.citrus.mobile.CType)} ()} instead.
+     * @deprecated use {@link #Card(String, Month, Year, String, String, com.citrus.mobile.CType)} ()} instead.
      */
     @Deprecated
     public Card(String cardNum, String month, String year, String cvv, String name, String crdr) {

@@ -1,8 +1,63 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
+
+ext {
+    // Bintray credentials
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('bintray.auth').newDataInputStream())
+    bintray_userid = properties.getProperty("bintray.userid")
+    bintray_apikey = properties.getProperty("bintray.apikey")
+    bintray_gpgkey = properties.getProperty("bintray.gpgkey")
+
+    // Note: The artifact-id variable is included just to be explicit about the
+    // source of how your library is generated. If you want your library to be
+    // published as 'myawesomelib.aar' instead of 'library.aar', then do the following:
+    //
+    // Go to 'publish-settings.gradle' in the project root, and change the artifact-id
+    // in the project alias eg. :library to :helloawesomeworld
+    //
+    // While project.archivesBaseName works for sources, jars and the aar
+    // it doesn't apply the artifact-id properly for the pom file.
+    // The alternative is maven-publish, but that doesn't publish dependencies,
+    // which is a bad idea imho. Also, from Components.java does not work for aars atm.
+    //com.citrus:cube-payment-sdk:1.1
+    //com.citrus:payment-sdk:3.1
+    // bare minimum params for uploading to bintray
+    bintray_repo = 'maven'
+    package_name = 'com.citrus.sdk'
+    group_id = 'com.citrus.sdk'
+    artifact_id = project.name
+    artifact_version = '3.0.16'
+    all_licenses = ["Apache-2.0"] // mandatory
+    git_url = 'https://github.com/citruspay/open-android-v3.git'
+    site_url = 'https://github.com/citruspay/open-android-v3'
+
+    // pom.xml is required for users to download your aars using the command
+    // ie. compile 'group_id:artifact_id:artifact_version'
+    // eg. compile 'com.android.support:appcompat-v7:22.1.1'
+    // params below are for defining the additional params for the pom.xml
+    pom_library_desc = 'Basic android library template for deploying AARs'
+    pom_license_name = 'The Apache Software License, Version 2.0'
+    pom_license_url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    pom_developer_id = 'developer'
+    pom_developer_name = 'developercitrus'
+    pom_developer_email = 'developercitrus@gmail.com'
+
+    // params for the android build
+    android_version_code = 1
+    android_version = artifact_version // reuse
+    android_build_sdk_version = 22
+    android_build_tools_version = "22.0.1"
+    android_build_minsdk_version = 9
+    android_build_targetsdk_version = 22
+}
+
+group = group_id
+version = artifact_version
+project.archivesBaseName = artifact_id
 
 dependencies {
     compile fileTree(include: '*.jar', dir: 'libs')
-    compile 'com.google.android.gms:play-services-analytics:7.0.0'
+    compile 'com.google.android.gms:play-services-analytics:8.1.0'
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.3.0'
@@ -13,8 +68,10 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+
+        useLibrary 'org.apache.http.legacy'
 
     sourceSets {
         main {
@@ -45,3 +102,5 @@ android {
         javaMaxHeapSize "4g"
     }
 }
+
+apply from: 'https://raw.githubusercontent.com/jimcoven/android-bintray-kit/0.5/bintray-aar-publish.gradle'
