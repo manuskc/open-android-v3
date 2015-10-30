@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -87,7 +88,7 @@ import java.util.Map;
 
 public class CitrusActivity extends ActionBarActivity implements OTPViewListener {
 
-    private final int WAIT_TIME = 200;
+    private final int WAIT_TIME = 300;
     private final String WAIT_MESSAGE = "Processing Payment. Please Wait...";
     private final String CANCEL_MESSAGE = "Cancelling Transaction. Please Wait...";
 
@@ -338,6 +339,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
         setActionBarBackground();
+
+        // Enable webContentDebugging, only for apps in debug mode.
+        enableWebContentDebugging();
     }
 
     @Override
@@ -553,6 +557,11 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
         otpProcessTransactionJS = String.format(netBankForOTP.getTransactionJS(), otp);
 
+        // Set OTP on bank's page.
+        if (netBankForOTP.isSetOTPJSRequired()) {
+            mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
+        }
+
         Logger.d("OTP : %s, js : %s", otp, otpProcessTransactionJS);
         mOTPPopupView.setOTP(otp);
     }
@@ -580,6 +589,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 // NOOP
             }
         });
+    }
+
+    private void enableWebContentDebugging() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (0 != (getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)) {
+                WebView.setWebContentsDebuggingEnabled(true);
+            }
+        }
     }
 
     @Override
