@@ -65,20 +65,20 @@ public enum Environment {
             return "OOPS";
         }
     },
-    STG5 {
+    STG15 {
         @Override
         public String getBaseUrl() {
-            return "https://stgadmin5.citruspay.com/";
+            return "https://stgadmin15.citruspay.com/";
         }
 
         @Override
         public String getBaseCitrusUrl() {
-            return "https://stgadmin5.citruspay.com/";
+            return "https://stgadmin15.citruspay.com/";
         }
 
         @Override
         public String getDynamicPricingBaseUrl() {
-            return "https://stgadmin5.citruspay.com/dynamic-pricing/";
+            return "https://stgadmin15.citruspay.com/dynamic-pricing/";
         }
 
         @Override
