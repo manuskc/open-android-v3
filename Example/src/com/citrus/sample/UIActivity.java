@@ -17,10 +17,13 @@ package com.citrus.sample;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.citrus.sdk.Callback;
 import com.citrus.sdk.CitrusClient;
@@ -33,6 +36,7 @@ import com.citrus.sdk.payment.PaymentType;
 import com.citrus.sdk.response.CitrusError;
 import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.sdk.response.PaymentResponse;
+import com.orhanobut.logger.Logger;
 
 
 public class UIActivity extends ActionBarActivity implements UserManagementFragment.UserManagementInteractionListener, WalletFragmentListener {
@@ -41,11 +45,15 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
     private Context mContext = this;
     private CitrusClient citrusClient = null;
     private CitrusConfig citrusConfig = null;
+    private FrameLayout frameLayout = null;
+    private View snackBarParent = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ui);
+
+        frameLayout = (FrameLayout) findViewById(R.id.container);
 
         fragmentManager = getSupportFragmentManager();
 
@@ -58,6 +66,12 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
         citrusConfig.setColorPrimary(Constants.colorPrimary);
         citrusConfig.setColorPrimaryDark(Constants.colorPrimaryDark);
         citrusConfig.setTextColorPrimary(Constants.textColor);
+
+        snackBarParent = new View(this);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 200);
+        layoutParams.gravity = Gravity.BOTTOM;
+        snackBarParent.setLayoutParams(layoutParams);
+        frameLayout.addView(snackBarParent);
 
         showUI();
     }
@@ -99,7 +113,7 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
     @Override
     public void onPaymentComplete(TransactionResponse transactionResponse) {
         if (transactionResponse != null) {
-            Utils.showToast(mContext, transactionResponse.getMessage());
+            showSnackBar(transactionResponse.getMessage());
         }
     }
 
@@ -111,12 +125,12 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
                 citrusClient.payUsingCitrusCash(new PaymentType.CitrusCash(amount, Constants.BILL_URL), new Callback<TransactionResponse>() {
                     @Override
                     public void success(TransactionResponse transactionResponse) {
-                        Utils.showToast(getApplicationContext(), transactionResponse.getMessage());
+                        showSnackBar(transactionResponse.getMessage());
                     }
 
                     @Override
                     public void error(CitrusError error) {
-                        Utils.showToast(getApplicationContext(), error.getMessage());
+                        showSnackBar(error.getMessage());
                     }
                 });
             } catch (CitrusException e) {
@@ -146,29 +160,22 @@ public class UIActivity extends ActionBarActivity implements UserManagementFragm
 
     @Override
     public void onCashoutSelected(CashoutInfo cashoutInfo) {
-        citrusClient.saveCashoutInfo(cashoutInfo, new Callback<CitrusResponse>() {
-            @Override
-            public void success(CitrusResponse citrusResponse) {
-                Utils.showToast(getApplicationContext(), citrusResponse.getMessage());
-            }
-
-            @Override
-            public void error(CitrusError error) {
-                Utils.showToast(getApplicationContext(), error.getMessage());
-            }
-        });
-
-        citrusClient.cashout(cashoutInfo, new Callback<PaymentResponse>() {
+       citrusClient.cashout(cashoutInfo, new Callback<PaymentResponse>() {
             @Override
             public void success(PaymentResponse paymentResponse) {
-                Utils.showToast(getApplicationContext(), paymentResponse.toString());
+                showSnackBar((paymentResponse.getStatus() == CitrusResponse.Status.SUCCESSFUL) ? "Withdraw Successful" : "Error While Withdrawing" );
             }
 
             @Override
             public void error(CitrusError error) {
-                Utils.showToast(getApplicationContext(), error.getMessage());
+                showSnackBar(error.getMessage());
             }
         });
+    }
+
+    @Override
+    public void showSnackBar(String message) {
+        Snackbar.make(snackBarParent, message, Snackbar.LENGTH_LONG).show();
     }
 
     public void onWalletPaymentClicked(View view) {

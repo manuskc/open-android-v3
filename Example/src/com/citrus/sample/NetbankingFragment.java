@@ -122,7 +122,7 @@ public final class NetbankingFragment extends Fragment {
 
                 @Override
                 public void error(CitrusError error) {
-                    Utils.showToast(getActivity(), error.getMessage());
+                    ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                 }
             });
         } else {
@@ -139,7 +139,7 @@ public final class NetbankingFragment extends Fragment {
 
                 @Override
                 public void error(CitrusError error) {
-                    Utils.showToast(getActivity(), error.getMessage());
+                    ((UIActivity) getActivity()).showSnackBar(error.getMessage());
                 }
             });
         }
@@ -178,6 +178,8 @@ public final class NetbankingFragment extends Fragment {
         @Override
         public void onItemClick(View childView, int position) {
             NetbankingOption netbankingOption = getItem(position);
+
+            PaymentType paymentType1;
             CitrusClient client = CitrusClient.getInstance(getActivity());
 
             if (paymentType == Utils.PaymentType.DYNAMIC_PRICING) {

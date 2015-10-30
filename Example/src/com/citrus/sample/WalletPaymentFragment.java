@@ -178,12 +178,12 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         mCitrusClient.getBalance(new Callback<Amount>() {
             @Override
             public void success(Amount amount) {
-                Utils.showToast(mContext, "Balance : " + amount.getValue());
+                mListener.showSnackBar("Balance : " + amount.getValue());
             }
 
             @Override
             public void error(CitrusError error) {
-                Utils.showToast(mContext, error.getMessage());
+                mListener.showSnackBar(error.getMessage());
             }
         });
     }
@@ -208,12 +208,12 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
         mCitrusClient.getCashoutInfo(new Callback<CashoutInfo>() {
             @Override
             public void success(CashoutInfo cashoutInfo) {
-                Utils.showToast(getActivity(), cashoutInfo.toString());
+                mListener.showSnackBar(cashoutInfo.toString());
             }
 
             @Override
             public void error(CitrusError error) {
-                Utils.showToast(getActivity(), error.getMessage());
+                mListener.showSnackBar(error.getMessage());
             }
         });
     }
@@ -407,12 +407,12 @@ public class WalletPaymentFragment extends Fragment implements View.OnClickListe
                 mCitrusClient.sendMoneyToMoblieNo(new Amount(amount), mobileNo, message, new Callback<PaymentResponse>() {
                     @Override
                     public void success(PaymentResponse paymentResponse) {
-                        Utils.showToast(getActivity(), paymentResponse.getStatus() == CitrusResponse.Status.SUCCESSFUL ? "Sent Money Successfully." : "Failed To Send the Money");
+                        mListener.showSnackBar(paymentResponse.getStatus() == CitrusResponse.Status.SUCCESSFUL ? "Sent Money Successfully." : "Failed To Send the Money");
                     }
 
                     @Override
                     public void error(CitrusError error) {
-                        Utils.showToast(getActivity(), error.getMessage());
+                        mListener.showSnackBar(error.getMessage());
                     }
                 });
                 // Hide the keyboard.
