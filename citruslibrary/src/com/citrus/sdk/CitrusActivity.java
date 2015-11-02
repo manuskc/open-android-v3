@@ -129,6 +129,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private boolean autoOTPEnabled = false;
     private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
     private String otp;
+    private static final long OTP_READ_TIMEOUT = 45000;
 
 
     @Override
@@ -756,7 +757,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 unregisterSMSReceivers();
                 mOTPPopupView.otpReadTimeout();
             }
-        }, 60000);
+        }, OTP_READ_TIMEOUT);
     }
 
     /**
