@@ -744,9 +744,10 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         // Load the js to process the transaction.
 
         String js = String.format(netBankForOTP.getTransactionJS(), otp);
-        mPaymentWebview.loadUrl(js
+        mPaymentWebview.loadUrl(js);
 
-        );
+        // Hide the popup since proceeding with transaction.
+        dismissOtpPopup();
     }
 
 //    private void showOtpView() {
