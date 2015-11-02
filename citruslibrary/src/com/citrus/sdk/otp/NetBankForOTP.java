@@ -34,14 +34,7 @@ public enum NetBankForOTP {
         }
 
         @Override
-        public int getOTPLength() {
-            // TODO:
-            return 6;
-        }
-
-        @Override
         public String getBankNameForParsing() {
-            // TODO:
             return "SBI";
         }
 
@@ -54,36 +47,43 @@ public enum NetBankForOTP {
     ICICI {
         @Override
         public String getTransactionJS() {
-            // TODO:
-            return null;
+            return "javascript:submitPassword();";
         }
 
         @Override
         public String getEnterPasswordJS() {
-            // TODO:
-            return null;
+            return "javascript:" +
+                    "var txtPassword=document.getElementById('txtPassword');" +
+                    "txtPassword.focus(); txtPassword.scrollIntoView();";
         }
 
         @Override
         public String getSendOTPJS() {
-            // TODO:
-            return null;
+            return "javascript:showChannelSelectPage();" + // Show OTP Channel Page.
+                    "var otpChannels = document.getElementsByName('otpDestinationOption');" + // Select the OTP Channel as mobile.
+                    "otpChannels[0].checked = true;" +
+                    "pwdBaseOtpChannelSelected(1);"; // Submit the page.
         }
 
         @Override
         public String getReSendOTPJS() {
-            return null;
+            return "javascript:resendOTP();";
         }
 
         @Override
-        public int getOTPLength() {
-            // TODO:
-            return 6;
+        public boolean isSetOTPJSRequired() {
+            return true;
+        }
+
+        @Override
+        public String getSetOTPJS(String otp) {
+            return "javascript:" +
+                    "var txtOTP = document.getElementsByName('otpPassword');" +
+                    "txtOTP[0].value = '" + otp + "';";
         }
 
         @Override
         public String getBankNameForParsing() {
-            // TODO:
             return "ICICIB";
         }
 
@@ -115,13 +115,7 @@ public enum NetBankForOTP {
 
         @Override
         public String getReSendOTPJS() {
-            return null;
-        }
-
-        @Override
-        public int getOTPLength() {
-            // TODO:
-            return 6;
+            return "";
         }
 
         @Override
@@ -156,19 +150,13 @@ public enum NetBankForOTP {
         @Override
         public String getSendOTPJS() {
             // TODO:
-            return null;
+            return "";
         }
 
         @Override
         public String getReSendOTPJS() {
             // TODO:
             return "javascript:reSendOtp();";
-        }
-
-        @Override
-        public int getOTPLength() {
-            // TODO:
-            return 6;
         }
 
         @Override
@@ -190,29 +178,22 @@ public enum NetBankForOTP {
         @Override
         public String getEnterPasswordJS() {
             // TODO:
-            return null;
+            return "javascript:document.getElementById('uid_tb_r').checked=true; showdiv('uid_tb');";
         }
 
         @Override
         public String getSendOTPJS() {
             // TODO:
-            return null;
+            return "javascript:document.getElementById('otp_tb_r').checked=true; OnSubmitHandler1();";
         }
 
         @Override
         public String getReSendOTPJS() {
-            return null;
-        }
-
-        @Override
-        public int getOTPLength() {
-            // TODO:
-            return 6;
+            return "";
         }
 
         @Override
         public String getBankNameForParsing() {
-            // TODO:
             return "CITIBK";
         }
 
@@ -265,7 +246,17 @@ public enum NetBankForOTP {
 
     public abstract String getReSendOTPJS();
 
-    public abstract int getOTPLength();
+    public String getSetOTPJS(String otp) {
+        return "";
+    }
+
+    public int getOTPLength() {
+        return 6;
+    }
+
+    public boolean isSetOTPJSRequired() {
+        return false;
+    }
 
     public abstract String getBankNameForParsing();
 

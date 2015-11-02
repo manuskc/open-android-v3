@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -87,7 +88,7 @@ import java.util.Map;
 
 public class CitrusActivity extends ActionBarActivity implements OTPViewListener {
 
-    private final int WAIT_TIME = 200;
+    private final int WAIT_TIME = 300;
     private final String WAIT_MESSAGE = "Processing Payment. Please Wait...";
     private final String CANCEL_MESSAGE = "Cancelling Transaction. Please Wait...";
 
@@ -127,6 +128,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private ImageView otpPopupCancelImgView = null;
     private boolean autoOTPEnabled = false;
     private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
+    private String otp;
 
 
     @Override
@@ -149,16 +151,16 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setContentView(R.layout.activity_citrus);
 
-        mOTPPopupView = (OTPPopupView)findViewById(R.id.otpPopupViewId);
-        otpPopupCancelImgView = (ImageView)findViewById(R.id.otpPopupCancelImgViewId);
+        mOTPPopupView = (OTPPopupView) findViewById(R.id.otpPopupViewId);
+        otpPopupCancelImgView = (ImageView) findViewById(R.id.otpPopupCancelImgViewId);
         otpPopupCancelImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mOTPPopupView.getOtpViewToggleStatus()){
+                if (mOTPPopupView.getOtpViewToggleStatus()) {
                     mOTPPopupView.setVisibility(View.VISIBLE);
                     mOTPPopupView.setOtpViewToggleStatus(false);
                     otpPopupCancelImgView.setBackgroundResource(R.drawable.arrow_down_icon);
-                }else{
+                } else {
                     mOTPPopupView.setVisibility(View.GONE);
                     mOTPPopupView.setOtpViewToggleStatus(true);
                     otpPopupCancelImgView.setBackgroundResource(R.drawable.arrow_up_icon);
@@ -337,6 +339,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
         setActionBarBackground();
+
+        // Enable webContentDebugging, only for apps in debug mode.
+        enableWebContentDebugging();
     }
 
     @Override
@@ -549,8 +554,13 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     }
 
     private void autoOtpReceived(Intent intent) {
-        String otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
+        otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
         otpProcessTransactionJS = String.format(netBankForOTP.getTransactionJS(), otp);
+
+        // Set OTP on bank's page.
+        if (netBankForOTP.isSetOTPJSRequired()) {
+            mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
+        }
 
         Logger.d("OTP : %s, js : %s", otp, otpProcessTransactionJS);
         mOTPPopupView.setOTP(otp);
@@ -558,7 +568,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     private void displayOtpPopup() {
         // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
-        if (autoOTPEnabled && mPaymentOption instanceof CardOption) {
+        if (autoOTPEnabled && mPaymentOption instanceof CardOption && netBankForOTP != NetBankForOTP.UNKNOWN) {
             mOTPPopupView.setVisibility(View.VISIBLE);
         }
     }
@@ -566,7 +576,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private void dismissOtpPopup() {
         mOTPPopupView.setVisibility(View.GONE);
     }
-    
+
     private void fetchBinRequestData(CardOption cardOption) {
         mCitrusClient.getBINDetails(cardOption, new com.citrus.sdk.Callback<BinServiceResponse>() {
             @Override
@@ -579,6 +589,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 // NOOP
             }
         });
+    }
+
+    private void enableWebContentDebugging() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (0 != (getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE)) {
+                WebView.setWebContentsDebuggingEnabled(true);
+            }
+        }
     }
 
     @Override
@@ -704,6 +722,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onGeneratePasswordClicked() {
 
+        String enterPwdJS = netBankForOTP.getEnterPasswordJS();
+        mPaymentWebview.loadUrl(enterPwdJS);
         Toast.makeText(this, "onGeneratePasswordClicked", Toast.LENGTH_SHORT).show();
     }
 
@@ -712,6 +732,16 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         isBackKeyPressedByUser = true;
 //        mPaymentWebview.loadUrl(mpiServletUrl);
         handleCancelTransaction();
+    }
+
+    @Override
+    public void onProcessTransactionClicked() {
+        // Load the js to process the transaction.
+
+        String js = String.format(netBankForOTP.getTransactionJS(), otp);
+        mPaymentWebview.loadUrl(js
+
+        );
     }
 
 //    private void showOtpView() {
@@ -746,16 +776,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 //        mOTPPopupView.startAnimation(slideDown);
 //        mOTPPopupView.setOtpViewToggleStatus(true);
 //    }
-
-    @Override
-    public void onProcessTransactionClicked() {
-
-        NetBankForOTP netBankForOTP = NetBankForOTP.KOTAK;
-        mPaymentWebview.loadUrl(netBankForOTP.getSendOTPJS());
-
-        // Load the js to process the transaction.
-        mPaymentWebview.loadUrl(otpProcessTransactionJS);
-    }
 
     @Override
     public void onResendOTPClicked() {

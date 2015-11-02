@@ -64,7 +64,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     }
 
     public void setOTP(String otp) {
-
+        enterOtpEditTxt.setText(otp);
     }
 
     public void setOtpViewToggleStatus(boolean toggle){
