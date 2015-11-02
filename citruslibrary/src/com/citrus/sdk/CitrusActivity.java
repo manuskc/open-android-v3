@@ -130,6 +130,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private boolean autoOTPEnabled = false;
     private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
     private String otp;
+    private static final long OTP_READ_TIMEOUT = 30000;
 
 
     @Override
@@ -717,9 +718,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     public void onSendOtpClicked() {
         Toast.makeText(this, "onSendOtpClicked", Toast.LENGTH_SHORT).show();
 
-        NetBankForOTP netBankForOTP = NetBankForOTP.HDFC;
-
-        mPaymentWebview.loadUrl(netBankForOTP.getSendOTPJS());
+        String sendOtpJS = netBankForOTP.getSendOTPJS();
+        mPaymentWebview.loadUrl(sendOtpJS);
 
         mOTPPopupView.displayOtpAutoDetectPopup();
     }
@@ -789,14 +789,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void startOtpReadTimer() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        final Handler otpReadHandler = new Handler();
+        otpReadHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 unregisterSMSReceivers();
                 mOTPPopupView.otpReadTimeout();
             }
-        }, 30000);
+        }, OTP_READ_TIMEOUT);
     }
 
     /**

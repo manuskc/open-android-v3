@@ -38,6 +38,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     private Button otpConfirmBtn = null;
     private TextView cancelTransactionTxtView = null;
     private boolean otpViewToggleStatus = false;
+    private boolean otpDetectedStatus = false;
 
     public OTPPopupView(Context context) {
         super(context);
@@ -64,20 +65,25 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     }
 
     public void setOTP(String otp) {
+        this.otpDetectedStatus = true;
         this.enterOtpEditTxt.setText(otp);
         this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm);
         this.otpResendBtn.setBackgroundResource(R.drawable.btn_resend_disabled);
         this.otpResendBtn.setClickable(false);
         this.otpConfirmBtn.setClickable(true);
+        this.otpConfirmBtn.setEnabled(true);
         this.otpAutoDetectProgressBar.setVisibility(View.GONE);
         this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_success_text);
 
     }
 
     public void otpReadTimeout() {
-        this.otpConfirmBtn.setClickable(false);
-        this.otpAutoDetectProgressBar.setVisibility(View.GONE);
-        this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_failed_text);
+        if(!this.otpDetectedStatus){
+            this.otpConfirmBtn.setClickable(false);
+            this.otpConfirmBtn.setEnabled(false);
+            this.otpAutoDetectProgressBar.setVisibility(View.GONE);
+            this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_failed_text);
+        }
     }
 
     public void setOtpViewToggleStatus(boolean toggle){
