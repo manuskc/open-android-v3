@@ -51,7 +51,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.citrus.analytics.EventsManager;
 import com.citrus.analytics.WebViewEvents;
@@ -715,12 +714,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void onSendOtpClicked() {
-        Toast.makeText(this, "onSendOtpClicked", Toast.LENGTH_SHORT).show();
-
-        NetBankForOTP netBankForOTP = NetBankForOTP.HDFC;
-
         mPaymentWebview.loadUrl(netBankForOTP.getSendOTPJS());
-
         mOTPPopupView.displayOtpAutoDetectPopup();
     }
 
@@ -729,13 +723,11 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         String enterPwdJS = netBankForOTP.getEnterPasswordJS();
         mPaymentWebview.loadUrl(enterPwdJS);
-        Toast.makeText(this, "onGeneratePasswordClicked", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onCancelClicked() {
         isBackKeyPressedByUser = true;
-//        mPaymentWebview.loadUrl(mpiServletUrl);
         handleCancelTransaction();
     }
 
@@ -750,42 +742,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         dismissOtpPopup();
     }
 
-//    private void showOtpView() {
-//        TranslateAnimation slideUp;
-//
-//        DisplayMetrics displaymetrics = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-//        int screenHeight = displaymetrics.heightPixels;
-//
-//        slideUp = new TranslateAnimation(0,0,screenHeight,-mOTPPopupView.getY());
-//        slideUp.setDuration(500);
-//        slideUp.setFillAfter(true);
-//        slideUp.setFillEnabled(true);
-//
-//        mOTPPopupView.startAnimation(slideUp);
-//        mOTPPopupView.setOtpViewToggleStatus(false);
-//    }
-//
-//    private void hideOtpView() {
-//
-//        TranslateAnimation slideDown;
-//
-//        DisplayMetrics displaymetrics = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-//        int screenHeight = displaymetrics.heightPixels;
-//
-//        slideDown = new TranslateAnimation(0,0,mOTPPopupView.getY(),screenHeight+mOTPPopupView.getY());
-//        slideDown.setDuration(500);
-//        slideDown.setFillAfter(true);
-//        slideDown.setFillEnabled(true);
-//
-//        mOTPPopupView.startAnimation(slideDown);
-//        mOTPPopupView.setOtpViewToggleStatus(true);
-//    }
-
     @Override
     public void onResendOTPClicked() {
-        Toast.makeText(this, "onResendOTPClicked", Toast.LENGTH_SHORT).show();
+        mPaymentWebview.loadUrl(netBankForOTP.getReSendOTPJS());
     }
 
     @Override
@@ -797,7 +756,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 unregisterSMSReceivers();
                 mOTPPopupView.otpReadTimeout();
             }
-        }, 30000);
+        }, 60000);
     }
 
     /**
