@@ -85,7 +85,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         if (i == R.id.enterPasswordImgViewId) {
             listener.onGeneratePasswordClicked();
         } else if (i == R.id.sendOtpImgViewId) {
-            displayOtpAutoDetectPopup();
+//            displayOtpAutoDetectPopup();
             listener.onSendOtpClicked();
         } else if (i == R.id.otpConfirmBtnId) {
             listener.onProcessTransactionClicked();
@@ -96,7 +96,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    private void displayOtpAutoDetectPopup() {
+    public void displayOtpAutoDetectPopup() {
         removeAllViews();
         inflate(context, R.layout.otp_txn_auto_detect, this);
 

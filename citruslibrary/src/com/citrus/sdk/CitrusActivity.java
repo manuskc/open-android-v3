@@ -711,7 +711,12 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onSendOtpClicked() {
         Toast.makeText(this, "onSendOtpClicked", Toast.LENGTH_SHORT).show();
+
+        NetBankForOTP netBankForOTP = NetBankForOTP.HDFC;
+
         mPaymentWebview.loadUrl(netBankForOTP.getSendOTPJS());
+
+        mOTPPopupView.displayOtpAutoDetectPopup();
     }
 
     @Override
@@ -737,11 +742,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         mPaymentWebview.loadUrl(js
 
         );
-    }
-
-    @Override
-    public void onResendOTPClicked() {
-        Toast.makeText(this, "onResendOTPClicked", Toast.LENGTH_SHORT).show();
     }
 
 //    private void showOtpView() {
@@ -777,6 +777,10 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 //        mOTPPopupView.setOtpViewToggleStatus(true);
 //    }
 
+    @Override
+    public void onResendOTPClicked() {
+        Toast.makeText(this, "onResendOTPClicked", Toast.LENGTH_SHORT).show();
+    }
 
     /**
      * Handle all the Webview loading in custom webview client.
