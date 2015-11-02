@@ -6,7 +6,7 @@ package com.citrus.sdk.otp;
 public interface OTPViewListener {
 
     void onSendOtpClicked();
-    void onGeneratePasswordClicked();
+    void onEnterPasswordClicked();
     void onCancelClicked();
     void onProcessTransactionClicked();
     void onResendOTPClicked();

@@ -12,25 +12,27 @@ public enum NetBankForOTP {
     SBI {
         @Override
         public String getTransactionJS() {
-            // TODO:
-            return null;
+            return "javascript: document.getElementsByName('submits')[0].click();";
         }
 
         @Override
         public String getEnterPasswordJS() {
-            // TODO:
-            return null;
+            return ""; // This js is not required, since there is no facility to enter password.
         }
 
         @Override
         public String getSendOTPJS() {
-            // TODO:
-            return null;
+            return ""; // This js is not required, since auto otp is triggered automatically.
         }
 
         @Override
         public String getReSendOTPJS() {
-            return null;
+            return "javascript:resendOTP();";
+        }
+
+        @Override
+        public String getSetOTPJS(String otp) {
+            return "javascript:document.getElementById('otp').value=" + otp + ";";
         }
 
         @Override
@@ -41,6 +43,16 @@ public enum NetBankForOTP {
         @Override
         public String getBankIconName() {
             return "sbi_bank";
+        }
+
+        @Override
+        public boolean isBypassSendOTPButton() {
+            return true;
+        }
+
+        @Override
+        public boolean isBypassEnterPasswordButton() {
+            return true;
         }
     },
 
@@ -71,11 +83,6 @@ public enum NetBankForOTP {
         }
 
         @Override
-        public boolean isSetOTPJSRequired() {
-            return true;
-        }
-
-        @Override
         public String getSetOTPJS(String otp) {
             return "javascript:" +
                     "var txtOTP = document.getElementsByName('otpPassword');" +
@@ -102,7 +109,12 @@ public enum NetBankForOTP {
         public String getEnterPasswordJS() {
             return "javascript: " +
                     "var radioButtons = document.getElementsByName('acsRadio');" +
-                    "radioButtons[0].checked = true;";
+                    "radioButtons[0].checked = true;" +
+                    "selectOption();" +
+                    "document.addEventListener(\"DOMContentLoaded\", function(event) {\n" +
+                    "var txtPassword=document.getElementById('txtPassword');" +
+                    "txtPassword.focus(); txtPassword.scrollIntoView();" +
+                    "  });";
         }
 
         @Override
@@ -111,7 +123,9 @@ public enum NetBankForOTP {
                     "var radioButtons = document.getElementsByName('acsRadio');" +
                     "radioButtons[1].checked = true;" +
                     "selectOption();" +
-                    "generateOTP();" ;
+                    "document.addEventListener(\"DOMContentLoaded\", function(event) {\n" +
+                    "generateOTP();" +
+                    "  });";
 
         }
 
@@ -130,6 +144,7 @@ public enum NetBankForOTP {
         public String getBankIconName() {
             return "hdfc_bank";
         }
+
     }, KOTAK {
         @Override
         public String getTransactionJS() {
@@ -145,7 +160,7 @@ public enum NetBankForOTP {
         @Override
         public String getEnterPasswordJS() {
             // TODO:
-                    return null;
+            return null;
 
         }
 
@@ -249,7 +264,9 @@ public enum NetBankForOTP {
     public abstract String getReSendOTPJS();
 
     public String getSetOTPJS(String otp) {
-        return "";
+        return "javascript: " +
+                "var inputs = document.querySelectorAll('input[type=password]');" +
+                "inputs[inputs.length - 1].value=" + otp + ";";
     }
 
     public int getOTPLength() {
@@ -257,6 +274,14 @@ public enum NetBankForOTP {
     }
 
     public boolean isSetOTPJSRequired() {
+        return true;
+    }
+
+    public boolean isBypassSendOTPButton() {
+        return false;
+    }
+
+    public boolean isBypassEnterPasswordButton() {
         return false;
     }
 

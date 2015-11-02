@@ -1,24 +1,14 @@
 package com.citrus.sdk.otp;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.citrus.library.R;
 
@@ -78,19 +68,29 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     }
 
     public void otpReadTimeout() {
-        if(!this.otpDetectedStatus){
+        if (!this.otpDetectedStatus) {
+
+            this.otpResendBtn.setBackgroundResource(R.drawable.btn_resend);
+            this.otpResendBtn.setClickable(true);
+
+            this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm_disabled);
             this.otpConfirmBtn.setClickable(false);
             this.otpConfirmBtn.setEnabled(false);
+
             this.otpAutoDetectProgressBar.setVisibility(View.GONE);
             this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_failed_text);
         }
     }
 
-    public void setOtpViewToggleStatus(boolean toggle){
+    public void handleResendOTP() {
+        otpAutoDetectHeaderTxtView.setText(R.string.otp_autodetect_header_text);
+    }
+
+    public void setOtpViewToggleStatus(boolean toggle) {
         this.otpViewToggleStatus = toggle;
     }
 
-    public boolean getOtpViewToggleStatus(){
+    public boolean getOtpViewToggleStatus() {
         return otpViewToggleStatus;
     }
 
@@ -98,11 +98,17 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         this.listener = listener;
     }
 
+    public void enableEnterPasswordButton(boolean enabled) {
+        if (findViewById(R.id.enterPasswordImgViewId) != null) {
+            findViewById(R.id.enterPasswordImgViewId).setEnabled(enabled);
+        }
+    }
+
     @Override
     public void onClick(View view) {
         int i = view.getId();
         if (i == R.id.enterPasswordImgViewId) {
-            listener.onGeneratePasswordClicked();
+            listener.onEnterPasswordClicked();
         } else if (i == R.id.sendOtpImgViewId) {
             displayOtpAutoDetectPopup();
             listener.onSendOtpClicked();

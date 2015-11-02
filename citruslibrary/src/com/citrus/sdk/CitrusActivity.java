@@ -130,7 +130,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
     private String otp;
     private static final long OTP_READ_TIMEOUT = 45000;
-
+    private boolean transactionProcessed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,21 +183,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         mCitrusConfig = CitrusConfig.getInstance();
         mActivityTitle = mCitrusConfig.getCitrusActivityTitle();
 
-        // Timer to dismiss dialog after specific time once the url loading is complete.
-        mTimer = new CountDownTimer(WAIT_TIME, 100) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-            }
-
-            @Override
-            public void onFinish() {
-                if (!mLoading) {
-                    dismissDialog();
-                    otpPopupCancelImgView.setVisibility(View.VISIBLE);
-                    displayOtpPopup();
-                }
-            }
-        };
+        initializeTimer();
 
         // Set payment Params
         if (mPaymentParams != null) {
@@ -357,6 +343,27 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         super.onPause();
         if (mAutoOtpSMSReceiveListener != null)
             unregisterSMSReceivers();
+    }
+
+    private void initializeTimer() {
+        // Timer to dismiss dialog after specific time once the url loading is complete.
+        mTimer = new CountDownTimer(WAIT_TIME, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                if (!mLoading) {
+                    dismissDialog();
+                    otpPopupCancelImgView.setVisibility(View.VISIBLE);
+
+                    if (!transactionProcessed) {
+                        displayOtpPopup();
+                    }
+                }
+            }
+        };
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -575,6 +582,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
         if (autoOTPEnabled && mPaymentOption instanceof CardOption && netBankForOTP != NetBankForOTP.UNKNOWN) {
             mOTPPopupView.setVisibility(View.VISIBLE);
+
+            if (netBankForOTP.isBypassEnterPasswordButton()) {
+                mOTPPopupView.enableEnterPasswordButton(false);
+            }
+
+            if (netBankForOTP.isBypassSendOTPButton()) {
+                mOTPPopupView.displayOtpAutoDetectPopup();
+            }
         }
     }
 
@@ -711,6 +726,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         mProgressDialog = null;
         mPaymentOption = null;
         mActivityTitle = null;
+        transactionProcessed = false;
     }
 
     @Override
@@ -720,7 +736,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     }
 
     @Override
-    public void onGeneratePasswordClicked() {
+    public void onEnterPasswordClicked() {
 
         String enterPwdJS = netBankForOTP.getEnterPasswordJS();
         mPaymentWebview.loadUrl(enterPwdJS);
@@ -739,6 +755,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         String js = String.format(netBankForOTP.getTransactionJS(), otp);
         mPaymentWebview.loadUrl(js);
 
+        transactionProcessed = true;
         // Hide the popup since proceeding with transaction.
         dismissOtpPopup();
     }
@@ -746,14 +763,21 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onResendOTPClicked() {
         mPaymentWebview.loadUrl(netBankForOTP.getReSendOTPJS());
+
+        // Register sms receivers
+        registerSMSReceivers();
+        startOtpReadTimer();
     }
 
     @Override
     public void startOtpReadTimer() {
+        mOTPPopupView.handleResendOTP();
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+
                 unregisterSMSReceivers();
                 mOTPPopupView.otpReadTimeout();
             }

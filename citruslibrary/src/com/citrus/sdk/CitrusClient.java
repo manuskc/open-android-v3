@@ -28,7 +28,6 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
-import com.citrus.analytics.EventsManager;
 import com.citrus.cash.PersistentConfig;
 import com.citrus.citrususer.RandomPassword;
 import com.citrus.mobile.Config;
@@ -2043,7 +2042,13 @@ public class CitrusClient {
 
         if (cardOption != null && !TextUtils.isEmpty(cardOption.getCardNumber())) {
             String cardNumber = cardOption.getCardNumber();
-            String first6Digits = cardNumber.length() > 6 ? cardNumber.substring(0, 6) : "";
+            String first6Digits = "";
+            if (!TextUtils.isEmpty(cardOption.getToken())) {
+                first6Digits = cardOption.getToken();
+            } else {
+                first6Digits = cardNumber.length() > 6 ? cardNumber.substring(0, 6) : "";
+            }
+            
             if (!TextUtils.isEmpty(first6Digits)) {
                 API binServiceClient = RetroFitClient.getClientWithUrl("https://citrusapi.citruspay.com");
                 binServiceClient.getBinInfo(first6Digits, new retrofit.Callback<Response>() {
