@@ -16,7 +16,7 @@
     <dimen name="otp_options_send_otp_layout_margin_left">10dp</dimen>
     <dimen name="otp_options_send_otp_textsize">10dp</dimen>
     <dimen name="otp_auto_detect_header_textsize">13sp</dimen>
-    <dimen name="otp_auto_detect_header_top_margin">20dp</dimen>
+    <dimen name="otp_auto_detect_header_margin">20dp</dimen>
     <dimen name="otp_auto_detect_progress_bar_top_margin">10dp</dimen>
     <dimen name="otp_auto_detect_enter_otp_layout_left_margin">20dp</dimen>
     <dimen name="otp_auto_detect_enter_otp_layout_right_margin">20dp</dimen>

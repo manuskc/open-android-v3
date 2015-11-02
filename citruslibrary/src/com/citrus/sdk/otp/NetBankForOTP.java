@@ -110,7 +110,9 @@ public enum NetBankForOTP {
             return "javascript: " +
                     "var radioButtons = document.getElementsByName('acsRadio');" +
                     "radioButtons[1].checked = true;" +
-                    "selectOption();" ;
+                    "selectOption();" +
+                    "generateOTP();" ;
+
         }
 
         @Override

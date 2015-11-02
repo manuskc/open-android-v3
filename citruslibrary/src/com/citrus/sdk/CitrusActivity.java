@@ -31,6 +31,7 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -354,8 +355,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     protected void onPause() {
         super.onPause();
-
-        unregisterSMSReceivers();
+        if (mAutoOtpSMSReceiveListener != null)
+            unregisterSMSReceivers();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -533,7 +534,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
             registerReceiver(mSMSReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
             LocalBroadcastManager.getInstance(this).registerReceiver(mAutoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
+
         }
+
     }
 
     private void unregisterSMSReceivers() {
@@ -545,10 +548,12 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
             if (mSMSReceiver != null) {
                 unregisterReceiver(mSMSReceiver);
+                mSMSReceiver = null;
             }
 
             if (mAutoOtpSMSReceiveListener != null) {
                 LocalBroadcastManager.getInstance(this).unregisterReceiver(mAutoOtpSMSReceiveListener);
+                mAutoOtpSMSReceiveListener = null;
             }
         }
     }
@@ -780,6 +785,18 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onResendOTPClicked() {
         Toast.makeText(this, "onResendOTPClicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void startOtpReadTimer() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                unregisterSMSReceivers();
+                mOTPPopupView.otpReadTimeout();
+            }
+        }, 30000);
     }
 
     /**
