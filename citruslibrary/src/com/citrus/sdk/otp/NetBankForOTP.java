@@ -79,7 +79,7 @@ public enum NetBankForOTP {
         public String getSetOTPJS(String otp) {
             return "javascript:" +
                     "var txtOTP = document.getElementsByName('otpPassword');" +
-                    "txtOTP[0].value = '" + otp + "';";
+                    "txtOTP[0].value = " + otp + ";";
         }
 
         @Override
