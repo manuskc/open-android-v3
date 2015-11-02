@@ -85,21 +85,18 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         if (i == R.id.enterPasswordImgViewId) {
             listener.onGeneratePasswordClicked();
         } else if (i == R.id.sendOtpImgViewId) {
-            displayOtpAutoDetectPopup();
+//            displayOtpAutoDetectPopup();
             listener.onSendOtpClicked();
         } else if (i == R.id.otpConfirmBtnId) {
-            Toast.makeText(context, "Confirm Btn Clicked", Toast.LENGTH_SHORT).show();
             listener.onProcessTransactionClicked();
         } else if (i == R.id.otpResendBtnId) {
-            Toast.makeText(context, "Resend Btn Clicked", Toast.LENGTH_SHORT).show();
             listener.onResendOTPClicked();
         } else if (i == R.id.cancelTransactionTxtId) {
-            Toast.makeText(context, "Cancel Transaction clicked", Toast.LENGTH_SHORT).show();
             listener.onCancelClicked();
         }
     }
 
-    private void displayOtpAutoDetectPopup() {
+    public void displayOtpAutoDetectPopup() {
         removeAllViews();
         inflate(context, R.layout.otp_txn_auto_detect, this);
 

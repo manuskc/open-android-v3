@@ -694,8 +694,11 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     public void onSendOtpClicked() {
         Toast.makeText(this, "onSendOtpClicked", Toast.LENGTH_SHORT).show();
 
-        NetBankForOTP netBankForOTP = NetBankForOTP.KOTAK;
-        mPaymentWebview.loadUrl(netBankForOTP.getTransactionJS());
+        NetBankForOTP netBankForOTP = NetBankForOTP.HDFC;
+
+        mPaymentWebview.loadUrl(netBankForOTP.getSendOTPJS());
+
+        mOTPPopupView.displayOtpAutoDetectPopup();
     }
 
     @Override
@@ -746,6 +749,10 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void onProcessTransactionClicked() {
+
+        NetBankForOTP netBankForOTP = NetBankForOTP.KOTAK;
+        mPaymentWebview.loadUrl(netBankForOTP.getSendOTPJS());
+
         // Load the js to process the transaction.
         mPaymentWebview.loadUrl(otpProcessTransactionJS);
     }

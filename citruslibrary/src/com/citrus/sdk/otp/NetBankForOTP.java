@@ -100,14 +100,17 @@ public enum NetBankForOTP {
 
         @Override
         public String getEnterPasswordJS() {
-            // TODO:
-            return null;
+            return "javascript: " +
+                    "var radioButtons = document.getElementsByName('acsRadio');" +
+                    "radioButtons[0].checked = true;";
         }
 
         @Override
         public String getSendOTPJS() {
-            // TODO:
-            return null;
+            return "javascript: " +
+                    "var radioButtons = document.getElementsByName('acsRadio');" +
+                    "radioButtons[1].checked = true;" +
+                    "selectOption();" ;
         }
 
         @Override
@@ -146,7 +149,8 @@ public enum NetBankForOTP {
         @Override
         public String getEnterPasswordJS() {
             // TODO:
-            return null;
+                    return null;
+
         }
 
         @Override
