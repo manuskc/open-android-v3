@@ -37,7 +37,7 @@ public class CitrusResponse implements Parcelable {
         return status;
     }
 
-    public String getTransactionResponse() { return rawResponse; }
+    public String getRawResponse() { return rawResponse; }
 
     @Override
     public int describeContents() {
