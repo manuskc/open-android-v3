@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/otp_auto_detect_header_top_margin"
+        android:layout_margin="@dimen/otp_auto_detect_header_margin"
         android:gravity="center"
         android:text="@string/otp_autodetect_header_text"
         android:textColor="@android:color/black"
@@ -22,8 +22,7 @@
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/otp_auto_detect_progress_bar_top_margin" />
+        android:layout_gravity="center_horizontal" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -65,6 +64,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textAllCaps="false"
+        android:clickable="false"
+        android:enabled="false"
         android:layout_marginTop="@dimen/otp_auto_detect_confirm_btn_top_margin"
         android:background="@drawable/btn_confirm_disabled"
         android:textColor="@android:color/white"

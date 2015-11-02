@@ -64,7 +64,20 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     }
 
     public void setOTP(String otp) {
-        enterOtpEditTxt.setText(otp);
+        this.enterOtpEditTxt.setText(otp);
+        this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm);
+        this.otpResendBtn.setBackgroundResource(R.drawable.btn_resend_disabled);
+        this.otpResendBtn.setClickable(false);
+        this.otpConfirmBtn.setClickable(true);
+        this.otpAutoDetectProgressBar.setVisibility(View.GONE);
+        this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_success_text);
+
+    }
+
+    public void otpReadTimeout() {
+        this.otpConfirmBtn.setClickable(false);
+        this.otpAutoDetectProgressBar.setVisibility(View.GONE);
+        this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_failed_text);
     }
 
     public void setOtpViewToggleStatus(boolean toggle){
@@ -85,8 +98,9 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         if (i == R.id.enterPasswordImgViewId) {
             listener.onGeneratePasswordClicked();
         } else if (i == R.id.sendOtpImgViewId) {
-//            displayOtpAutoDetectPopup();
+            displayOtpAutoDetectPopup();
             listener.onSendOtpClicked();
+            listener.startOtpReadTimer();
         } else if (i == R.id.otpConfirmBtnId) {
             listener.onProcessTransactionClicked();
         } else if (i == R.id.otpResendBtnId) {
@@ -110,7 +124,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         this.otpResendBtn.setOnClickListener(this);
         this.otpConfirmBtn.setOnClickListener(this);
         this.cancelTransactionTxtView.setOnClickListener(this);
-    }
 
+    }
 
 }

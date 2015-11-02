@@ -10,4 +10,6 @@ public interface OTPViewListener {
     void onCancelClicked();
     void onProcessTransactionClicked();
     void onResendOTPClicked();
+
+    void startOtpReadTimer();
 }
