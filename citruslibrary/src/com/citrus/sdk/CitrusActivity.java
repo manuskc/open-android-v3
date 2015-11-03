@@ -131,6 +131,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private String otp;
     private static final long OTP_READ_TIMEOUT = 45000;
     private boolean transactionProcessed = false;
+    private boolean mMultipartSendOTPJS = false;
+    private boolean mMultipartEnterPasswordJS = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -356,10 +358,20 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             public void onFinish() {
                 if (!mLoading) {
                     dismissDialog();
-                    otpPopupCancelImgView.setVisibility(View.VISIBLE);
-
-                    if (!transactionProcessed) {
+                    if (!transactionProcessed && !mMultipartEnterPasswordJS) {
                         displayOtpPopup();
+                    }
+
+                    // If the sendOTP js is multipart, load the js.
+                    if (mMultipartSendOTPJS) {
+                        mPaymentWebview.loadUrl(netBankForOTP.getMultiPartSendOTPJS());
+                        mMultipartSendOTPJS = false;
+                    }
+
+                    // If the sendOTP js is multipart, load the js.
+                    if (mMultipartEnterPasswordJS) {
+                        mPaymentWebview.loadUrl(netBankForOTP.getMultiPartEnterPasswordJS());
+                        mMultipartEnterPasswordJS = false;
                     }
                 }
             }
@@ -581,6 +593,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private void displayOtpPopup() {
         // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
         if (autoOTPEnabled && mPaymentOption instanceof CardOption && netBankForOTP != NetBankForOTP.UNKNOWN) {
+            otpPopupCancelImgView.setVisibility(View.VISIBLE);
+            
             mOTPPopupView.setVisibility(View.VISIBLE);
 
             if (netBankForOTP.isBypassEnterPasswordButton()) {
@@ -594,6 +608,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     }
 
     private void dismissOtpPopup() {
+        otpPopupCancelImgView.setVisibility(View.GONE);
         mOTPPopupView.setVisibility(View.GONE);
     }
 
@@ -727,10 +742,13 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         mPaymentOption = null;
         mActivityTitle = null;
         transactionProcessed = false;
+        mMultipartSendOTPJS = false;
     }
 
     @Override
     public void onSendOtpClicked() {
+        mMultipartSendOTPJS = netBankForOTP.isMultipartSendOTPJS();
+
         mPaymentWebview.loadUrl(netBankForOTP.getSendOTPJS());
         mOTPPopupView.displayOtpAutoDetectPopup();
     }
@@ -738,13 +756,17 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onEnterPasswordClicked() {
 
+        mMultipartEnterPasswordJS = netBankForOTP.isMultipartEnterPasswordJS();
+
         String enterPwdJS = netBankForOTP.getEnterPasswordJS();
         mPaymentWebview.loadUrl(enterPwdJS);
+
+        // Hide the OTP PopUp View.
+        dismissOtpPopup();
     }
 
     @Override
     public void onCancelClicked() {
-        isBackKeyPressedByUser = true;
         handleCancelTransaction();
     }
 

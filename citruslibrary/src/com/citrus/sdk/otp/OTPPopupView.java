@@ -57,11 +57,14 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     public void setOTP(String otp) {
         this.otpDetectedStatus = true;
         this.enterOtpEditTxt.setText(otp);
+
+        // Hide the resend button.
+        this.otpResendBtn.setVisibility(GONE);
+
         this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm);
-        this.otpResendBtn.setBackgroundResource(R.drawable.btn_resend_disabled);
-        this.otpResendBtn.setClickable(false);
         this.otpConfirmBtn.setClickable(true);
         this.otpConfirmBtn.setEnabled(true);
+
         this.otpAutoDetectProgressBar.setVisibility(View.GONE);
         this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_success_text);
 
@@ -84,6 +87,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
 
     public void handleResendOTP() {
         otpAutoDetectHeaderTxtView.setText(R.string.otp_autodetect_header_text);
+        otpAutoDetectProgressBar.setVisibility(View.VISIBLE);
     }
 
     public void setOtpViewToggleStatus(boolean toggle) {

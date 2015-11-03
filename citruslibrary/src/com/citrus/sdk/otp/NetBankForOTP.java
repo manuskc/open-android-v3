@@ -101,8 +101,19 @@ public enum NetBankForOTP {
     }, HDFC {
         @Override
         public String getTransactionJS() {
-            // TODO:
-            return null;
+            return "javascript:document.frmDynamicAuth.submit();";
+        }
+
+        @Override
+        public boolean isMultipartEnterPasswordJS() {
+            return true;
+        }
+
+        @Override
+        public String getMultiPartEnterPasswordJS() {
+            return "javascript:" +
+                    "var txtPassword=document.getElementById('txtPassword');" +
+                    "txtPassword.focus(); txtPassword.scrollIntoView();";
         }
 
         @Override
@@ -110,11 +121,12 @@ public enum NetBankForOTP {
             return "javascript: " +
                     "var radioButtons = document.getElementsByName('acsRadio');" +
                     "radioButtons[0].checked = true;" +
-                    "selectOption();" +
-                    "document.addEventListener(\"DOMContentLoaded\", function(event) {\n" +
-                    "var txtPassword=document.getElementById('txtPassword');" +
-                    "txtPassword.focus(); txtPassword.scrollIntoView();" +
-                    "  });";
+                    "selectOption();";
+        }
+
+        @Override
+        public boolean isMultipartSendOTPJS() {
+            return true;
         }
 
         @Override
@@ -122,21 +134,21 @@ public enum NetBankForOTP {
             return "javascript: " +
                     "var radioButtons = document.getElementsByName('acsRadio');" +
                     "radioButtons[1].checked = true;" +
-                    "selectOption();" +
-                    "document.addEventListener(\"DOMContentLoaded\", function(event) {\n" +
-                    "generateOTP();" +
-                    "  });";
+                    "selectOption();";
+        }
 
+        @Override
+        public String getMultiPartSendOTPJS() {
+            return "javascript:generateOTP();";
         }
 
         @Override
         public String getReSendOTPJS() {
-            return "";
+            return "javascript:generateOTP();";
         }
 
         @Override
         public String getBankNameForParsing() {
-            // TODO:
             return "HDFCBK";
         }
 
@@ -204,34 +216,38 @@ public enum NetBankForOTP {
     }, CITI {
         @Override
         public String getTransactionJS() {
-            return "javascript:document.optInForm.otp.value='%s'; validateOTP(1);";
+            return "javascript: validateOTP(1);";
         }
 
         @Override
         public String getEnterPasswordJS() {
             // TODO:
-            return "javascript:document.getElementById('uid_tb_r').checked=true; showdiv('uid_tb');";
+            return "javascript:document.getElementById('uid_tb_r').checked=true;" +
+                    " showdiv('uid_tb');" +
+                    " var txtPassword = document.getElementsByName('useridanswer')[0]" +
+                    " txtPassword.focus(); txtPassword.scrollIntoView();";
         }
 
         @Override
         public String getSendOTPJS() {
-            // TODO:
             return "javascript:document.getElementById('otp_tb_r').checked=true; OnSubmitHandler1();";
         }
 
         @Override
         public String getReSendOTPJS() {
-            return "";
+            return "javascript:";
         }
 
         @Override
         public String getBankNameForParsing() {
             return "CITIBK";
         }
+
         @Override
         public String getSetOTPJS(String otp) {
-            return "javascript:document.getElementByName('otp').value=" + otp + ";";
+            return "javascript:document.getElementsByName('otp')[0].value=" + otp + ";";
         }
+
         @Override
         public boolean isBypassEnterPasswordButton() {
             return false;
@@ -285,9 +301,35 @@ public enum NetBankForOTP {
 
     public abstract String getTransactionJS();
 
+    /**
+     * If the enter password js to be executed multiple times. By default it is false, make it true if required.
+     *
+     * @return
+     */
+    public boolean isMultipartEnterPasswordJS() {
+        return false;
+    }
+
+    public String getMultiPartEnterPasswordJS() {
+        return "javascript:";
+    }
+
     public abstract String getEnterPasswordJS();
 
+    /**
+     * If the set otp to be executed multiple times. By default it is false, make it true if required.
+     *
+     * @return
+     */
+    public boolean isMultipartSendOTPJS() {
+        return false;
+    }
+
     public abstract String getSendOTPJS();
+
+    public String getMultiPartSendOTPJS() {
+        return "javascript:";
+    }
 
     public abstract String getReSendOTPJS();
 
