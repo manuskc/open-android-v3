@@ -171,6 +171,11 @@ public enum NetBankForOTP {
         }
 
         @Override
+        public String getSetOTPJS(String otp) {
+            return "javascript:document.getElementById('txtOtp').value=" + otp + ";";
+        }
+
+        @Override
         public String getReSendOTPJS() {
             // TODO:
             return "javascript:reSendOtp();";
@@ -185,6 +190,16 @@ public enum NetBankForOTP {
         @Override
         public String getBankIconName() {
             return "kotak_mahindra_bank";
+        }
+
+        @Override
+        public boolean isBypassEnterPasswordButton() {
+            return true;
+        }
+
+        @Override
+        public boolean isBypassSendOTPButton() {
+            return true;
         }
     }, CITI {
         @Override
@@ -212,6 +227,19 @@ public enum NetBankForOTP {
         @Override
         public String getBankNameForParsing() {
             return "CITIBK";
+        }
+        @Override
+        public String getSetOTPJS(String otp) {
+            return "javascript:document.getElementByName('otp').value=" + otp + ";";
+        }
+        @Override
+        public boolean isBypassEnterPasswordButton() {
+            return false;
+        }
+
+        @Override
+        public boolean isBypassSendOTPButton() {
+            return false;
         }
 
         @Override

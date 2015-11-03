@@ -26,6 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_margin="@dimen/otp_bottom_bar_secured_image_top_margin"
             android:background="@drawable/secured" />
 
@@ -35,6 +36,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_toRightOf="@id/citrusLogoImgViewId"
+            android:layout_toEndOf="@id/citrusLogoImgViewId"
             android:textSize="@dimen/otp_bottom_bar_secured_text_size"
             android:layout_centerVertical="true"
             android:text="@string/otp_secured_text"
@@ -45,7 +47,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
+            android:visibility="gone"
             android:layout_margin="@dimen/otp_bottom_bar_bank_logo_margin"
             android:background="@drawable/secured" />
 
