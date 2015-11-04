@@ -224,8 +224,11 @@ public enum NetBankForOTP {
             // TODO:
             return "javascript:document.getElementById('uid_tb_r').checked=true;" +
                     " showdiv('uid_tb');" +
-                    " var txtPassword = document.getElementsByName('useridanswer')[0]" +
-                    " txtPassword.focus(); txtPassword.scrollIntoView();";
+                    " setTimeout( function() { " +
+                    "       var txtPassword = document.getElementsByName('useridanswer')[0];" +
+                    "       txtPassword.focus(); txtPassword.scrollIntoView(); " +
+                    " }, 300);" +
+                    "";
         }
 
         @Override
@@ -366,9 +369,13 @@ public enum NetBankForOTP {
             return ICICI;
         } else if (TextUtils.equals(bankName, "State Bank of India")) {
             return SBI;
+        }else if (TextUtils.equals(bankName, "SBI(Maestro)")) {
+            return SBI;
         } else if (TextUtils.equals(bankName, "HDFC BANK LIMITED")) {
             return HDFC;
         } else if (TextUtils.equals(bankName, "CITI BANK LTD")) {
+            return CITI;
+        } else if (TextUtils.equals(bankName, "CITI BANK LTD(Maestro)")) {
             return CITI;
         } else {
             return UNKNOWN;
