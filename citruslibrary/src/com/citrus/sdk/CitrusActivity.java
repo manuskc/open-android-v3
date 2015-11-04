@@ -609,6 +609,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             // If in case of few banks the otp is directly triggered, so hide the send OTP button.
             if (netBankForOTP.isBypassSendOTPButton()) {
                 mOTPPopupView.displayOtpAutoDetectPopup();
+                startOtpReadTimer();
             }
         }
     }
