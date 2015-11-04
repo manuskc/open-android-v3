@@ -593,14 +593,20 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private void displayOtpPopup() {
         // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
         if (autoOTPEnabled && mPaymentOption instanceof CardOption && netBankForOTP != NetBankForOTP.UNKNOWN) {
+
+            // Prevent the activity from sleeping.
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            // Show minimize button over the view.
             otpPopupCancelImgView.setVisibility(View.VISIBLE);
-
+            // Show the popup otp view.
             mOTPPopupView.setVisibility(View.VISIBLE);
-
+            // If in case of few banks there is no option to enter password, only otp is directly triggered, so hide the enter password button.
             if (netBankForOTP.isBypassEnterPasswordButton()) {
                 mOTPPopupView.enableEnterPasswordButton(false);
             }
 
+            // If in case of few banks the otp is directly triggered, so hide the send OTP button.
             if (netBankForOTP.isBypassSendOTPButton()) {
                 mOTPPopupView.displayOtpAutoDetectPopup();
             }
