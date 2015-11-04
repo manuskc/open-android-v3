@@ -9,7 +9,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.citrus.library.R;
 
@@ -122,8 +121,8 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     }
 
     public void enableEnterPasswordButton(boolean enabled) {
-        if (findViewById(R.id.enterPasswordImgViewId) != null) {
-            findViewById(R.id.enterPasswordImgViewId).setEnabled(enabled);
+        if (findViewById(R.id.enterPasswordLayoutId) != null && !enabled) {
+            findViewById(R.id.enterPasswordLayoutId).setVisibility(GONE);
         }
     }
 
@@ -136,9 +135,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
             displayOtpAutoDetectPopup();
             listener.onSendOtpClicked();
             listener.startOtpReadTimer();
-        }
-
-        else if (i == R.id.otpConfirmBtnId) {
+        } else if (i == R.id.otpConfirmBtnId) {
             if (otpDetectedStatus) {
                 // Otp detected.
                 listener.onProcessTransactionClicked(otp);

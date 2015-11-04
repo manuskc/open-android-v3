@@ -54,9 +54,52 @@ public enum NetBankForOTP {
         public boolean isBypassEnterPasswordButton() {
             return true;
         }
-    },
+    }, ICICI_CREDIT {
+        @Override
+        public String getTransactionJS() {
+            return "javascript: document.frmPayerAuth.submit();";
+        }
 
-    ICICI {
+        @Override
+        public String getEnterPasswordJS() {
+            return "javascript:";
+        }
+
+        @Override
+        public boolean isBypassEnterPasswordButton() {
+            return true;
+        }
+
+        @Override
+        public String getSendOTPJS() {
+            return "javascript:" +
+                    "var otpChannels = document.getElementsByName('otpDestinationOption');" + // Select the OTP Channel as mobile.
+                    "otpChannels[0].checked = true;" +
+                    "document.getElementsByTagName('form')[0].submit();"; // Submit the page.
+        }
+
+        @Override
+        public String getReSendOTPJS() {
+            return "javascript:resend_otp()";
+        }
+
+        @Override
+        public String getSetOTPJS(String otp) {
+            return "javascript:" +
+                    "var txtOTP = document.getElementsByName('txtAutoOtp');" +
+                    "txtOTP[0].value = " + otp + ";";
+        }
+
+        @Override
+        public String getBankNameForParsing() {
+            return "ICICIB";
+        }
+
+        @Override
+        public String getBankIconName() {
+            return "icici_bank";
+        }
+    }, ICICI_DEBIT {
         @Override
         public String getTransactionJS() {
             return "javascript:submitPassword();";
@@ -157,29 +200,24 @@ public enum NetBankForOTP {
             return "hdfc_bank";
         }
 
-    }, KOTAK {
+    }, KOTAK_DEBIT {
         @Override
         public String getTransactionJS() {
             // TODO:
             //return "javascript:document.getElementById(\"cmdSubmit\").click();";
             return "javascript: " +
-                    "var inputs = document.querySelectorAll('input[type=password]');" +
                     "var forms = document.getElementsByTagName('form');" +
-                    "inputs[inputs.length - 1].value='%s';" +
                     "forms[forms.length - 1].submit();";
         }
 
         @Override
         public String getEnterPasswordJS() {
-            // TODO:
-            return null;
-
+            return "javascript:"; // In case of debit card, otp is triggered directly.
         }
 
         @Override
         public String getSendOTPJS() {
-            // TODO:
-            return "";
+            return "javascript:"; // In case of debit card, otp is triggered directly so explicitly call is not required.
         }
 
         @Override
@@ -189,13 +227,11 @@ public enum NetBankForOTP {
 
         @Override
         public String getReSendOTPJS() {
-            // TODO:
             return "javascript:reSendOtp();";
         }
 
         @Override
         public String getBankNameForParsing() {
-            // TODO:
             return "KOTAKB";
         }
 
@@ -212,6 +248,43 @@ public enum NetBankForOTP {
         @Override
         public boolean isBypassSendOTPButton() {
             return true;
+        }
+    }, KOTAK_CREDIT {
+        @Override
+        public String getTransactionJS() {
+            return "javascript: document.getElementById('cmdSubmit').click();";
+        }
+
+        @Override
+        public String getEnterPasswordJS() {
+            return "javascript: document.getElementsByName('authenticationOption')[1].click();" +
+                    "var txtPassword = document.getElementById('txtPassword');" +
+                    "txtPassword.focus(); txtPassword.scrollIntoView();";
+        }
+
+        @Override
+        public String getSendOTPJS() {
+            return "javascript: document.getElementsByName('authenticationOption')[0].click();";
+        }
+
+        @Override
+        public String getSetOTPJS(String otp) {
+            return "javascript: document.getElementById('otpValue').value=" + otp + ";";
+        }
+
+        @Override
+        public String getReSendOTPJS() {
+            return "javascript:reSendOtp();";
+        }
+
+        @Override
+        public String getBankNameForParsing() {
+            return "KOTAKB";
+        }
+
+        @Override
+        public String getBankIconName() {
+            return "kotak_mahindra_bank";
         }
     }, CITI {
         @Override
@@ -362,14 +435,20 @@ public enum NetBankForOTP {
 
     public abstract String getBankIconName();
 
-    public static NetBankForOTP getNetBankForOTP(String bankName) {
-        if (TextUtils.equals(bankName, "Kotak Mahindra Bank Ltd")) {
-            return KOTAK;
-        } else if (TextUtils.equals(bankName, "ICICI BANK LTD")) {
-            return ICICI;
+    public static NetBankForOTP getNetBankForOTP(String cardType, String bankName) {
+        if (TextUtils.equals(bankName, "Kotak Mahindra Bank Ltd") && TextUtils.equals(cardType, "Credit")) {
+            return KOTAK_CREDIT;
+        } else if (TextUtils.equals(bankName, "Kotak Mahindra Bank Ltd") && TextUtils.equals(cardType, "Debit")) {
+            return KOTAK_DEBIT;
+        } else if (TextUtils.equals(bankName, "ICICI BANK LTD") && TextUtils.equals(cardType, "Credit")) {
+            return ICICI_CREDIT;
+        } else if (TextUtils.equals(bankName, "ICICI BANK LTD") && TextUtils.equals(cardType, "Debit")) {
+            return ICICI_DEBIT;
         } else if (TextUtils.equals(bankName, "State Bank of India")) {
             return SBI;
-        }else if (TextUtils.equals(bankName, "SBI(Maestro)")) {
+        } else if (TextUtils.equals(bankName, "SBI(Maestro)")) {
+            return SBI;
+        } else if (TextUtils.equals(bankName, "SBI CARDS & PAYMENTS")) {
             return SBI;
         } else if (TextUtils.equals(bankName, "HDFC BANK LIMITED")) {
             return HDFC;

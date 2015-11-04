@@ -32,9 +32,10 @@ public class BinServiceResponse {
             try {
                 JSONObject jsonObject = new JSONObject(json);
                 String scheme = jsonObject.optString("cardscheme");
+                String cardtype = jsonObject.optString("cardtype");
                 CardOption.CardScheme cardScheme = CardOption.CardScheme.getCardScheme(scheme);
                 String issuingbank = jsonObject.optString("issuingbank");
-                NetBankForOTP netBankForOTP = NetBankForOTP.getNetBankForOTP(issuingbank);
+                NetBankForOTP netBankForOTP = NetBankForOTP.getNetBankForOTP(cardtype, issuingbank);
 
                 response = new BinServiceResponse(cardScheme, netBankForOTP);
             } catch (JSONException e) {

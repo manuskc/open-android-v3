@@ -594,7 +594,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
         if (autoOTPEnabled && mPaymentOption instanceof CardOption && netBankForOTP != NetBankForOTP.UNKNOWN) {
             otpPopupCancelImgView.setVisibility(View.VISIBLE);
-            
+
             mOTPPopupView.setVisibility(View.VISIBLE);
 
             if (netBankForOTP.isBypassEnterPasswordButton()) {
@@ -617,6 +617,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             @Override
             public void success(BinServiceResponse binServiceResponse) {
                 netBankForOTP = binServiceResponse.getNetBankForOTP();
+                Logger.d("netbankForOTP : " + netBankForOTP);
             }
 
             @Override
@@ -773,14 +774,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onProcessTransactionClicked(String otp) {
 
-        if(mOTPPopupView.isOtpDetectedStatus()){
+        if (mOTPPopupView.isOtpDetectedStatus()) {
             // Otp is detected so Load the js to process the transaction.
             String js = String.format(netBankForOTP.getTransactionJS(), otp);
             mPaymentWebview.loadUrl(js);
 
             transactionProcessed = true;
 
-        }else{
+        } else {
             // Otp is not detected, user entered manually
 
             // Set OTP on bank's page.
