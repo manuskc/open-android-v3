@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.citrus.library.R;
 
@@ -29,6 +30,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     private TextView cancelTransactionTxtView = null;
     private boolean otpViewToggleStatus = false;
     private boolean otpDetectedStatus = false;
+    private String otp = null;
 
     public OTPPopupView(Context context) {
         super(context);
@@ -49,12 +51,17 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         ImageButton btnEnterPassword = (ImageButton) findViewById(R.id.enterPasswordImgViewId);
         ImageButton btnSendOTP = (ImageButton) findViewById(R.id.sendOtpImgViewId);
         this.cancelTransactionTxtView = (TextView) findViewById(R.id.cancelTransactionTxtId);
+        LinearLayout enterPasswordLayout = (LinearLayout) findViewById(R.id.enterPasswordLayoutId);
+        LinearLayout enterOtpLayout = (LinearLayout) findViewById(R.id.enterOtpLayoutId);
+        enterOtpLayout.setOnClickListener(this);
+        enterPasswordLayout.setOnClickListener(this);
         btnEnterPassword.setOnClickListener(this);
         btnSendOTP.setOnClickListener(this);
         this.cancelTransactionTxtView.setOnClickListener(this);
     }
 
     public void setOTP(String otp) {
+        this.otp = otp;
         this.otpDetectedStatus = true;
         this.enterOtpEditTxt.setText(otp);
 
@@ -76,9 +83,13 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
             this.otpResendBtn.setBackgroundResource(R.drawable.btn_resend);
             this.otpResendBtn.setClickable(true);
 
-            this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm_disabled);
-            this.otpConfirmBtn.setClickable(false);
-            this.otpConfirmBtn.setEnabled(false);
+//            this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm_disabled);
+//            this.otpConfirmBtn.setClickable(false);
+//            this.otpConfirmBtn.setEnabled(false);
+
+            this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm);
+            this.otpConfirmBtn.setClickable(true);
+            this.otpConfirmBtn.setEnabled(true);
 
             this.otpAutoDetectProgressBar.setVisibility(View.GONE);
             this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_failed_text);
@@ -88,6 +99,14 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     public void handleResendOTP() {
         otpAutoDetectHeaderTxtView.setText(R.string.otp_autodetect_header_text);
         otpAutoDetectProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    public boolean isOtpDetectedStatus() {
+        return otpDetectedStatus;
+    }
+
+    public void setOtpDetectedStatus(boolean otpDetectedStatus) {
+        this.otpDetectedStatus = otpDetectedStatus;
     }
 
     public void setOtpViewToggleStatus(boolean toggle) {
@@ -111,14 +130,28 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         int i = view.getId();
-        if (i == R.id.enterPasswordImgViewId) {
+        if (i == R.id.enterPasswordImgViewId || i == R.id.enterPasswordLayoutId) {
             listener.onEnterPasswordClicked();
-        } else if (i == R.id.sendOtpImgViewId) {
+        } else if (i == R.id.sendOtpImgViewId || i == R.id.enterOtpLayoutId) {
             displayOtpAutoDetectPopup();
             listener.onSendOtpClicked();
             listener.startOtpReadTimer();
-        } else if (i == R.id.otpConfirmBtnId) {
-            listener.onProcessTransactionClicked();
+        }
+
+        else if (i == R.id.otpConfirmBtnId) {
+            if (otpDetectedStatus) {
+                // Otp detected.
+                listener.onProcessTransactionClicked(otp);
+            } else if (this.enterOtpEditTxt.getText().toString().equalsIgnoreCase("")) {
+                // Otp detection failed or timeout and no otp entered
+                this.enterOtpEditTxt.requestFocus();
+                this.enterOtpEditTxt.setError("Please enter OTP or click Resend");
+            } else {
+                // Otp detection failed or timeout and user entered it manually
+                String otp = this.enterOtpEditTxt.getText().toString();
+                listener.onProcessTransactionClicked(otp);
+            }
+
         } else if (i == R.id.otpResendBtnId) {
             listener.onResendOTPClicked();
         } else if (i == R.id.cancelTransactionTxtId) {

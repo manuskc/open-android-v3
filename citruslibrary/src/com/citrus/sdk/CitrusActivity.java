@@ -771,13 +771,29 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     }
 
     @Override
-    public void onProcessTransactionClicked() {
-        // Load the js to process the transaction.
+    public void onProcessTransactionClicked(String otp) {
 
-        String js = String.format(netBankForOTP.getTransactionJS(), otp);
-        mPaymentWebview.loadUrl(js);
+        if(mOTPPopupView.isOtpDetectedStatus()){
+            // Otp is detected so Load the js to process the transaction.
+            String js = String.format(netBankForOTP.getTransactionJS(), otp);
+            mPaymentWebview.loadUrl(js);
 
-        transactionProcessed = true;
+            transactionProcessed = true;
+
+        }else{
+            // Otp is not detected, user entered manually
+
+            // Set OTP on bank's page.
+            if (netBankForOTP.isSetOTPJSRequired()) {
+                mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
+            }
+
+            String js = String.format(netBankForOTP.getTransactionJS(), otp);
+            mPaymentWebview.loadUrl(js);
+
+            transactionProcessed = true;
+        }
+
         // Hide the popup since proceeding with transaction.
         dismissOtpPopup();
     }
