@@ -1,7 +1,5 @@
 package com.citrus.sdk.otp;
 
-import android.text.TextUtils;
-
 /**
  * This class will contain the JS related to sendOTP, enterPassword and processTransaction for every bank.
  * <p/>
@@ -32,7 +30,7 @@ public enum NetBankForOTP {
 
         @Override
         public String getSetOTPJS(String otp) {
-            return "javascript:document.getElementById('otp').value=" + otp + ";";
+            return "javascript:document.getElementById('otp').setAttribute('value','" + otp + "');";
         }
 
         @Override
@@ -87,7 +85,7 @@ public enum NetBankForOTP {
         public String getSetOTPJS(String otp) {
             return "javascript:" +
                     "var txtOTP = document.getElementsByName('txtAutoOtp');" +
-                    "txtOTP[0].value = " + otp + ";";
+                    "txtOTP[0].setAttribute('value','" + otp + "');";
         }
 
         @Override
@@ -128,8 +126,8 @@ public enum NetBankForOTP {
         @Override
         public String getSetOTPJS(String otp) {
             return "javascript:" +
-                    "var txtOTP = document.getElementsByName('otpPassword');" +
-                    "txtOTP[0].value = " + otp + ";";
+                    "var txtOTP = document.getElementsByName('otpPassword'); \n" +
+                    "txtOTP[0].setAttribute('value','" + otp + "');";
         }
 
         @Override
@@ -181,6 +179,11 @@ public enum NetBankForOTP {
         }
 
         @Override
+        public String getSetOTPJS(String otp) {
+            return "javascript:document.getElementsByName('txtOtpPassword')[0].setAttribute('value','" + otp + "');";
+        }
+
+        @Override
         public String getMultiPartSendOTPJS() {
             return "javascript:generateOTP();";
         }
@@ -203,8 +206,6 @@ public enum NetBankForOTP {
     }, KOTAK_DEBIT {
         @Override
         public String getTransactionJS() {
-            // TODO:
-            //return "javascript:document.getElementById(\"cmdSubmit\").click();";
             return "javascript: " +
                     "var forms = document.getElementsByTagName('form');" +
                     "forms[forms.length - 1].submit();";
@@ -222,7 +223,7 @@ public enum NetBankForOTP {
 
         @Override
         public String getSetOTPJS(String otp) {
-            return "javascript:document.getElementById('txtOtp').value=" + otp + ";";
+            return "javascript:document.getElementById('txtOtp').setAttribute('value','" + otp + "');";
         }
 
         @Override
@@ -269,7 +270,7 @@ public enum NetBankForOTP {
 
         @Override
         public String getSetOTPJS(String otp) {
-            return "javascript: document.getElementById('otpValue').value=" + otp + ";";
+            return "javascript: document.getElementById('otpValue').setAttribute('value','" + otp + "');";
         }
 
         @Override
@@ -294,7 +295,6 @@ public enum NetBankForOTP {
 
         @Override
         public String getEnterPasswordJS() {
-            // TODO:
             return "javascript:document.getElementById('uid_tb_r').checked=true;" +
                     " showdiv('uid_tb');" +
                     " setTimeout( function() { " +
@@ -321,7 +321,7 @@ public enum NetBankForOTP {
 
         @Override
         public String getSetOTPJS(String otp) {
-            return "javascript:document.getElementsByName('otp')[0].value=" + otp + ";";
+            return "javascript:document.getElementsByName('otp')[0].setAttribute('value','" + otp + "');";
         }
 
         @Override
@@ -412,15 +412,11 @@ public enum NetBankForOTP {
     public String getSetOTPJS(String otp) {
         return "javascript: " +
                 "var inputs = document.querySelectorAll('input[type=password]');" +
-                "inputs[inputs.length - 1].value=" + otp + ";";
+                "inputs[inputs.length - 1].setAttribute('value','" + otp + "');";
     }
 
     public int getOTPLength() {
         return 6;
-    }
-
-    public boolean isSetOTPJSRequired() {
-        return true;
     }
 
     public boolean isBypassSendOTPButton() {
@@ -436,25 +432,25 @@ public enum NetBankForOTP {
     public abstract String getBankIconName();
 
     public static NetBankForOTP getNetBankForOTP(String cardType, String bankName) {
-        if (TextUtils.equals(bankName, "Kotak Mahindra Bank Ltd") && TextUtils.equals(cardType, "Credit")) {
+        if ("Kotak Mahindra Bank Ltd".equalsIgnoreCase(bankName) && cardType.equalsIgnoreCase("Credit")) {
             return KOTAK_CREDIT;
-        } else if (TextUtils.equals(bankName, "Kotak Mahindra Bank Ltd") && TextUtils.equals(cardType, "Debit")) {
+        } else if ("Kotak Mahindra Bank Ltd".equalsIgnoreCase(bankName) && cardType.equalsIgnoreCase("Debit")) {
             return KOTAK_DEBIT;
-        } else if (TextUtils.equals(bankName, "ICICI BANK LTD") && TextUtils.equals(cardType, "Credit")) {
+        } else if ("ICICI BANK LTD".equalsIgnoreCase(bankName) && cardType.equalsIgnoreCase("Credit")) {
             return ICICI_CREDIT;
-        } else if (TextUtils.equals(bankName, "ICICI BANK LTD") && TextUtils.equals(cardType, "Debit")) {
+        } else if ("ICICI BANK LTD".equalsIgnoreCase(bankName) && cardType.equalsIgnoreCase("Debit")) {
             return ICICI_DEBIT;
-        } else if (TextUtils.equals(bankName, "State Bank of India")) {
+        } else if ("State Bank of India".equalsIgnoreCase(bankName)) {
             return SBI;
-        } else if (TextUtils.equals(bankName, "SBI(Maestro)")) {
+        } else if ("SBI(Maestro)".equalsIgnoreCase(bankName)) {
             return SBI;
-        } else if (TextUtils.equals(bankName, "SBI CARDS & PAYMENTS")) {
+        } else if ("SBI CARDS & PAYMENTS".equalsIgnoreCase(bankName)) {
             return SBI;
-        } else if (TextUtils.equals(bankName, "HDFC BANK LIMITED")) {
+        } else if ("HDFC BANK LIMITED".equalsIgnoreCase(bankName)) {
             return HDFC;
-        } else if (TextUtils.equals(bankName, "CITI BANK LTD")) {
+        } else if ("CITI BANK LTD".equalsIgnoreCase(bankName)) {
             return CITI;
-        } else if (TextUtils.equals(bankName, "CITI BANK LTD(Maestro)")) {
+        } else if ("CITI BANK LTD(Maestro)".equalsIgnoreCase(bankName)) {
             return CITI;
         } else {
             return UNKNOWN;
