@@ -551,7 +551,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 };
             }
 
-            registerReceiver(mSMSReceiver, new IntentFilter(Constants.ACTION_SMS_RECEIVED));
+            IntentFilter intentFilter = new IntentFilter(Constants.ACTION_SMS_RECEIVED);
+            intentFilter.setPriority(Constants.SMS_RECEIVER_PRIORITY);
+            registerReceiver(mSMSReceiver, intentFilter);
             LocalBroadcastManager.getInstance(this).registerReceiver(mAutoOtpSMSReceiveListener, new IntentFilter(Constants.ACTION_AUTO_READ_OTP));
 
         }
@@ -661,6 +663,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                     sendResult(transactionResponse);
                 } else {
                     mPaymentWebview.loadUrl(mpiServletUrl);
+
+                    dismissOtpPopup();
                 }
             }
         });
