@@ -589,7 +589,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         otpProcessTransactionJS = String.format(netBankForOTP.getTransactionJS(), otp);
 
         // Set OTP on bank's page.
-        mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
+//        mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
 
         Logger.d("OTP : %s, js : %s", otp, otpProcessTransactionJS);
         mOTPPopupView.setOTP(otp);
@@ -622,6 +622,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     private void dismissOtpPopup() {
         otpPopupCancelImgView.setVisibility(View.GONE);
+        findViewById(R.id.otpPopupSeparatorId).setVisibility(View.GONE);
+        findViewById(R.id.otpPopupOverlayId).setVisibility(View.GONE);
         mOTPPopupView.setVisibility(View.GONE);
     }
 
@@ -791,14 +793,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     @Override
     public void onProcessTransactionClicked(String otp) {
 
-        if (mOTPPopupView.isOtpDetectedStatus()) {
-            // Otp is detected so Load the js to process the transaction.
-            String js = String.format(netBankForOTP.getTransactionJS(), otp);
-            mPaymentWebview.loadUrl(js);
+//        if (mOTPPopupView.isOtpDetectedStatus()) {
+//            // Otp is detected so Load the js to process the transaction.
+//            String js = String.format(netBankForOTP.getTransactionJS(), otp);
+//            mPaymentWebview.loadUrl(js);
+//
+//            transactionProcessed = true;
 
-            transactionProcessed = true;
-
-        } else {
+//        } else {
             // Otp is not detected, user entered manually
 
             // Set OTP on bank's page.
@@ -808,7 +810,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             mPaymentWebview.loadUrl(js);
 
             transactionProcessed = true;
-        }
+//        }
 
         // Hide the popup since proceeding with transaction.
         dismissOtpPopup();
