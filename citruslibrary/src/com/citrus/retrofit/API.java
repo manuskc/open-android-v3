@@ -196,4 +196,8 @@ public interface API {
 
     @GET("/binservice/v2/bin/{first6Digits}")
     void getBinInfo(@Path("first6Digits") String first6Digits, Callback<Response> callback);
+
+    @GET("/cards/metadata/{token}")
+    void getBinInfoUsingToken(@Path("token") String token, Callback<Response> callback);
+
 }

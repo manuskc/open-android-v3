@@ -2043,33 +2043,39 @@ public class CitrusClient {
         if (cardOption != null && !TextUtils.isEmpty(cardOption.getCardNumber())) {
             String cardNumber = cardOption.getCardNumber();
             String first6Digits = "";
+            String token = "";
             if (!TextUtils.isEmpty(cardOption.getToken())) {
-                first6Digits = cardOption.getToken();
+                token = cardOption.getToken();
             } else {
                 first6Digits = cardNumber.length() > 6 ? cardNumber.substring(0, 6) : "";
             }
-            
+
+            retrofit.Callback<Response> responseCallback = new retrofit.Callback<Response>() {
+                @Override
+                public void success(Response response, Response response2) {
+                    String binServiceJSON = new String(((TypedByteArray) response.getBody()).getBytes());
+                    BinServiceResponse binServiceResponse = BinServiceResponse.fromJSON(binServiceJSON);
+                    if (binServiceResponse != null) {
+                        netBankForOTP = binServiceResponse.getNetBankForOTP();
+                        // Send Response.
+                        sendResponse(callback, binServiceResponse);
+                    } else {
+                        sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    sendError(callback, error);
+                }
+            };
+
+            // If card is new card use bin service api, else use token api
             if (!TextUtils.isEmpty(first6Digits)) {
                 API binServiceClient = RetroFitClient.getClientWithUrl("https://citrusapi.citruspay.com");
-                binServiceClient.getBinInfo(first6Digits, new retrofit.Callback<Response>() {
-                    @Override
-                    public void success(Response response, Response response2) {
-                        String binServiceJSON = new String(((TypedByteArray) response.getBody()).getBytes());
-                        BinServiceResponse binServiceResponse = BinServiceResponse.fromJSON(binServiceJSON);
-                        if (binServiceResponse != null) {
-                            netBankForOTP = binServiceResponse.getNetBankForOTP();
-                            // Send Response.
-                            sendResponse(callback, binServiceResponse);
-                        } else {
-                            sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
-                        }
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        sendError(callback, error);
-                    }
-                });
+                binServiceClient.getBinInfo(first6Digits, responseCallback);
+            } else if (!TextUtils.isEmpty(token)) {
+                retrofitClient.getBinInfoUsingToken(token, responseCallback);
             } else {
                 sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
             }
