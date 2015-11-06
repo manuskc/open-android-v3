@@ -440,17 +440,11 @@ public enum NetBankForOTP {
             return ICICI_CREDIT;
         } else if ("ICICI BANK LTD".equalsIgnoreCase(bankName) && cardType.equalsIgnoreCase("Debit")) {
             return ICICI_DEBIT;
-        } else if ("State Bank of India".equalsIgnoreCase(bankName)) {
+        } else if ("State Bank of India".equalsIgnoreCase(bankName) || "SBI(Maestro)".equalsIgnoreCase(bankName) || "SBI CARDS & PAYMENTS".equalsIgnoreCase(bankName)) {
             return SBI;
-        } else if ("SBI(Maestro)".equalsIgnoreCase(bankName)) {
-            return SBI;
-        } else if ("SBI CARDS & PAYMENTS".equalsIgnoreCase(bankName)) {
-            return SBI;
-        } else if ("HDFC BANK LIMITED".equalsIgnoreCase(bankName)) {
+        } else if ("HDFC BANK LIMITED".equalsIgnoreCase(bankName) || "HDFC BANK LIMITED(Maestro)".equalsIgnoreCase(bankName)) {
             return HDFC;
-        } else if ("CITI BANK LTD".equalsIgnoreCase(bankName)) {
-            return CITI;
-        } else if ("CITI BANK LTD(Maestro)".equalsIgnoreCase(bankName)) {
+        } else if ("CITI BANK LTD".equalsIgnoreCase(bankName) || "CITI BANK LTD(Maestro)".equalsIgnoreCase(bankName)) {
             return CITI;
         } else {
             return UNKNOWN;
