@@ -1,6 +1,7 @@
 package com.citrus.sdk.otp;
 
 import android.content.Context;
+import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +31,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     private boolean otpViewToggleStatus = false;
     private boolean otpDetectedStatus = false;
     private String otp = null;
+    private int otpEditTextLength = -1;
 
     public OTPPopupView(Context context) {
         super(context);
@@ -76,6 +78,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
 
     }
 
+
     public void otpReadTimeout() {
         if (!this.otpDetectedStatus) {
 
@@ -114,6 +117,14 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
 
     public boolean getOtpViewToggleStatus() {
         return otpViewToggleStatus;
+    }
+
+    public int getOtpEditTextLength() {
+        return otpEditTextLength;
+    }
+
+    public void setOtpEditTextLength(int otpEditTextLength) {
+        this.otpEditTextLength = otpEditTextLength;
     }
 
     public void setListener(OTPViewListener listener) {
@@ -170,6 +181,11 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         this.otpResendBtn.setOnClickListener(this);
         this.otpConfirmBtn.setOnClickListener(this);
         this.cancelTransactionTxtView.setOnClickListener(this);
+
+        InputFilter[] FilterArray = new InputFilter[1];
+        if (getOtpEditTextLength() != -1)
+            FilterArray[0] = new InputFilter.LengthFilter(getOtpEditTextLength());
+        this.enterOtpEditTxt.setFilters(FilterArray);
 
     }
 

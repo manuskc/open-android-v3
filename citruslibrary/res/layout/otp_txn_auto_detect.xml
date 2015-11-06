@@ -39,6 +39,7 @@
             android:layout_gravity="center"
             android:background="@drawable/textbox"
             android:hint="@string/otp_autodetect_enter_otp_hint_text"
+            android:inputType="number"
             android:maxLength="10"
             android:paddingEnd="@dimen/otp_auto_detect_enter_otp_edtxt_right_padding"
             android:paddingLeft="@dimen/otp_auto_detect_enter_otp_edtxt_left_padding"
