@@ -9,7 +9,7 @@
     <!--Auto OTP-->
     <string name="otp_options_header_text">Please select an option to continue with the transaction</string>
     <string name="otp_options_enter_pass_text">Enter Password</string>
-    <string name="otp_options_send_otp_text">Send Otp</string>
+    <string name="otp_options_send_otp_text">Send OTP</string>
     <string name="otp_cancel_transaction_text"><u>Cancel Transaction</u></string>
     <string name="otp_autodetect_header_text">We are trying to auto detect your OTP</string>
     <string name="otp_autodetect_resend_btn_text">Resend</string>

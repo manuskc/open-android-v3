@@ -14,13 +14,16 @@
         android:layout_margin="@dimen/otp_auto_detect_header_margin"
         android:gravity="center"
         android:text="@string/otp_autodetect_header_text"
-        android:textColor="@android:color/black"
+        android:textColor="#646464"
         android:textSize="@dimen/otp_auto_detect_header_textsize" />
 
     <ProgressBar
         android:id="@+id/otpAutoDetectProgressBarId"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
+        android:indeterminate="true"
+        android:layout_marginBottom="5dp"
+        android:indeterminateDrawable="@drawable/otp_autodetect_progress"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal" />
 
@@ -37,7 +40,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:textColor="#48860b"
             android:background="@drawable/textbox"
+            android:textColorHint="#434343"
             android:hint="@string/otp_autodetect_enter_otp_hint_text"
             android:inputType="number"
             android:maxLength="10"
@@ -52,6 +57,7 @@
             android:layout_height="@dimen/otp_auto_detect_resend_btn_height"
             android:layout_gravity="end|center_vertical"
             android:textAllCaps="false"
+            android:textColor="#4d4a4a"
             android:layout_marginEnd="@dimen/otp_auto_detect_resend_btn_right_margin"
             android:layout_marginRight="@dimen/otp_auto_detect_resend_btn_right_margin"
             android:background="@drawable/btn_resend"

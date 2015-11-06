@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/otp_options_header_top_margin"
         android:gravity="center"
         android:text="@string/otp_options_header_text"
-        android:textColor="@android:color/black"
+        android:textColor="#737373"
         android:textSize="@dimen/otp_options_header_textsize" />
 
     <LinearLayout
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/otp_options_enter_pass_textsize"
                 android:text="@string/otp_options_enter_pass_text"
-                android:textColor="@android:color/black" />
+                android:textColor="#383838" />
 
 
         </LinearLayout>
@@ -71,8 +71,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/otp_options_send_otp_textsize"
+                android:textColor="#383838"
                 android:text="@string/otp_options_send_otp_text"
-                android:textColor="@android:color/black" />
+                 />
 
         </LinearLayout>
     </LinearLayout>
