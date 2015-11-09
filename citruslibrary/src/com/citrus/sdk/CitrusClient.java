@@ -1606,7 +1606,7 @@ public class CitrusClient {
 
         registerReceiver(callback, new IntentFilter(loadMoney.getIntentAction()));
 
-        startCitrusActivity(loadMoney);
+        startCitrusActivity(loadMoney, false);
     }
 
     public synchronized void pgPayment(final PaymentType.PGPayment pgPayment, final Callback<TransactionResponse> callback) {
@@ -1624,7 +1624,25 @@ public class CitrusClient {
 
         registerReceiver(callback, new IntentFilter(pgPayment.getIntentAction()));
 
-        startCitrusActivity(pgPayment);
+        startCitrusActivity(pgPayment, false);
+    }
+
+    public synchronized void makePayment(final PaymentType.PGPayment pgPayment, final Callback<TransactionResponse> callback) {
+
+        // Validate the card details before forwarding transaction.
+        if (pgPayment != null) {
+            PaymentOption paymentOption = pgPayment.getPaymentOption();
+            // If the CardOption is invalid, check what is incorrect and respond with proper message.
+            if (paymentOption instanceof CardOption && !((CardOption) paymentOption).validateCard()) {
+
+                sendError(callback, new CitrusError(((CardOption) paymentOption).getCardValidityFailureReasons(), Status.FAILED));
+                return;
+            }
+        }
+
+        registerReceiver(callback, new IntentFilter(pgPayment.getIntentAction()));
+
+        startCitrusActivity(pgPayment, true);
     }
 
     public synchronized void pgPayment(final DynamicPricingResponse dynamicPricingResponse, final Callback<TransactionResponse> callback) {
@@ -1638,7 +1656,7 @@ public class CitrusClient {
 
                 registerReceiver(callback, new IntentFilter(pgPayment.getIntentAction()));
 
-                startCitrusActivity(pgPayment, dynamicPricingResponse);
+                startCitrusActivity(pgPayment, dynamicPricingResponse, false);
             } catch (CitrusException e) {
                 e.printStackTrace();
                 sendError(callback, new CitrusError(e.getMessage(), Status.FAILED));
@@ -1682,7 +1700,7 @@ public class CitrusClient {
                         if (balanceAmount.getValueAsDouble() >= citrusCash.getAmount().getValueAsDouble()) {
                             registerReceiver(callback, new IntentFilter(citrusCash.getIntentAction()));
 
-                            startCitrusActivity(citrusCash);
+                            startCitrusActivity(citrusCash, false);
                         } else {
                             sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INSUFFICIENT_BALANCE, Status.FAILED));
                         }
@@ -1710,7 +1728,7 @@ public class CitrusClient {
                     if (balanceAmount.getValueAsDouble() >= citrusCash.getAmount().getValueAsDouble()) {
                         registerReceiver(callback, new IntentFilter(citrusCash.getIntentAction()));
 
-                        startCitrusActivity(citrusCash);
+                        startCitrusActivity(citrusCash, false);
                     } else {
                         sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INSUFFICIENT_BALANCE, Status.FAILED));
                     }
@@ -2111,17 +2129,18 @@ public class CitrusClient {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(receiver);
     }
 
-    private void startCitrusActivity(PaymentType paymentType, DynamicPricingResponse dynamicPricingResponse) {
+    private void startCitrusActivity(PaymentType paymentType, DynamicPricingResponse dynamicPricingResponse, boolean useNewAPI) {
         Intent intent = new Intent(mContext, CitrusActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.INTENT_EXTRA_PAYMENT_TYPE, paymentType);
         intent.putExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE, dynamicPricingResponse);
+        intent.putExtra(Constants.INTENT_EXTRA_USE_NEW_API, useNewAPI);
 
         mContext.startActivity(intent);
     }
 
-    private void startCitrusActivity(PaymentType paymentType) {
-        startCitrusActivity(paymentType, null);
+    private void startCitrusActivity(PaymentType paymentType, boolean useNewAPI) {
+        startCitrusActivity(paymentType, null, useNewAPI);
     }
 
     private <T> void registerReceiver(final Callback<T> callback, IntentFilter intentFilter) {

@@ -29,6 +29,8 @@ public interface Constants {
 
     String INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE = "INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE";
 
+    String INTENT_EXTRA_USE_NEW_API = "INTENT_EXTRA_USE_NEW_API";
+
     /**
      * Use this constant to pass the payment type. {@link com.citrus.sdk.payment.PaymentType}
      */

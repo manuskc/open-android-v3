@@ -133,12 +133,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private boolean transactionProcessed = false;
     private boolean mMultipartSendOTPJS = false;
     private boolean mMultipartEnterPasswordJS = false;
+    private boolean useNewAPI = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         mPaymentType = getIntent().getParcelableExtra(Constants.INTENT_EXTRA_PAYMENT_TYPE);
         mRequestCode = getIntent().getIntExtra(Constants.INTENT_EXTRA_REQUEST_CODE_PAYMENT, -1);
+        useNewAPI = getIntent().getBooleanExtra(Constants.INTENT_EXTRA_USE_NEW_API, false);
 
         // Initialize CitrusClient.
         mCitrusClient = CitrusClient.getInstance(mContext);
@@ -315,7 +317,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             Amount amount = mPaymentType.getAmount();
 
             LoadMoney loadMoney = new LoadMoney(amount.getValue(), mPaymentType.getUrl());
-            PG paymentgateway = new PG(mPaymentOption, loadMoney, new UserDetails(CitrusUser.toJSONObject(mCitrusUser)));
+            PG paymentgateway = new PG(mCitrusClient.getEnvironment(), mPaymentOption, loadMoney, new UserDetails(CitrusUser.toJSONObject(mCitrusUser)));
 
             showDialog(WAIT_MESSAGE, true);
 
@@ -436,7 +438,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             Prepaid prepaid = new Prepaid(userDetails.getEmail());
             Bill bill = new Bill(billJSON);
             mTransactionId = bill.getTxnId();
-            PG paymentgateway = new PG(prepaid, bill, userDetails);
+            PG paymentgateway = new PG(mCitrusClient.getEnvironment(), prepaid, bill, userDetails);
             if (bill.getCustomParameters() != null) {
                 paymentgateway.setCustomParameters(bill.getCustomParameters());
             }
@@ -445,20 +447,20 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 public void onTaskexecuted(String success, String error) {
                     prepaidPayment(success, error);
                 }
-            });
+            }, false);
         } else {
             UserDetails userDetails = new UserDetails(CitrusUser.toJSONObject(mCitrusUser));
             Bill bill = new Bill(billJSON);
             mTransactionId = bill.getTxnId();
 
-            PG paymentgateway = new PG(mPaymentOption, bill, userDetails, dynamicPricingResponse);
+            PG paymentgateway = new PG(mCitrusClient.getEnvironment(), mPaymentOption, bill, userDetails, dynamicPricingResponse);
 
             paymentgateway.charge(new Callback() {
                 @Override
                 public void onTaskexecuted(String success, String error) {
                     processresponse(success, error);
                 }
-            });
+            }, useNewAPI);
         }
     }
 
@@ -466,25 +468,32 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         TransactionResponse transactionResponse = null;
         if (!android.text.TextUtils.isEmpty(response)) {
-            try {
+            if (useNewAPI) {
 
-                JSONObject redirect = new JSONObject(response);
-                mpiServletUrl = redirect.optString("redirectUrl");
+                // Loading html directly
+                Logger.d("Loading new make payment page :: " + response);
+                mPaymentWebview.loadDataWithBaseURL(mCitrusClient.getEnvironment().getBaseCitrusUrl(), response, "text/html", "utf-8", null);
 
-                if (!android.text.TextUtils.isEmpty(mpiServletUrl)) {
+            } else {
+                try {
+                    JSONObject redirect = new JSONObject(response);
+                    mpiServletUrl = redirect.optString("redirectUrl");
 
-                    mPaymentWebview.loadUrl(mpiServletUrl);
-                    if (mPaymentOption != null) {
-                        EventsManager.logWebViewEvents(CitrusActivity.this, WebViewEvents.OPEN, mPaymentOption.getAnalyticsPaymentType()); //analytics event - WebView Event
+                    if (!android.text.TextUtils.isEmpty(mpiServletUrl)) {
+
+                        mPaymentWebview.loadUrl(mpiServletUrl);
+                        if (mPaymentOption != null) {
+                            EventsManager.logWebViewEvents(CitrusActivity.this, WebViewEvents.OPEN, mPaymentOption.getAnalyticsPaymentType()); //analytics event - WebView Event
+                        }
+                    } else {
+                        transactionResponse = new TransactionResponse(TransactionResponse.TransactionStatus.FAILED, response, mTransactionId);
+                        sendResult(transactionResponse);
                     }
-                } else {
-                    transactionResponse = new TransactionResponse(TransactionResponse.TransactionStatus.FAILED, response, mTransactionId);
-                    sendResult(transactionResponse);
-                }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } // else useNewAPI ends.
         } else {
             transactionResponse = new TransactionResponse(TransactionResponse.TransactionStatus.FAILED, error, mTransactionId);
             sendResult(transactionResponse);
@@ -670,7 +679,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
                 // If the PaymentType is CitrusCash or network is not available, finish the activity and mark the status as cancelled.
                 // else load the url again so that Citrus can cancel the transaction and return the control to app normal way.
-                if (mPaymentType instanceof PaymentType.CitrusCash || !Utils.isNetworkConnected(mContext)) {
+                if (mPaymentType instanceof PaymentType.CitrusCash || !Utils.isNetworkConnected(mContext) || useNewAPI) {
                     TransactionResponse transactionResponse = new TransactionResponse(TransactionResponse.TransactionStatus.CANCELLED, "Cancelled By User", mTransactionId);
                     sendResult(transactionResponse);
                 } else {

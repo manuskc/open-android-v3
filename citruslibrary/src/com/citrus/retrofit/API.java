@@ -111,6 +111,11 @@ public interface API {
     @POST("/service/moto/authorize/struct/payment")
     void getPaymentResponse(@Body TypedString body, Callback<StructResponsePOJO> structResponseCallback);
 
+    //return url from citrus
+    @Headers("Content-Type: application/json")
+    @POST("/moto/makePayment")
+    void makePayment(@Body TypedString body, Callback<Response> callback);
+
     //payment options of merchant
     @FormUrlEncoded
     @POST("/service/v1/merchant/pgsetting")

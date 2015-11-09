@@ -14,21 +14,17 @@ package com.citrus.payment;
 
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import com.citrus.card.Card;
 import com.citrus.cash.LoadMoney;
 import com.citrus.cash.Prepaid;
 import com.citrus.mobile.Callback;
-import com.citrus.mobile.Config;
-import com.citrus.mobile.Errorclass;
 import com.citrus.mobile.OauthToken;
-import com.citrus.mobile.RESTclient;
-import com.citrus.mobile.User;
 import com.citrus.netbank.Bank;
 import com.citrus.netbank.BankPaymentType;
 import com.citrus.retrofit.RetroFitClient;
+import com.citrus.sdk.Environment;
 import com.citrus.sdk.ResponseMessages;
 import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.CitrusPrepaidBill;
@@ -43,7 +39,6 @@ import com.orhanobut.logger.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import retrofit.RetrofitError;
@@ -75,8 +70,9 @@ public class PG {
 
     ArrayList<String> mylist = new ArrayList<String>();
     private DynamicPricingResponse dynamicPricingResponse = null;
+    private Environment environment;
 
-    public PG(PaymentOption paymentOption, Bill bill, UserDetails userDetails, DynamicPricingResponse dynamicPricingResponse) {
+    public PG(Environment environment, PaymentOption paymentOption, Bill bill, UserDetails userDetails, DynamicPricingResponse dynamicPricingResponse) {
         if (paymentOption != null) {
             if (paymentOption instanceof CardOption) {
                 CardOption cardOption = (CardOption) paymentOption;
@@ -100,13 +96,14 @@ public class PG {
                 }
             }
         }
+        this.environment = environment;
         this.bill = bill;
         this.userDetails = userDetails;
         this.customParameters = bill.getCustomParameters();
         this.dynamicPricingResponse = dynamicPricingResponse;
     }
 
-    public PG(PaymentOption paymentOption, LoadMoney load, UserDetails userDetails) {
+    public PG(Environment environment, PaymentOption paymentOption, LoadMoney load, UserDetails userDetails) {
         if (paymentOption != null) {
             if (paymentOption instanceof CardOption) {
                 CardOption cardOption = (CardOption) paymentOption;
@@ -130,77 +127,29 @@ public class PG {
                 }
             }
         }
+        this.environment = environment;
         this.loadmoney = load;
         this.userDetails = userDetails;
     }
 
-
-    public PG(Card card, Bill bill, UserDetails userDetails) {
-        this.card = card;
-        this.bill = bill;
-        this.userDetails = userDetails;
-
-        if (TextUtils.isEmpty(card.getCardNumber())) {
-            paymenttype = "cardtoken";
-        } else {
-            paymenttype = "card";
-        }
-        this.customParameters = bill.getCustomParameters();
-    }
-
-    public PG(Bank bank, Bill bill, UserDetails userDetails) {
-        this.bank = bank;
-        this.bill = bill;
-        this.userDetails = userDetails;
-        if (this.bank.getPaymentType() != null)
-            paymenttype = this.bank.getPaymentType().toString();
-        else
-            paymenttype = "netbank";
-
-        this.customParameters = bill.getCustomParameters();
-    }
-
-    public PG(Prepaid prepaid, Bill bill, UserDetails userDetails) {
+    public PG(Environment environment, Prepaid prepaid, Bill bill, UserDetails userDetails) {
         this.bill = bill;
         this.userDetails = userDetails;
         this.prepaid = prepaid;
         paymenttype = "prepaid";
 
+        this.environment = environment;
         this.customParameters = bill.getCustomParameters();
-    }
-
-    public PG(Card card, LoadMoney load, UserDetails userDetails) {
-        this.card = card;
-        this.userDetails = userDetails;
-
-        this.loadmoney = load;
-
-        if (TextUtils.isEmpty(card.getCardNumber())) {
-            paymenttype = "cardtoken";
-        } else {
-            paymenttype = "card";
-        }
-
-    }
-
-    public PG(Bank bank, LoadMoney load, UserDetails userDetails) {
-        this.bank = bank;
-        this.userDetails = userDetails;
-        this.loadmoney = load;
-        if (this.bank.getPaymentType() != null)
-            paymenttype = this.bank.getPaymentType().toString();
-        else
-            paymenttype = "netbank";
     }
 
     /**
      * @param callback
      * @deprecated Use {@link com.citrus.sdk.CitrusActivity} instead.
      */
-    public void charge(Callback callback) {
+    public void charge(Callback callback, boolean useNewMakePaymentAPI) {
         this.callback = callback;
 
-        validate();
+        validate(useNewMakePaymentAPI);
 
     }
 
@@ -228,14 +177,14 @@ public class PG {
     private void formprepaidBill(String prepaid_bill) {
         this.bill = new Bill(prepaid_bill, "prepaid");
 
-        validate();
+        validate(false);
     }
 
     public void setCustomParameters(JSONObject customParameters) {
         this.customParameters = customParameters;
     }
 
-    private void validate() {
+    private void validate(boolean useNewMakePaymentAPI) {
 
         if (TextUtils.equals(paymenttype.toString(), "card") || TextUtils.equals(paymenttype.toString(), "cardtoken")) {
             if (TextUtils.isEmpty(card.getCardNumber()) && TextUtils.isEmpty(card.getcardToken())) {
@@ -273,7 +222,7 @@ public class PG {
 
         checkifnull();
 
-        formjson();
+        formjson(useNewMakePaymentAPI);
     }
 
     private void checkifnull() {
@@ -285,7 +234,7 @@ public class PG {
         }
     }
 
-    private void formjson() {
+    private void formjson(boolean useNewMakePaymentAPI) {
         JSONObject paymentToken = new JSONObject();
         boolean isTokenizedPayment = false;
         JSONObject paymentmode;
@@ -444,9 +393,32 @@ public class PG {
             e.printStackTrace();
         }
 
-        //new MakePayment(payment, headers, callback).execute();
-        retrofitCharge();
+        if (useNewMakePaymentAPI) {
+            newMakePayment();
+        } else {
+            retrofitCharge();
+        }
+    }
 
+    // Make Payment using new MOTO API.
+    private void newMakePayment() {
+        RetroFitClient.getClientWithUrl(environment.getBaseCitrusUrl()).makePayment(new TypedString(payment.toString()), new retrofit.Callback<Response>() {
+            @Override
+            public void success(Response response, Response response2) {
+                String bankHTML = new String(((TypedByteArray) response.getBody()).getBytes());
+                Logger.d("MOTO SUCCESSFUL***" + bankHTML);
+                callback.onTaskexecuted(bankHTML, "");
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Logger.d("FAILED MOTO CALL**** " + error.getMessage());
+                if (error.getKind() == RetrofitError.Kind.NETWORK)
+                    callback.onTaskexecuted("", ResponseMessages.ERROR_NETWORK_CONNECTION);
+                else
+                    callback.onTaskexecuted("", error.getMessage());
+            }
+        });
     }
 
 
