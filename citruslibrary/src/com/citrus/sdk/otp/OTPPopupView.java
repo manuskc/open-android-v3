@@ -34,8 +34,6 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     private ImageView bankLogoImgView = null;
 
     private boolean otpViewToggleStatus = false;
-    private boolean otpDetectedStatus = false;
-    private String otp = null;
     private int otpEditTextLength = -1;
     private NetBankForOTP netBankForOTP = null;
 
@@ -70,8 +68,6 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     }
 
     public void setOTP(String otp) {
-        this.otp = otp;
-        this.otpDetectedStatus = true;
         this.enterOtpEditTxt.setText(otp);
 
         // Hide the resend button.
@@ -86,42 +82,25 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
 
     }
 
-//    public void setBankDetailsOnView(Drawable bankDrawable, String bankName){
-//        this.bankLogoImgView.setImageDrawable(bankDrawable);
-//        this.bankNameTextView.setText(bankName);
-//    }
-
-
     public void otpReadTimeout() {
-        if (!this.otpDetectedStatus) {
-
-            this.otpResendBtn.setBackgroundResource(R.drawable.btn_resend);
-            this.otpResendBtn.setClickable(true);
+        this.otpResendBtn.setBackgroundResource(R.drawable.btn_resend);
+        this.otpResendBtn.setClickable(true);
 
 //            this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm_disabled);
 //            this.otpConfirmBtn.setClickable(false);
 //            this.otpConfirmBtn.setEnabled(false);
 
-            this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm);
-            this.otpConfirmBtn.setClickable(true);
-            this.otpConfirmBtn.setEnabled(true);
+        this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm);
+        this.otpConfirmBtn.setClickable(true);
+        this.otpConfirmBtn.setEnabled(true);
 
-            this.otpAutoDetectProgressBar.setVisibility(View.GONE);
-            this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_failed_text);
-        }
+        this.otpAutoDetectProgressBar.setVisibility(View.GONE);
+        this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_failed_text);
     }
 
     public void handleResendOTP() {
         otpAutoDetectHeaderTxtView.setText(R.string.otp_autodetect_header_text);
         otpAutoDetectProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    public boolean isOtpDetectedStatus() {
-        return otpDetectedStatus;
-    }
-
-    public void setOtpDetectedStatus(boolean otpDetectedStatus) {
-        this.otpDetectedStatus = otpDetectedStatus;
     }
 
     public void setOtpViewToggleStatus(boolean toggle) {
@@ -131,14 +110,6 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     public boolean getOtpViewToggleStatus() {
         return otpViewToggleStatus;
     }
-
-//    public int getOtpEditTextLength() {
-//        return otpEditTextLength;
-//    }
-//
-//    public void setOtpEditTextLength(int otpEditTextLength) {
-//        this.otpEditTextLength = otpEditTextLength;
-//    }
 
     public void setNetBankForOTP(NetBankForOTP netBankForOTP) {
         this.netBankForOTP = netBankForOTP;
@@ -171,16 +142,13 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
             listener.onSendOtpClicked();
             listener.startOtpReadTimer();
         } else if (i == R.id.otpConfirmBtnId) {
-            if (otpDetectedStatus) {
-                // Otp detected.
-                listener.onProcessTransactionClicked(otp);
-            } else if (this.enterOtpEditTxt.getText().toString().equalsIgnoreCase("")) {
+            String otp = enterOtpEditTxt.getText().toString();
+            if (this.enterOtpEditTxt.getText().toString().equalsIgnoreCase("")) {
                 // Otp detection failed or timeout and no otp entered
                 this.enterOtpEditTxt.requestFocus();
                 this.enterOtpEditTxt.setError("Please enter OTP or click Resend");
             } else {
                 // Otp detection failed or timeout and user entered it manually
-                String otp = this.enterOtpEditTxt.getText().toString();
                 listener.onProcessTransactionClicked(otp);
             }
 
@@ -215,7 +183,5 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         this.enterOtpEditTxt.setFilters(FilterArray);
 
         setBankDetails();
-
     }
-
 }
