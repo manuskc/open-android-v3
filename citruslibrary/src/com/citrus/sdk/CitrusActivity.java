@@ -599,6 +599,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
         if (autoOTPEnabled && mPaymentOption instanceof CardOption && netBankForOTP != NetBankForOTP.UNKNOWN) {
 
+
             // Prevent the activity from sleeping.
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -633,7 +634,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             public void success(BinServiceResponse binServiceResponse) {
                 netBankForOTP = binServiceResponse.getNetBankForOTP();
                 Logger.d("netbankForOTP : " + netBankForOTP);
-                mOTPPopupView.setOtpEditTextLength(netBankForOTP.getOTPLength());
+
+                mOTPPopupView.setNetBankForOTP(netBankForOTP);
+//                mOTPPopupView.setOtpEditTextLength(netBankForOTP.getOTPLength());
             }
 
             @Override

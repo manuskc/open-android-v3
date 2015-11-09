@@ -1,12 +1,14 @@
 package com.citrus.sdk.otp;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.InputFilter;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,10 +30,14 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
     private Button otpResendBtn = null;
     private Button otpConfirmBtn = null;
     private TextView cancelTransactionTxtView = null;
+    private TextView bankNameTextView = null;
+    private ImageView bankLogoImgView = null;
+
     private boolean otpViewToggleStatus = false;
     private boolean otpDetectedStatus = false;
     private String otp = null;
     private int otpEditTextLength = -1;
+    private NetBankForOTP netBankForOTP = null;
 
     public OTPPopupView(Context context) {
         super(context);
@@ -52,6 +58,8 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         ImageButton btnEnterPassword = (ImageButton) findViewById(R.id.enterPasswordImgViewId);
         ImageButton btnSendOTP = (ImageButton) findViewById(R.id.sendOtpImgViewId);
         this.cancelTransactionTxtView = (TextView) findViewById(R.id.cancelTransactionTxtId);
+        this.bankLogoImgView = (ImageView) findViewById(R.id.bankLogoImgViewId);
+        this.bankNameTextView = (TextView) findViewById(R.id.bankNameTextViewId);
         LinearLayout enterPasswordLayout = (LinearLayout) findViewById(R.id.enterPasswordLayoutId);
         LinearLayout enterOtpLayout = (LinearLayout) findViewById(R.id.enterOtpLayoutId);
         enterOtpLayout.setOnClickListener(this);
@@ -77,6 +85,11 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         this.otpAutoDetectHeaderTxtView.setText(R.string.otp_detection_success_text);
 
     }
+
+//    public void setBankDetailsOnView(Drawable bankDrawable, String bankName){
+//        this.bankLogoImgView.setImageDrawable(bankDrawable);
+//        this.bankNameTextView.setText(bankName);
+//    }
 
 
     public void otpReadTimeout() {
@@ -119,12 +132,23 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         return otpViewToggleStatus;
     }
 
-    public int getOtpEditTextLength() {
-        return otpEditTextLength;
+//    public int getOtpEditTextLength() {
+//        return otpEditTextLength;
+//    }
+//
+//    public void setOtpEditTextLength(int otpEditTextLength) {
+//        this.otpEditTextLength = otpEditTextLength;
+//    }
+
+    public void setNetBankForOTP(NetBankForOTP netBankForOTP) {
+        this.netBankForOTP = netBankForOTP;
+
+        setBankDetails();
     }
 
-    public void setOtpEditTextLength(int otpEditTextLength) {
-        this.otpEditTextLength = otpEditTextLength;
+    private void setBankDetails() {
+        this.bankLogoImgView.setImageDrawable(netBankForOTP.getBankIconDrawable(context));
+        this.bankNameTextView.setText(netBankForOTP.getBankName());
     }
 
     public void setListener(OTPViewListener listener) {
@@ -177,15 +201,20 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
         this.otpResendBtn = (Button) findViewById(R.id.otpResendBtnId);
         this.otpConfirmBtn = (Button) findViewById(R.id.otpConfirmBtnId);
         this.cancelTransactionTxtView = (TextView) findViewById(R.id.cancelTransactionTxtId);
+        this.bankLogoImgView = (ImageView) findViewById(R.id.bankLogoImgViewId);
+        this.bankNameTextView = (TextView) findViewById(R.id.bankNameTextViewId);
 
         this.otpResendBtn.setOnClickListener(this);
         this.otpConfirmBtn.setOnClickListener(this);
         this.cancelTransactionTxtView.setOnClickListener(this);
 
         InputFilter[] FilterArray = new InputFilter[1];
-        if (getOtpEditTextLength() != -1)
-            FilterArray[0] = new InputFilter.LengthFilter(getOtpEditTextLength());
+        otpEditTextLength = netBankForOTP.getOTPLength();
+        if (otpEditTextLength != -1)
+            FilterArray[0] = new InputFilter.LengthFilter(otpEditTextLength);
         this.enterOtpEditTxt.setFilters(FilterArray);
+
+        setBankDetails();
 
     }
 
