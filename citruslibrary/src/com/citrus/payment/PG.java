@@ -406,8 +406,25 @@ public class PG {
             @Override
             public void success(Response response, Response response2) {
                 String bankHTML = new String(((TypedByteArray) response.getBody()).getBytes());
-                Logger.d("MOTO SUCCESSFUL***" + bankHTML);
-                callback.onTaskexecuted(bankHTML, "");
+                Logger.d("New MOTO SUCCESSFUL***" + bankHTML);
+
+                if (bankHTML.contains("Access is denied")) {
+                    String errorString = "";
+                    int end = -1;
+                    String[] errorCodes = bankHTML.split("class=\\\"transDetails\\\">(.*)\\s");
+                    if (errorCodes != null && errorCodes.length == 2 && ((end = errorCodes[1].indexOf("</div>"))) != -1) {
+                        String input = errorCodes[1];
+                        String output = input.substring(0, end);
+                        errorString = output.replaceAll("\n", "").replaceAll("\t", "");
+                    } else {
+                        errorString = "Some Error Occurred";
+                    }
+
+                    callback.onTaskexecuted("", errorString);
+
+                } else {
+                    callback.onTaskexecuted(bankHTML, "");
+                }
             }
 
             @Override
