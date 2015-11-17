@@ -33,6 +33,11 @@ public class PaymentResponse extends CitrusResponse implements Parcelable {
     protected String merchantName = null;
     @SerializedName("date")
     protected String date = null;
+
+    public TransactionResponse getTransactionResponse() {
+        return transactionResponse;
+    }
+
     protected TransactionResponse transactionResponse = null;
     private JSONObject responseParams = null;
 

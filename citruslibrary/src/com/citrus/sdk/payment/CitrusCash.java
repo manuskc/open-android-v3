@@ -27,6 +27,9 @@ public final class CitrusCash extends PaymentOption {
     private CitrusCash() {
     }
 
+    public CitrusCash(String name, String token) {
+        super(name, token);
+    }
     public CitrusCash(String amount) {
         this.amount = amount;
         this.name = "Citrus Cash : \u20B9 " + amount;
@@ -61,9 +64,18 @@ public final class CitrusCash extends PaymentOption {
     }
 
     @Override
+    public String getSaveDefaultPaymentOptionObject() {
+        return null;
+    }
+
+
+    @Override
     public String toString() {
         return super.toString() + "CitrusCash{" +
                 "amount='" + amount + '\'' +
                 '}';
+    }
+    public void setName(String name) {
+        super.name = name;
     }
 }

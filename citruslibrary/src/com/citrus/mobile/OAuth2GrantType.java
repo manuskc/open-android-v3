@@ -19,5 +19,5 @@ package com.citrus.mobile;
  * Created by MANGESH KADAM on 5/11/2015.
  */
 public enum OAuth2GrantType {
-    implicit, password, username, refresh_token
+    implicit, password, username, refresh_token, onetimepass
 }
