@@ -217,21 +217,27 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         registerSMSReceivers();
 
+        CitrusUser citrusUser = mCitrusClient.getCitrusUser();
         String emailId = mCitrusClient.getUserEmailId();
         String mobileNo = mCitrusClient.getUserMobileNumber();
 
         // Set the citrusUser.
         // Use details from the token in case of load money
         if (mPaymentType instanceof PaymentType.LoadMoney || mPaymentType instanceof PaymentType.CitrusCash) {
-            if (mCitrusClient.getCitrusUser() != null) {
-                mCitrusUser = mCitrusClient.getCitrusUser();
+            if (citrusUser != null) {
+                mCitrusUser = citrusUser;
             } else if (mCitrusUser == null) {
                 mCitrusUser = new CitrusUser(emailId, mobileNo);
             }
         } else {
             // In case of PG Payment, send the merchant values.
             if (mCitrusUser == null) {
-                mCitrusUser = new CitrusUser(emailId, mobileNo);
+                // If the user details from token are available use those, put the details sent by the merchant while bind.
+                if (citrusUser != null) {
+                    mCitrusUser = citrusUser;
+                } else {
+                    mCitrusUser = new CitrusUser(emailId, mobileNo);
+                }
             }
         }
 
