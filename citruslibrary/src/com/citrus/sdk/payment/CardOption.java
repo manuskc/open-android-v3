@@ -125,7 +125,14 @@ public abstract class CardOption extends PaymentOption {
     }
 
     public String getNickName() {
-        return getName();
+        String name = getName();
+
+        if("---".equalsIgnoreCase(name)) {
+            name = String.format((this instanceof CreditCardOption ? "Credit Card (%s)" : "Debit Card (%s)"), getLast4Digits());
+        }
+
+            return name;
+       // return getName();
     }
 
     public String getCardExpiryYear() {

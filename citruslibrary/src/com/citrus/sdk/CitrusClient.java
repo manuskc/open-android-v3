@@ -2597,7 +2597,7 @@ public class CitrusClient {
                     if (transactionStatus == TransactionResponse.TransactionStatus.SUCCESSFUL) {
                         sendResponse(callback, transactionResponse);
                     } else {
-                        sendError(callback, new CitrusError(transactionResponse.getMessage(), status));
+                        sendError(callback, new CitrusError(transactionResponse.getMessage(), transactionResponse.getJsonResponse(), status));
                     }
                 }
             }
