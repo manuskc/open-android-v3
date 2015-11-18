@@ -141,20 +141,20 @@ public final class Utils {
 
                     // Card Details
                     buffer.append("&cardNumber=");
-                    buffer.append(buffer.append(URLEncoder.encode(cardOption.getCardNumber(), "utf-8")));
+                    buffer.append(URLEncoder.encode(cardOption.getCardNumber(), "utf-8"));
 
                     buffer.append("&cvvNumber=");
-                    buffer.append(buffer.append(URLEncoder.encode(cardOption.getCardCVV(), "utf-8")));
+                    buffer.append(URLEncoder.encode(cardOption.getCardCVV(), "utf-8"));
 
                     buffer.append("&expiryMonth=");
-                    buffer.append(buffer.append(URLEncoder.encode(cardOption.getCardExpiryMonth(), "utf-8")));
+                    buffer.append(URLEncoder.encode(cardOption.getCardExpiryMonth(), "utf-8"));
 
                     buffer.append("&expiryYear=");
-                    buffer.append(buffer.append(URLEncoder.encode(cardOption.getCardExpiryYear(), "utf-8")));
+                    buffer.append(URLEncoder.encode(cardOption.getCardExpiryYear(), "utf-8"));
 
                     buffer.append("&cardType=");
                     if (cardOption.getCardScheme() != null) {
-                        buffer.append(buffer.append(URLEncoder.encode(cardOption.getCardScheme().getName(), "utf-8")));
+                        buffer.append(URLEncoder.encode(cardOption.getCardScheme().getName(), "utf-8"));
                     }
                 } else if (paymentOption instanceof NetbankingOption) {
                     buffer.append("&paymentMode=");
