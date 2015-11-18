@@ -119,6 +119,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private boolean isBackKeyPressedByUser = false;
     private boolean passwordPromptShown = false;
     private DynamicPricingResponse dynamicPricingResponse = null;
+    private PaymentBill mPaymentBill = null;
 
     // Auto OTP
     private SMSReceiver mSMSReceiver = null;
@@ -299,6 +300,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         // For PG Payment or Pay Using Citrus Cash
         if (mPaymentType instanceof PaymentType.PGPayment || mPaymentType instanceof PaymentType.CitrusCash) {
             if (mPaymentType.getPaymentBill() != null) {
+                mPaymentBill = mPaymentType.getPaymentBill();
+
                 // TODO Need to refactor the code.
                 if (PaymentBill.toJSONObject(mPaymentType.getPaymentBill()) != null) {
                     proceedToPayment(PaymentBill.toJSONObject(mPaymentType.getPaymentBill()).toString());
@@ -412,6 +415,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         mCitrusClient.getBill(billUrl, mPaymentType.getAmount(), new com.citrus.sdk.Callback<PaymentBill>() {
             @Override
             public void success(PaymentBill paymentBill) {
+                // PaymentBill required for the later use.
+                mPaymentBill = paymentBill;
+
                 customParametersOriginalMap = paymentBill.getCustomParametersMap();
                 JSONObject billJson = PaymentBill.toJSONObject(paymentBill);
                 if (billJson != null) {
@@ -597,9 +603,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
         otpProcessTransactionJS = String.format(netBankForOTP.getTransactionJS(), otp);
 
-        // Set OTP on bank's page.
-//        mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
-
         Logger.d("OTP : %s, js : %s", otp, otpProcessTransactionJS);
         mOTPPopupView.setOTP(otp);
     }
@@ -645,7 +648,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 Logger.d("netbankForOTP : " + netBankForOTP);
 
                 mOTPPopupView.setNetBankForOTP(netBankForOTP);
-//                mOTPPopupView.setOtpEditTextLength(netBankForOTP.getOTPLength());
             }
 
             @Override
@@ -677,15 +679,23 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 dialog.dismiss();
                 isBackKeyPressedByUser = true;
 
-                // If the PaymentType is CitrusCash or network is not available, finish the activity and mark the status as cancelled.
-                // else load the url again so that Citrus can cancel the transaction and return the control to app normal way.
-                if (mPaymentType instanceof PaymentType.CitrusCash || !Utils.isNetworkConnected(mContext) || useNewAPI) {
-                    TransactionResponse transactionResponse = new TransactionResponse(TransactionResponse.TransactionStatus.CANCELLED, "Cancelled By User", mTransactionId);
-                    sendResult(transactionResponse);
+                if (useNewAPI) {
+                    String vanity = mCitrusClient.getVanity();
+                    String postData = Utils.getURLEncodedParamsForCancelTransaction(mCitrusUser, mPaymentBill, mPaymentOption, dynamicPricingResponse, vanity);
+                    Logger.d("PostData :: " + postData);
+                    Environment environment = mCitrusClient.getEnvironment();
+                    mPaymentWebview.postUrl(environment.getCancelUrl(vanity), postData.getBytes());
                 } else {
-                    mPaymentWebview.loadUrl(mpiServletUrl);
+                    // If the PaymentType is CitrusCash or network is not available, finish the activity and mark the status as cancelled.
+                    // else load the url again so that Citrus can cancel the transaction and return the control to app normal way.
+                    if (mPaymentType instanceof PaymentType.CitrusCash || !Utils.isNetworkConnected(mContext)) {
+                        TransactionResponse transactionResponse = new TransactionResponse(TransactionResponse.TransactionStatus.CANCELLED, "Cancelled By User", mTransactionId);
+                        sendResult(transactionResponse);
+                    } else {
+                        mPaymentWebview.loadUrl(mpiServletUrl);
 
-                    dismissOtpPopup();
+                        dismissOtpPopup();
+                    }
                 }
             }
         });
@@ -760,6 +770,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             mPaymentWebview.stopLoading();
             mPaymentWebview.destroy();
         }
+        mPaymentBill = null;
         mPaymentWebview = null;
         mPaymentType = null;
         mPaymentParams = null;
@@ -813,15 +824,15 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 //            transactionProcessed = true;
 
 //        } else {
-            // Otp is not detected, user entered manually
+        // Otp is not detected, user entered manually
 
-            // Set OTP on bank's page.
-            mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
+        // Set OTP on bank's page.
+        mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
 
-            String js = String.format(netBankForOTP.getTransactionJS(), otp);
-            mPaymentWebview.loadUrl(js);
+        String js = String.format(netBankForOTP.getTransactionJS(), otp);
+        mPaymentWebview.loadUrl(js);
 
-            transactionProcessed = true;
+        transactionProcessed = true;
 //        }
 
         // Hide the popup since proceeding with transaction.

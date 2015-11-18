@@ -1,5 +1,7 @@
 package com.citrus.sdk;
 
+import android.text.TextUtils;
+
 /**
  * Created by MANGESH KADAM on 6/3/2015.
  */
@@ -18,6 +20,11 @@ public enum Environment {
         @Override
         public String getDynamicPricingBaseUrl() {
             return "https://sandboxmars.citruspay.com/dynamic-pricing/";
+        }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
         }
 
         @Override
@@ -41,6 +48,11 @@ public enum Environment {
         }
 
         @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
+        }
+
+        @Override
         public String toString() {
             return "PRODUCTION";
         }
@@ -58,6 +70,11 @@ public enum Environment {
         @Override
         public String getDynamicPricingBaseUrl() {
             return "https://oops.citruspay.com/dynamic-pricing/";
+        }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
         }
 
         @Override
@@ -82,6 +99,11 @@ public enum Environment {
         }
 
         @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
+        }
+
+        @Override
         public String toString() {
             return "STG5";
         }
@@ -103,6 +125,11 @@ public enum Environment {
         }
 
         @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
+        }
+
+        @Override
         public String toString() {
             return "STG5";
         }
@@ -120,6 +147,11 @@ public enum Environment {
         @Override
         public String getDynamicPricingBaseUrl() {
             return "https://stg3admin.citruspay.com/dynamic-pricing/";
+        }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
         }
 
         @Override
@@ -146,6 +178,11 @@ public enum Environment {
         public String getDynamicPricingBaseUrl() {
             return null;
         }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return null;
+        }
     };
 
     public abstract String getBaseUrl();
@@ -153,4 +190,6 @@ public enum Environment {
     public abstract String getBaseCitrusUrl();
 
     public abstract String getDynamicPricingBaseUrl();
+
+    public abstract String getCancelUrl(String vanity);
 }
