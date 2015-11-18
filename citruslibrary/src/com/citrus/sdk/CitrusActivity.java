@@ -685,6 +685,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                     Logger.d("PostData :: " + postData);
                     Environment environment = mCitrusClient.getEnvironment();
                     mPaymentWebview.postUrl(environment.getCancelUrl(vanity), postData.getBytes());
+
+                    dismissOtpPopup();
                 } else {
                     // If the PaymentType is CitrusCash or network is not available, finish the activity and mark the status as cancelled.
                     // else load the url again so that Citrus can cancel the transaction and return the control to app normal way.
