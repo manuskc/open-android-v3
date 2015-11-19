@@ -167,6 +167,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                     mOTPPopupView.setOtpViewToggleStatus(false);
                     otpPopupCancelImgView.setBackgroundResource(R.drawable.arrow_down_icon);
                     findViewById(R.id.otpPopupSeparatorId).setVisibility(View.VISIBLE);
+                    // Show the OTP Popup Overlay i.e. dark grey portion on the back
                     findViewById(R.id.otpPopupOverlayId).setVisibility(View.VISIBLE);
 
                 } else {
@@ -174,6 +175,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                     mOTPPopupView.setOtpViewToggleStatus(true);
                     otpPopupCancelImgView.setBackgroundResource(R.drawable.arrow_up_icon);
                     findViewById(R.id.otpPopupSeparatorId).setVisibility(View.GONE);
+                    // Hide the OTP Popup Overlay i.e. dark grey portion on the back
                     findViewById(R.id.otpPopupOverlayId).setVisibility(View.GONE);
                 }
 
@@ -617,15 +619,14 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         // Display popup only if the autoOTP is enabled and payment mode is Credit/Debit Card.
         if (autoOTPEnabled && mPaymentOption instanceof CardOption && netBankForOTP != NetBankForOTP.UNKNOWN) {
 
-
             // Prevent the activity from sleeping.
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-            // Show minimize button over the view.
-            otpPopupCancelImgView.setVisibility(View.VISIBLE);
-            // Show the popup otp view.
-            mOTPPopupView.setVisibility(View.VISIBLE);
+            // Show the Overlay on the otp popup i.e. dark gray screen
             findViewById(R.id.otpPopupOverlayId).setVisibility(View.VISIBLE);
+
+            // Show OTP Popup Layout
+            findViewById(R.id.otp_popup_layout).setVisibility(View.VISIBLE);
+
             // If in case of few banks there is no option to enter password, only otp is directly triggered, so hide the enter password button.
             if (netBankForOTP.isBypassEnterPasswordButton()) {
                 mOTPPopupView.enableEnterPasswordButton(false);
@@ -640,10 +641,11 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     }
 
     private void dismissOtpPopup() {
-        otpPopupCancelImgView.setVisibility(View.GONE);
-        findViewById(R.id.otpPopupSeparatorId).setVisibility(View.GONE);
+        // Hide the Overlay on the otp popup i.e. dark gray screen
         findViewById(R.id.otpPopupOverlayId).setVisibility(View.GONE);
-        mOTPPopupView.setVisibility(View.GONE);
+
+        // Hide the OTP Popup.
+        findViewById(R.id.otp_popup_layout).setVisibility(View.GONE);
     }
 
     private void fetchBinRequestData(CardOption cardOption) {

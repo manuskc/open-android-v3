@@ -14,28 +14,28 @@
         android:id="@+id/otpPopupOverlayId"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
         android:alpha="0.5"
-        android:background="#242424" />
+        android:background="#242424"
+        android:visibility="gone" />
 
     <FrameLayout
+        android:id="@+id/otp_popup_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
 
         <com.citrus.sdk.otp.OTPPopupView
             android:id="@+id/otpPopupViewId"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/otpPopupCancelImgViewId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:background="@drawable/arrow_down_icon"
-            android:visibility="gone" />
+            android:background="@drawable/arrow_down_icon" />
 
         <LinearLayout
             android:id="@+id/otpPopupSeparatorId"
