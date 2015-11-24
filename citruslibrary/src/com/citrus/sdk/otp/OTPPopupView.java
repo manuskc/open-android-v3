@@ -84,6 +84,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
 
     public void otpReadTimeout() {
         this.otpResendBtn.setBackgroundResource(R.drawable.btn_resend);
+        this.otpResendBtn.setEnabled(true);
         this.otpResendBtn.setClickable(true);
 
 //            this.otpConfirmBtn.setBackgroundResource(R.drawable.btn_confirm_disabled);
@@ -154,6 +155,7 @@ public class OTPPopupView extends LinearLayout implements View.OnClickListener {
 
         } else if (i == R.id.otpResendBtnId) {
             listener.onResendOTPClicked();
+            this.otpResendBtn.setEnabled(false);
         } else if (i == R.id.cancelTransactionTxtId) {
             listener.onCancelClicked();
         }

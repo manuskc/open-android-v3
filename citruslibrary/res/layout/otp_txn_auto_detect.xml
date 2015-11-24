@@ -21,11 +21,11 @@
         android:id="@+id/otpAutoDetectProgressBarId"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
-        android:indeterminate="true"
-        android:layout_marginBottom="5dp"
-        android:indeterminateDrawable="@drawable/otp_autodetect_progress"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/otp_autodetect_progress" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -40,28 +40,29 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:textColor="#48860b"
             android:background="@drawable/textbox"
-            android:textColorHint="#434343"
             android:hint="@string/otp_autodetect_enter_otp_hint_text"
             android:inputType="number"
             android:maxLength="10"
             android:paddingEnd="@dimen/otp_auto_detect_enter_otp_edtxt_right_padding"
             android:paddingLeft="@dimen/otp_auto_detect_enter_otp_edtxt_left_padding"
             android:paddingRight="@dimen/otp_auto_detect_enter_otp_edtxt_right_padding"
-            android:paddingStart="@dimen/otp_auto_detect_enter_otp_edtxt_left_padding" />
+            android:paddingStart="@dimen/otp_auto_detect_enter_otp_edtxt_left_padding"
+            android:textColor="#48860b"
+            android:textColorHint="#434343" />
 
         <Button
             android:id="@+id/otpResendBtnId"
             android:layout_width="@dimen/otp_auto_detect_resend_btn_width"
             android:layout_height="@dimen/otp_auto_detect_resend_btn_height"
             android:layout_gravity="end|center_vertical"
-            android:textAllCaps="false"
-            android:textColor="#4d4a4a"
             android:layout_marginEnd="@dimen/otp_auto_detect_resend_btn_right_margin"
             android:layout_marginRight="@dimen/otp_auto_detect_resend_btn_right_margin"
             android:background="@drawable/btn_resend"
-            android:text="@string/otp_autodetect_resend_btn_text" />
+            android:enabled="false"
+            android:text="@string/otp_autodetect_resend_btn_text"
+            android:textAllCaps="false"
+            android:textColor="#4d4a4a" />
 
     </FrameLayout>
 
@@ -70,13 +71,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textAllCaps="false"
-        android:clickable="false"
-        android:enabled="false"
         android:layout_marginTop="@dimen/otp_auto_detect_confirm_btn_top_margin"
         android:background="@drawable/btn_confirm_disabled"
-        android:textColor="@android:color/white"
-        android:text="@string/otp_autodetect_confirm_btn_text" />
+        android:clickable="false"
+        android:enabled="false"
+        android:text="@string/otp_autodetect_confirm_btn_text"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white" />
 
 
     <include layout="@layout/otp_txn_bottom_bar" />
