@@ -92,7 +92,7 @@ public final class NetbankingFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_net_banking, container, false);
 
-        final NetbankingAdapter netbankingAdapter = new NetbankingAdapter(getActivity(),mNetbankingOptionsList);
+        final NetbankingAdapter netbankingAdapter = new NetbankingAdapter(getActivity(), mNetbankingOptionsList);
 
         RecyclerView recylerViewNetbanking = (RecyclerView) view.findViewById(R.id.recycler_view_netbanking);
         recylerViewNetbanking.setAdapter(netbankingAdapter);
@@ -221,7 +221,7 @@ public final class NetbankingFragment extends Fragment {
                         paymentType1 = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, netbankingOption);
                         client.loadMoney((PaymentType.LoadMoney) paymentType1, callback);
                     } else if (paymentType == Utils.PaymentType.PG_PAYMENT) {
-                        paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, netbankingOption, new CitrusUser(client.getUserEmailId(), client.getUserMobileNumber()));
+                        paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, netbankingOption, null);
                         client.pgPayment((PaymentType.PGPayment) paymentType1, callback);
                     }
                 } catch (CitrusException e) {

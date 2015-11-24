@@ -241,7 +241,7 @@ public class SavedOptionsFragment extends Fragment {
                     paymentType1 = new PaymentType.LoadMoney(amount, Constants.RETURN_URL_LOAD_MONEY, paymentOption);
                     citrusClient.loadMoney((PaymentType.LoadMoney) paymentType1, callback);
                 } else if (paymentType == Utils.PaymentType.PG_PAYMENT) {
-                    paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, paymentOption, new CitrusUser(citrusClient.getUserEmailId(), citrusClient.getUserMobileNumber()));
+                    paymentType1 = new PaymentType.PGPayment(amount, Constants.BILL_URL, paymentOption, null);
                     citrusClient.pgPayment((PaymentType.PGPayment) paymentType1, callback);
                 }
             } catch (CitrusException e) {

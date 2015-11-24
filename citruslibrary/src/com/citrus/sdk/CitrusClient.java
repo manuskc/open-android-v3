@@ -39,6 +39,7 @@ import com.citrus.retrofit.API;
 import com.citrus.retrofit.RetroFitClient;
 import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.Amount;
+import com.citrus.sdk.classes.BinServiceResponse;
 import com.citrus.sdk.classes.BindPOJO;
 import com.citrus.sdk.classes.CardBinDetails;
 import com.citrus.sdk.classes.CashoutInfo;
@@ -53,6 +54,7 @@ import com.citrus.sdk.classes.VerifyMobileResponse;
 import com.citrus.sdk.dynamicPricing.DynamicPricingRequest;
 import com.citrus.sdk.dynamicPricing.DynamicPricingRequestType;
 import com.citrus.sdk.dynamicPricing.DynamicPricingResponse;
+import com.citrus.sdk.otp.NetBankForOTP;
 import com.citrus.sdk.payment.CardOption;
 import com.citrus.sdk.payment.CreditCardOption;
 import com.citrus.sdk.payment.DebitCardOption;
@@ -141,6 +143,8 @@ public class CitrusClient {
     private CitrusUser citrusUser = null;
     private boolean showDummyScreen = false;
     private boolean prepaymentTokenValid = false;
+    private boolean autoOtpReading = false;
+    private NetBankForOTP netBankForOTP = NetBankForOTP.UNKNOWN;
 
     private CitrusClient(Context context) {
         mContext = context;
@@ -163,6 +167,14 @@ public class CitrusClient {
 
     public boolean isShowDummyScreenWhilePayments() {
         return showDummyScreen;
+    }
+
+    public boolean isAutoOtpReading() {
+        return autoOtpReading;
+    }
+
+    public void enableAutoOtpReading(boolean enable) {
+        this.autoOtpReading = enable;
     }
 
     public void init(@NonNull String signupId, @NonNull String signupSecret, @NonNull String signinId, @NonNull String signinSecret, @NonNull String vanity, @NonNull Environment environment) {
@@ -378,18 +390,21 @@ public class CitrusClient {
                         try {
                             jsonObject.put("email", emailId);
                             jsonObject.put("mobile", mobileNo);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                             retrofitClient.getMemberInfo(accessToken.getHeaderAccessToken(), new TypedString(jsonObject.toString()), new retrofit.Callback<JsonElement>() {
                                 @Override
                                 public void success(JsonElement jsonElement, Response response) {
                                     MemberInfo memberInfo = MemberInfo.fromJSON(jsonElement.toString());
 
-                                    if (memberInfo != null) {
-                                        sendResponse(callback, memberInfo);
-                                    } else {
-                                        sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_MEMBER_INFO, Status.FAILED));
-                                    }
+                                if (memberInfo != null) {
+                                    sendResponse(callback, memberInfo);
+                                } else {
+                                    sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_MEMBER_INFO, Status.FAILED));
                                 }
+                            }
 
                                 @Override
                                 public void failure(RetrofitError error) {
@@ -1489,6 +1504,29 @@ public class CitrusClient {
      */
     public synchronized void getBalance(final Callback<Amount> callback) {
         if (validate()) {
+//            oauthToken.getSignInToken(new Callback<AccessToken>() {
+//                @Override
+//                public void success(AccessToken accessToken) {
+//
+//                    retrofitClient.getBalance(accessToken.getHeaderAccessToken(), new retrofit.Callback<Amount>() {
+//                        @Override
+//                        public void success(Amount amount, Response response) {
+//                            sendResponse(callback, amount);
+//                        }
+//
+//                        @Override
+//                        public void failure(RetrofitError error) {
+//                            sendError(callback, error);
+//                        }
+//                    });
+//                }
+//
+//                @Override
+//                public void error(CitrusError error) {
+//                    sendError(callback, error);
+//                }
+//            });
+
             oauthToken.getSignInToken(new Callback<AccessToken>() {
                 @Override
                 public void success(AccessToken accessToken) {
@@ -1973,7 +2011,7 @@ public class CitrusClient {
 
         registerReceiver(callback, new IntentFilter(loadMoney.getIntentAction()));
 
-        startCitrusActivity(loadMoney);
+        startCitrusActivity(loadMoney, false);
     }
 
     public synchronized void pgPayment(final PaymentType.PGPayment pgPayment, final Callback<TransactionResponse> callback) {
@@ -1991,7 +2029,25 @@ public class CitrusClient {
 
         registerReceiver(callback, new IntentFilter(pgPayment.getIntentAction()));
 
-        startCitrusActivity(pgPayment);
+        startCitrusActivity(pgPayment, false);
+    }
+
+    public synchronized void makePayment(final PaymentType.PGPayment pgPayment, final Callback<TransactionResponse> callback) {
+
+        // Validate the card details before forwarding transaction.
+        if (pgPayment != null) {
+            PaymentOption paymentOption = pgPayment.getPaymentOption();
+            // If the CardOption is invalid, check what is incorrect and respond with proper message.
+            if (paymentOption instanceof CardOption && !((CardOption) paymentOption).validateCard()) {
+
+                sendError(callback, new CitrusError(((CardOption) paymentOption).getCardValidityFailureReasons(), Status.FAILED));
+                return;
+            }
+        }
+
+        registerReceiver(callback, new IntentFilter(pgPayment.getIntentAction()));
+
+        startCitrusActivity(pgPayment, true);
     }
 
     public synchronized void pgPayment(final DynamicPricingResponse dynamicPricingResponse, final Callback<TransactionResponse> callback) {
@@ -2049,7 +2105,7 @@ public class CitrusClient {
                         if (balanceAmount.getValueAsDouble() >= citrusCash.getAmount().getValueAsDouble()) {
                             registerReceiver(callback, new IntentFilter(citrusCash.getIntentAction()));
 
-                            startCitrusActivity(citrusCash);
+                            startCitrusActivity(citrusCash, false);
                         } else {
                             sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INSUFFICIENT_BALANCE, Status.FAILED));
                         }
@@ -2077,7 +2133,7 @@ public class CitrusClient {
                     if (balanceAmount.getValueAsDouble() >= citrusCash.getAmount().getValueAsDouble()) {
                         registerReceiver(callback, new IntentFilter(citrusCash.getIntentAction()));
 
-                        startCitrusActivity(citrusCash);
+                        startCitrusActivity(citrusCash, false);
                     } else {
                         sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INSUFFICIENT_BALANCE, Status.FAILED));
                     }
@@ -2214,103 +2270,6 @@ public class CitrusClient {
             sendError(callback, new CitrusError("User's cookie has expired. Please signin.", Status.FAILED));
         }
     }
-
-    /*public  synchronized void prepaidPay(final PaymentType.CitrusCash citrusCash, final Callback<PaymentResponse> callback) {
-
-        final String billUrl;
-
-        if(citrusCash.getPaymentBill()!=null) { //merchant has provided Bill Object
-            if (prepaymentTokenValid) {
-                // Check whether the balance in the wallet is greater than the transaction amount.
-            }
-
-
-        } else { //merchant has BillURL
-
-        if (citrusCash.getUrl().contains("?")) {
-            billUrl = citrusCash.getUrl() + "&amount=" + citrusCash.getAmount().getValue();
-        } else {
-            billUrl = citrusCash.getUrl() + "?amount=" + citrusCash.getAmount().getValue();
-        }
-
-        if (prepaymentTokenValid) {
-            // Check whether the balance in the wallet is greater than the transaction amount.
-            getBalance(new Callback<Amount>() {
-                @Override
-                public void success(Amount balanceAmount) {
-                    // If the balance amount is greater than equal to the transaction amount, proceed with the payment.
-                    if (balanceAmount.getValueAsDouble() >= citrusCash.getAmount().getValueAsDouble()) {
-                        getBill(billUrl, citrusCash.getAmount(), new Callback<PaymentBill>() {
-                            @Override
-                            public void success(final PaymentBill paymentBill) {
-                                final String returnUrl = paymentBill.getReturnUrl();
-
-                                oauthToken.getPrepaidToken(new Callback<AccessToken>() {
-                                    @Override
-                                    public void success(AccessToken accessToken) {
-                                        citrusCash.setPaymentBill(paymentBill);
-
-                                        // Use the user details sent by the merchant, else use the user details from the token.
-                                        CitrusUser citrusUser = getCitrusUser();
-                                        if (citrusCash.getCitrusUser() == null) {
-                                            if (citrusUser == null) {
-                                                citrusUser = new CitrusUser(getUserEmailId(), getUserMobileNumber());
-                                            }
-
-                                            citrusCash.setCitrusUser(citrusUser);
-                                        }
-
-                                        retrofitClient.payUsingCitrusCash(accessToken.getPrepaidPayToken().getHeaderAccessToken(), new TypedString(citrusCash.getPaymentJSON()), new retrofit.Callback<JsonElement>() {
-                                            @Override
-                                            public void success(JsonElement jsonElement, Response response) {
-
-                                                if (jsonElement != null) {
-                                                    PaymentResponse paymentResponse = PaymentResponse.fromJSON(jsonElement.toString());
-                                                    sendResponse(callback, paymentResponse);
-
-                                                    // Send the response on the return url asynchronously, so as to keep the integration same.
-                                                    sendResponseToReturnUrlAsync(returnUrl, paymentResponse);
-                                                } else {
-                                                    sendError(callback, new CitrusError("Error while making payment", Status.FAILED));
-                                                }
-                                            }
-
-                                            @Override
-                                            public void failure(RetrofitError error) {
-                                                sendError(callback, error);
-                                            }
-                                        });
-                                    }
-
-                                    @Override
-                                    public void error(CitrusError error) {
-                                        sendError(callback, error);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void error(CitrusError error) {
-                                sendError(callback, error);
-                            }
-                        });
-                    } else {
-                        sendError(callback, new CitrusError(ResponseMessages.ERROR_MESSAGE_INSUFFICIENT_BALANCE, Status.FAILED));
-                    }
-                }
-
-                @Override
-                public void error(CitrusError error) {
-                    sendError(callback, error);
-                }
-            });
-        } else {
-            Logger.d("User's cookie has expired. Please signin");
-            sendError(callback, new CitrusError("User's cookie has expired. Please signin.", Status.FAILED));
-        }
-        }
-
-    }*/
 
     private void checkPrepaymentTokenValidity(final Callback<Boolean> callback) {
 
@@ -2531,7 +2490,66 @@ public class CitrusClient {
                 }
             });
         }
+    }
 
+    /**
+     * Internal.
+     * Returns the bank details using the card number.
+     *
+     * @param cardOption
+     */
+    public void getBINDetails(CardOption cardOption, final Callback<BinServiceResponse> callback) {
+
+        if (cardOption != null && !TextUtils.isEmpty(cardOption.getCardNumber())) {
+            String cardNumber = cardOption.getCardNumber();
+            String first6Digits = "";
+            String token = "";
+            if (!TextUtils.isEmpty(cardOption.getToken())) {
+                token = cardOption.getToken();
+            } else {
+                first6Digits = cardNumber.length() > 6 ? cardNumber.substring(0, 6) : "";
+            }
+
+            retrofit.Callback<Response> responseCallback = new retrofit.Callback<Response>() {
+                @Override
+                public void success(Response response, Response response2) {
+                    String binServiceJSON = new String(((TypedByteArray) response.getBody()).getBytes());
+                    BinServiceResponse binServiceResponse = BinServiceResponse.fromJSON(binServiceJSON);
+                    if (binServiceResponse != null) {
+                        netBankForOTP = binServiceResponse.getNetBankForOTP();
+                        // Send Response.
+                        sendResponse(callback, binServiceResponse);
+                    } else {
+                        sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    sendError(callback, error);
+                }
+            };
+
+            // If card is new card use bin service api, else use token api
+            if (!TextUtils.isEmpty(first6Digits)) {
+                API binServiceClient = RetroFitClient.getClientWithUrl("https://citrusapi.citruspay.com");
+                binServiceClient.getBinInfo(first6Digits, responseCallback);
+            } else if (!TextUtils.isEmpty(token)) {
+                retrofitClient.getBinInfoUsingToken(token, responseCallback);
+            } else {
+                sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
+            }
+        } else {
+            sendError(callback, new CitrusError("Unable to get BIN Details", Status.FAILED));
+        }
+    }
+
+    /**
+     * Internal.
+     * Returns the netbank for OTP which will be used to detect the bank for which auto OTP is being processed.
+     */
+    public NetBankForOTP getNetBankForOTP() {
+        return netBankForOTP;
     }
 
     public synchronized String getUserEmailId() {
@@ -2553,17 +2571,18 @@ public class CitrusClient {
         LocalBroadcastManager.getInstance(mContext).unregisterReceiver(receiver);
     }
 
-    private void startCitrusActivity(PaymentType paymentType, DynamicPricingResponse dynamicPricingResponse) {
+    private void startCitrusActivity(PaymentType paymentType, DynamicPricingResponse dynamicPricingResponse, boolean useNewAPI) {
         Intent intent = new Intent(mContext, CitrusActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.INTENT_EXTRA_PAYMENT_TYPE, paymentType);
         intent.putExtra(Constants.INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE, dynamicPricingResponse);
+        intent.putExtra(Constants.INTENT_EXTRA_USE_NEW_API, useNewAPI);
 
         mContext.startActivity(intent);
     }
 
-    private void startCitrusActivity(PaymentType paymentType) {
-        startCitrusActivity(paymentType, null);
+    private void startCitrusActivity(PaymentType paymentType, boolean useNewAPI) {
+        startCitrusActivity(paymentType, null, useNewAPI);
     }
 
     private <T> void registerReceiver(final Callback<T> callback, IntentFilter intentFilter) {
@@ -2571,6 +2590,9 @@ public class CitrusClient {
             @Override
             public void onReceive(Context context, Intent intent) {
                 unregisterReceiver(this);
+
+                // Reset it to unknown.
+                netBankForOTP = NetBankForOTP.UNKNOWN;
 
                 TransactionResponse transactionResponse = intent.getParcelableExtra(Constants.INTENT_EXTRA_TRANSACTION_RESPONSE);
                 if (transactionResponse != null) {
@@ -2597,7 +2619,7 @@ public class CitrusClient {
                     if (transactionStatus == TransactionResponse.TransactionStatus.SUCCESSFUL) {
                         sendResponse(callback, transactionResponse);
                     } else {
-                        sendError(callback, new CitrusError(transactionResponse.getMessage(), transactionResponse.getJsonResponse(), status));
+                        sendError(callback, new CitrusError(transactionResponse.getMessage(), status, transactionResponse));
                     }
                 }
             }

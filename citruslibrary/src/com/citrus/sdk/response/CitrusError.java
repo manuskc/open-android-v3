@@ -15,12 +15,27 @@
 
 package com.citrus.sdk.response;
 
+import com.citrus.sdk.TransactionResponse;
+
 /**
  * Created by salil on 12/5/15.
  */
 public class CitrusError extends CitrusResponse {
+    private final TransactionResponse transactionResponse;
+
     public CitrusError(String message, Status status) {
         super(message, status);
+        transactionResponse = null;
+    }
+
+    public CitrusError(String message, Status status, TransactionResponse transactionResponse) {
+        super(message, status);
+
+        this.transactionResponse = transactionResponse;
+    }
+
+    public TransactionResponse getTransactionResponse() {
+        return transactionResponse;
     }
     public CitrusError(String message, String transactionResponse, Status status) {
         super(message, transactionResponse, status);
