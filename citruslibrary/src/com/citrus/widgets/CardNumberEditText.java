@@ -13,6 +13,7 @@
 package com.citrus.widgets;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -25,6 +26,7 @@ import com.citrus.sdk.payment.CardOption;
 import java.util.regex.Pattern;
 
 public class CardNumberEditText extends EditText {
+    private final int DEFAULT_CARD_NUMBER_LENGTH = 19;
 
     public static final Pattern CODE_PATTERN = Pattern.compile("([0-9]{0,4})|([0-9]{4}-)+|([0-9]{4}-[0-9]{0,4})+");
     public static final Pattern EXP_PATTERN = Pattern.compile("^((0[1-9])|(1[0-2]))//((2009)|(20[1-2][0-9]))$");
@@ -50,14 +52,16 @@ public class CardNumberEditText extends EditText {
 
                 int id = context.getResources().getIdentifier(cardType.toLowerCase(), "drawable", context.getPackageName());
 
-                setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(id), null);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(id, null), null);
+                } else {
+                    setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(id), null);
+                }
 
                 setError(null);
             } catch (Exception e) {
                 setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
             }
-
-
         }
 
         @Override
@@ -99,6 +103,7 @@ public class CardNumberEditText extends EditText {
 
     private void init() {
         addTextChangedListener(customTextWatcher);
+        setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_CARD_NUMBER_LENGTH)});
     }
 
     private String keepNumbersOnly(CharSequence s) {
