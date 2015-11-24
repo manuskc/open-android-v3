@@ -278,16 +278,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             mPaymentWebview.setVisibility(View.GONE);
         }
 
-        if (TextUtils.isEmpty(mActivityTitle)) {
-            mActivityTitle = "Processing...";
-        }
-
-        if (mCitrusClient.isShowDummyScreenWhilePayments()) {
-            setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
-        }
-
-        setActionBarBackground();
-
         // Get BIN Details required for autoOTP
         if (autoOTPEnabled && mPaymentOption instanceof CardOption) {
             fetchBinRequestData((CardOption) mPaymentOption);
@@ -340,6 +330,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             });
         }
 
+        // Set the title for the activity
         if (TextUtils.isEmpty(mActivityTitle)) {
             mActivityTitle = "Processing...";
         }
@@ -391,6 +382,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                         mPaymentWebview.loadUrl(netBankForOTP.getMultiPartEnterPasswordJS());
                         mMultipartEnterPasswordJS = false;
                     }
+
+                    // Set the title since the transaction is done.
+                    setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\"> 3D Secure </font>"));
                 }
             }
         };
@@ -687,6 +681,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 dialog.dismiss();
                 isBackKeyPressedByUser = true;
 
+                // Set the title since the transaction is done.
+                setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\"> Cancelling... </font>"));
+
                 if (useNewAPI) {
                     String vanity = mCitrusClient.getVanity();
                     String postData = Utils.getURLEncodedParamsForCancelTransaction(mCitrusUser, mPaymentBill, mPaymentOption, dynamicPricingResponse, vanity);
@@ -914,9 +911,15 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
 
-            mTimer.start();
+            // If the data is loaded for the dummy screen, then do not dismiss the dialog, i.e. do not start the timer to dismiss the dialog.
+            // This case will occur only once, and if citrusClient.isShowDummyScreenWhilePayments is true.
+            // Not inverting the condition for code readability and understanding.
+            if (mCitrusClient.isShowDummyScreenWhilePayments() && url.startsWith("data:text/html")) {
+                // Do nothing i.e. do not start the timer.
+            } else {
+                mTimer.start();
+            }
         }
-
 
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
