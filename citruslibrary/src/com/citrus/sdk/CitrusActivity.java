@@ -369,7 +369,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             public void onFinish() {
                 if (!mLoading) {
                     dismissDialog();
-                    if (!transactionProcessed && !mMultipartEnterPasswordJS) {
+                    if (!transactionProcessed && !mMultipartEnterPasswordJS && !isBackKeyPressedByUser) {
                         displayOtpPopup();
                     }
 
