@@ -135,6 +135,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private boolean mMultipartSendOTPJS = false;
     private boolean mMultipartEnterPasswordJS = false;
     private boolean useNewAPI = false;
+    private boolean otpPopupDismissed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -606,7 +607,12 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         otpProcessTransactionJS = String.format(netBankForOTP.getTransactionJS(), otp);
 
         Logger.d("OTP : %s, js : %s", otp, otpProcessTransactionJS);
-        mOTPPopupView.setOTP(otp);
+        // This is done to avoid,
+        // when user cancels transaction, so OTP Dialog is dismissed.
+        // After this, OTP is received and trying to set on a Null reference field.
+        if (!otpPopupDismissed) {
+            mOTPPopupView.setOTP(otp);
+        }
     }
 
     private void displayOtpPopup() {
@@ -640,6 +646,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
         // Hide the OTP Popup.
         findViewById(R.id.otp_popup_layout).setVisibility(View.GONE);
+
+        otpPopupDismissed = true;
     }
 
     private void fetchBinRequestData(CardOption cardOption) {
