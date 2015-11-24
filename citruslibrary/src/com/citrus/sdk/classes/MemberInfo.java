@@ -13,11 +13,21 @@ public class MemberInfo {
     private final AccountProfile profileByEmail;
     private final AccountProfile profileByMobile;
 
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    private String responseCode;
     public MemberInfo(AccountProfile profileByEmail, AccountProfile profileByMobile) {
         this.profileByEmail = profileByEmail;
         this.profileByMobile = profileByMobile;
     }
 
+    public MemberInfo(AccountProfile profileByEmail, AccountProfile profileByMobile, String responseCode) {
+        this.profileByEmail = profileByEmail;
+        this.profileByMobile = profileByMobile;
+        this.responseCode = responseCode;
+    }
     public AccountProfile getProfileByEmail() {
         return profileByEmail;
     }
@@ -35,8 +45,9 @@ public class MemberInfo {
                 JSONObject responseData = jsonObject.getJSONObject("responseData");
                 AccountProfile profileByEmail = AccountProfile.fromJSONObject(responseData.optJSONObject("profileByEmail"));
                 AccountProfile profileByMobile = AccountProfile.fromJSONObject(responseData.optJSONObject("profileByMobile"));
+                String responseCode = jsonObject.getString("responseCode");
 
-                memberInfo = new MemberInfo(profileByEmail, profileByMobile);
+                memberInfo = new MemberInfo(profileByEmail, profileByMobile, responseCode);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -167,7 +167,7 @@ public class OauthToken {
         }
     }
 
-    private JSONObject refresh(String refreshToken) {
+    private synchronized JSONObject refresh(String refreshToken) {
         JSONObject response = new JSONObject();
 
         JSONObject userJson = new JSONObject();
@@ -214,28 +214,28 @@ public class OauthToken {
     }
 
 
-    public void getSignUpToken(com.citrus.sdk.Callback<AccessToken> callback) {
+    public synchronized void getSignUpToken(com.citrus.sdk.Callback<AccessToken> callback) {
         this.token_type = Constants.SIGNUP_TOKEN;
         getAccessToken(callback);
     }
 
-    public void getSignInToken(com.citrus.sdk.Callback<AccessToken> callback) {
+    public synchronized void getSignInToken(com.citrus.sdk.Callback<AccessToken> callback) {
         this.token_type = Constants.SIGNIN_TOKEN;
         getAccessToken(callback);
     }
 
 
-    public void getPrepaidToken(com.citrus.sdk.Callback<AccessToken> callback) {
+    public synchronized void getPrepaidToken(com.citrus.sdk.Callback<AccessToken> callback) {
         this.token_type = Constants.PREPAID_TOKEN;
         getAccessToken(callback);
     }
 
-    public void getPayUsingCitrusCashToken(com.citrus.sdk.Callback<AccessToken> callback) {
+    public synchronized void getPayUsingCitrusCashToken(com.citrus.sdk.Callback<AccessToken> callback) {
         this.token_type = Constants.PAY_USING_CITRUS_CASH_TOKEN;
         getAccessToken(callback);
     }
 
-    private void getAccessToken(com.citrus.sdk.Callback<AccessToken> callback) {
+    private synchronized void getAccessToken(com.citrus.sdk.Callback<AccessToken> callback) {
 
         JSONObject token = null;
         try {
@@ -263,7 +263,7 @@ public class OauthToken {
     }
 
 
-    private void refreshToken(JSONObject token, com.citrus.sdk.Callback callback) {
+    private synchronized void refreshToken(JSONObject token, com.citrus.sdk.Callback callback) {
 
         if (hasExpired(token)) {
             try {
@@ -283,7 +283,7 @@ public class OauthToken {
 
 
     //get Refresh TOken from RetroFitClient
-    private void getRefreshToken(String refreshToken, final com.citrus.sdk.Callback callback) {
+    private synchronized void getRefreshToken(String refreshToken, final com.citrus.sdk.Callback callback) {
         citrusClient = CitrusClient.getInstance(context);
 
         RetroFitClient.getCitrusRetroFitClient().getRefreshTokenAsync(citrusClient.getSigninId(), citrusClient.getSigninSecret(), OAuth2GrantType.refresh_token.toString(), refreshToken, new Callback<AccessToken>() {

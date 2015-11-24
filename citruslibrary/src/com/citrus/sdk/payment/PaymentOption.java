@@ -40,6 +40,36 @@ public abstract class PaymentOption implements Parcelable {
     protected boolean savePaymentOption = false;
     protected PGHealth pgHealth = PGHealth.UNKNOWN;
 
+    private boolean selected;
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    private int amount;
+
+    public int getCashAmount() {
+        return amount;
+    }
+
+    public void setCashAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+
+    public String getCvvText() {
+        return cvvText;
+    }
+
+    public void setCvvText(String cvvText) {
+        this.cvvText = cvvText;
+    }
+
+    private String cvvText = "";
     PaymentOption() {
     }
 
@@ -109,6 +139,7 @@ public abstract class PaymentOption implements Parcelable {
 
     public abstract String getSavePaymentOptionObject();
 
+    public abstract String getSaveDefaultPaymentOptionObject();
     public abstract Drawable getOptionIcon(Context context);
 
     public abstract com.citrus.analytics.PaymentType getAnalyticsPaymentType();
@@ -143,5 +174,19 @@ public abstract class PaymentOption implements Parcelable {
         dest.writeString(this.name);
         dest.writeString(this.token);
         dest.writeByte(savePaymentOption ? (byte) 1 : (byte) 0);
+    }
+    @Override
+    public boolean equals(Object object) {
+        boolean result = false;
+        if(object == null || object.getClass() != getClass()) {
+            result = false;
+        }
+        else {
+            PaymentOption  paymentOption = (PaymentOption) object;
+            if(this.name == paymentOption.getName()) {
+                result = true;
+            }
+        }
+        return result;
     }
 }
