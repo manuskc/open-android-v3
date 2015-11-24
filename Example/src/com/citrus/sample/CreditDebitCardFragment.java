@@ -184,7 +184,7 @@ public class CreditDebitCardFragment extends Fragment implements View.OnClickLis
                     citrusClient.loadMoney((PaymentType.LoadMoney) paymentType, callback);
                 } else if (this.paymentType == Utils.PaymentType.PG_PAYMENT) {
                     paymentType = new PaymentType.PGPayment(amount, Constants.BILL_URL, cardOption, null);
-                    citrusClient.makePayment((PaymentType.PGPayment) paymentType, callback);
+                    citrusClient.pgPayment((PaymentType.PGPayment) paymentType, callback);
                 } else if (this.paymentType == Utils.PaymentType.DYNAMIC_PRICING) {
                     DynamicPricingRequestType dynamicPricingRequestType = new DynamicPricingRequestType.SearchAndApplyRule(amount, cardOption, null);
 
