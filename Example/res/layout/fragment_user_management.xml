@@ -44,7 +44,16 @@
             android:layout_marginTop="@dimen/button_margin"
             android:hint="Password"
             android:inputType="textPassword"
-            android:text="Citrus@123"
+            android:visibility="gone" />
+        <!--android:text="Citrus@123"-->
+        <EditText
+            android:id="@+id/edit_otp_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edit_password"
+            android:layout_margin="@dimen/button_margin"
+            android:layout_marginTop="@dimen/button_margin"
+            android:inputType="textPassword"
             android:visibility="gone" />
 
         <!-- If the merchant is already a Citrus Member, show him signIn button else show him set password Button -->
@@ -52,9 +61,9 @@
             android:id="@+id/btn_signin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/edit_password"
+            android:layout_below="@id/edit_otp_id"
             android:layout_margin="@dimen/button_margin"
-            android:text="Sign In"
+            android:text="@string/sign_in_btn_text"
             android:visibility="gone" />
 
         <Button
@@ -71,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_below="@id/btn_signup"
-            android:layout_margin="@dimen/button_margin"
+            android:layout_margin="@dimen/user_management_msg_margin"
             android:text=""
             android:textSize="16sp" />
 
@@ -81,7 +90,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/txt_user_mgmt_message"
             android:layout_margin="@dimen/button_margin"
-            android:text="Reset Password" />
+            android:text="Reset Password"
+            android:visibility="gone" />
 
     </RelativeLayout>
 </ScrollView>

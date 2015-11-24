@@ -21,6 +21,7 @@
     <string name="card_nick_name_hint">Enter nick name</string>
 
     <string name="dp_request_prompt">Select the DP Request Type</string>
+    <string name="sign_in_btn_text">Sign In</string>
     <string-array name="dp_request_types_values">
         <item>Search And Apply Rule (Depending Upon Selected Payment Option)</item>
         <item>Apply Coupon Or Rule</item>

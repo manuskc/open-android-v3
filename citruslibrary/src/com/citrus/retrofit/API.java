@@ -20,6 +20,7 @@ import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.BindPOJO;
 import com.citrus.sdk.classes.CitrusPrepaidBill;
 import com.citrus.sdk.classes.CitrusUMResponse;
+import com.citrus.sdk.classes.LinkUserExtendedResponse;
 import com.citrus.sdk.classes.LinkUserResponse;
 import com.citrus.sdk.classes.PGHealthResponse;
 import com.citrus.sdk.classes.StructResponsePOJO;
@@ -58,10 +59,25 @@ public interface API {
     @FormUrlEncoded
     @POST("/service/v2/identity/bind")
     void getBindResponse(@Header("Authorization") String header, @Field("email") String email, @Field("mobile") String mobile, Callback<BindPOJO> bindPOJOCallback);
+
     // New Link User API
     @Headers("Content-Type: application/json")
     @POST("/service/um/link/user")
     void linkUser(@Header("Authorization") String signUpToken, @Body TypedString body, Callback<LinkUserResponse> callback);
+
+
+    @Headers("Content-Type: application/json")
+    @POST("/service/um/link/user/extended")
+    void linkUserExtended(@Header("Authorization") String signUpToken, @Body TypedString body, Callback<JsonElement> callback);
+
+    @Headers("Content-Type: application/json")
+    @POST("/service/um/verifyMobileAndSignIn")
+    void linkUserExtendedVerifyMobileAndSignIn(@Header("Authorization") String signUpToken, @Body TypedString body, Callback<AccessToken> callback);
+
+
+    @FormUrlEncoded
+    @POST("/service/um/verifyEOTPAndUpdateMobile")
+    void linkUserExtendedVerifyEOTPAndUpdateMobile(@Header("Authorization") String signUpToken, @Field("grant_type") String grant_type, @Field("client_id") String client_ID, @Field("client_secret") String client_Secret, @Field("username") String username, @Field("password") String password, @Field("requestedMobile") String requestedMobile, Callback<AccessToken> callback);
 
     //sign in
     @FormUrlEncoded
@@ -123,6 +139,7 @@ public interface API {
     @Headers("Content-Type: application/json")
     @POST("/service/moto/authorize/struct/payment")
     void getPaymentResponse(@Body TypedString body, Callback<StructResponsePOJO> structResponseCallback);
+
     @Headers("Content-Type: application/json")
     @POST("/service/um/mobileverification/sendCode")
     void updateMobile(@Header("Authorization") String accessToken, @Body TypedString body, Callback<UpdateMobileResponse> callback);
@@ -214,14 +231,17 @@ public interface API {
 
     @GET("/service/um/profile/profileInfo")
     void getProfileInfo(@Header("Authorization") String token, Callback<JsonElement> callback);
+
     // Save payment option
     @Headers("Content-Type: application/json")
     @PUT("/service/v2/profile/me/payment")
     void setDefaultPaymentOption(@Header("Authorization") String header, @Body TypedString body, Callback<CitrusResponse> callback);
+
     /**
      * Reset Password API -- UM implementation
-     * @param header signup token
-     * @param username email ID of user
+     *
+     * @param header                        signup token
+     * @param username                      email ID of user
      * @param resetPasswordResponseCallback
      */
     @FormUrlEncoded
@@ -231,11 +251,11 @@ public interface API {
 
     @FormUrlEncoded
     @POST("/service/um/user/signup")
-    void signUpUser(@Header("Authorization") String header,@Field("email") String email, @Field("mobile") String mobile, @Field("password") String password, @Field("firstName") String firstName, @Field("lastName") String lastName, @Field("sourceType") String sourceType, @Field("markMobileVerified") String markMobileVerified, @Field("markEmailVerified") String markEmailVerified, Callback<CitrusUMResponse> responseCallback);
+    void signUpUser(@Header("Authorization") String header, @Field("email") String email, @Field("mobile") String mobile, @Field("password") String password, @Field("firstName") String firstName, @Field("lastName") String lastName, @Field("sourceType") String sourceType, @Field("markMobileVerified") String markMobileVerified, @Field("markEmailVerified") String markEmailVerified, Callback<CitrusUMResponse> responseCallback);
 
     @FormUrlEncoded
     @PUT("/service/um/user/change/password")
-    void changePassword(@Header("Authorization") String header,@Field("old") String oldPassword, @Field("new") String newPassword, Callback<CitrusUMResponse> changePasswordResponseCallback);
+    void changePassword(@Header("Authorization") String header, @Field("old") String oldPassword, @Field("new") String newPassword, Callback<CitrusUMResponse> changePasswordResponseCallback);
 
     @Headers("Content-Type: application/json")
     @PUT("/service/um/profile/update")

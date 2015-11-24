@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="button_margin">8dp</dimen>
+    <dimen name="user_management_msg_margin">12dp</dimen>
 </resources>
