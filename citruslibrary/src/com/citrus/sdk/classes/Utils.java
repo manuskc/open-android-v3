@@ -79,7 +79,9 @@ public final class Utils {
         try {
             // Merchant Vanity
             buffer.append("vanityUrl=");
-            buffer.append(vanity);
+            if (!TextUtils.isEmpty(vanity)) {
+                buffer.append(vanity);
+            }
 
             // User Details
             buffer.append("&firstName=");
@@ -141,16 +143,24 @@ public final class Utils {
 
                     // Card Details
                     buffer.append("&cardNumber=");
-                    buffer.append(URLEncoder.encode(cardOption.getCardNumber(), "utf-8"));
+                    if (!TextUtils.isEmpty(cardOption.getCardNumber())) {
+                        buffer.append(URLEncoder.encode(cardOption.getCardNumber(), "utf-8"));
+                    }
 
                     buffer.append("&cvvNumber=");
-                    buffer.append(URLEncoder.encode(cardOption.getCardCVV(), "utf-8"));
+                    if (!TextUtils.isEmpty(cardOption.getCardCVV())) {
+                        buffer.append(URLEncoder.encode(cardOption.getCardCVV(), "utf-8"));
+                    }
 
                     buffer.append("&expiryMonth=");
-                    buffer.append(URLEncoder.encode(cardOption.getCardExpiryMonth(), "utf-8"));
+                    if (!TextUtils.isEmpty(cardOption.getCardExpiryMonth())) {
+                        buffer.append(URLEncoder.encode(cardOption.getCardExpiryMonth(), "utf-8"));
+                    }
 
                     buffer.append("&expiryYear=");
-                    buffer.append(URLEncoder.encode(cardOption.getCardExpiryYear(), "utf-8"));
+                    if (!TextUtils.isEmpty(cardOption.getCardExpiryYear())) {
+                        buffer.append(URLEncoder.encode(cardOption.getCardExpiryYear(), "utf-8"));
+                    }
 
                     buffer.append("&cardType=");
                     if (cardOption.getCardScheme() != null) {
@@ -165,34 +175,45 @@ public final class Utils {
             // PaymentDetails
             if (paymentBill != null) {
                 buffer.append("&returnUrl=");
-                buffer.append(URLEncoder.encode(paymentBill.getReturnUrl(), "utf-8"));
+                if (!TextUtils.isEmpty(paymentBill.getReturnUrl())) {
+                    buffer.append(URLEncoder.encode(paymentBill.getReturnUrl(), "utf-8"));
+                }
 
                 buffer.append("&notifyUrl=");
-                buffer.append(URLEncoder.encode(paymentBill.getNotifyUrl(), "utf-8"));
+                if (!TextUtils.isEmpty(paymentBill.getNotifyUrl())) {
+                    buffer.append(URLEncoder.encode(paymentBill.getNotifyUrl(), "utf-8"));
+                }
 
                 // Amount
                 Amount amount = paymentBill.getAmount();
-                buffer.append("&orderAmount=");
-                buffer.append(URLEncoder.encode(amount.getValue(), "utf-8"));
+                if (amount != null) {
+                    buffer.append("&orderAmount=");
+                    buffer.append(URLEncoder.encode(amount.getValue(), "utf-8"));
 
-                buffer.append("&currency=");
-                buffer.append(URLEncoder.encode(amount.getCurrency(), "utf-8"));
+                    buffer.append("&currency=");
+                    buffer.append(URLEncoder.encode(amount.getCurrency(), "utf-8"));
+                }
 
                 buffer.append("&secSignature=");
-                buffer.append(URLEncoder.encode(paymentBill.getRequestSignature(), "utf-8"));
+                if (!TextUtils.isEmpty(paymentBill.getRequestSignature())) {
+                    buffer.append(URLEncoder.encode(paymentBill.getRequestSignature(), "utf-8"));
+                }
 
                 buffer.append("&merchantTxnId=");
-                buffer.append(URLEncoder.encode(paymentBill.getMerchantTransactionId(), "utf-8"));
-
-                buffer.append("&secSignature=");
-                buffer.append(URLEncoder.encode(paymentBill.getRequestSignature(), "utf-8"));
+                if (!TextUtils.isEmpty(paymentBill.getMerchantTransactionId())) {
+                    buffer.append(URLEncoder.encode(paymentBill.getMerchantTransactionId(), "utf-8"));
+                }
 
                 buffer.append("&merchantAccessKey=");
-                buffer.append(URLEncoder.encode(paymentBill.getMerchantAccessKey(), "utf-8"));
+                if (!TextUtils.isEmpty(paymentBill.getMerchantAccessKey())) {
+                    buffer.append(URLEncoder.encode(paymentBill.getMerchantAccessKey(), "utf-8"));
+                }
 
                 // Dynamic Pricing.
                 buffer.append("&dpSignature=");
-                buffer.append(URLEncoder.encode(paymentBill.getDpSignature(), "utf-8"));
+                if (TextUtils.isEmpty(paymentBill.getDpSignature())) {
+                    buffer.append(URLEncoder.encode(paymentBill.getDpSignature(), "utf-8"));
+                }
 
                 Map<String, String> customParametersMap = paymentBill.getCustomParametersMap();
                 // Sending the customParameters.
