@@ -19,8 +19,12 @@ import com.citrus.sdk.classes.AccessToken;
 import com.citrus.sdk.classes.Amount;
 import com.citrus.sdk.classes.BindPOJO;
 import com.citrus.sdk.classes.CitrusPrepaidBill;
+import com.citrus.sdk.classes.CitrusUMResponse;
+import com.citrus.sdk.classes.LinkUserResponse;
 import com.citrus.sdk.classes.PGHealthResponse;
 import com.citrus.sdk.classes.StructResponsePOJO;
+import com.citrus.sdk.classes.UpdateMobileResponse;
+import com.citrus.sdk.classes.VerifyMobileResponse;
 import com.citrus.sdk.response.CitrusResponse;
 import com.citrus.sdk.response.PaymentResponse;
 import com.google.gson.JsonElement;
@@ -54,6 +58,10 @@ public interface API {
     @FormUrlEncoded
     @POST("/service/v2/identity/bind")
     void getBindResponse(@Header("Authorization") String header, @Field("email") String email, @Field("mobile") String mobile, Callback<BindPOJO> bindPOJOCallback);
+    // New Link User API
+    @Headers("Content-Type: application/json")
+    @POST("/service/um/link/user")
+    void linkUser(@Header("Authorization") String signUpToken, @Body TypedString body, Callback<LinkUserResponse> callback);
 
     //sign in
     @FormUrlEncoded
@@ -67,6 +75,11 @@ public interface API {
     // Get signin with password token, mostly used for pay using citrus cash.
     @GET("/service/v2/token/validate")
     void getPrepaymentTokenValidity(@Header("Authorization") String signupToken, @Header("OwnerAuthorization") String prepaymentToken, @Header("OwnerScope") String scope, Callback<JsonElement> callback);
+
+    @FormUrlEncoded
+    @POST("/oauth/token")
+    void getSignInWithOTP(@Field("client_id") String client_ID, @Field("client_secret") String client_Secret, @Field("username") String username, @Field("password") String otp, @Field("grant_type") String grantType, Callback<AccessToken> callback);
+
 
     //getCookie
     @FormUrlEncoded
@@ -116,6 +129,14 @@ public interface API {
     @POST("/moto/makePayment")
     void makePayment(@Body TypedString body, Callback<Response> callback);
 
+    @Headers("Content-Type: application/json")
+    @POST("/service/um/mobileverification/sendCode")
+    void updateMobile(@Header("Authorization") String accessToken, @Body TypedString body, Callback<UpdateMobileResponse> callback);
+
+    @Headers("Content-Type: application/json")
+    @POST("/service/um/mobileverification/verifyCode")
+    void verifyMobile(@Header("Authorization") String accessToken, @Body TypedString body, Callback<VerifyMobileResponse> callback);
+
     //payment options of merchant
     @FormUrlEncoded
     @POST("/service/v1/merchant/pgsetting")
@@ -135,7 +156,8 @@ public interface API {
 
     // Get the prepaid balance of the user. this is new method to get Balance
     @POST("/service/v2/mycard/balance")
-    void getBalance(@Header("Authorization") String header, Callback<Amount> callback);
+    @FormUrlEncoded
+    void getBalance(@Header("Authorization") String header, @Field("dummy") String dummyObject, Callback<Amount> callback);
 
     //bill generator response
     @GET("/{path}")
@@ -198,6 +220,42 @@ public interface API {
 
     @GET("/service/um/profile/profileInfo")
     void getProfileInfo(@Header("Authorization") String token, Callback<JsonElement> callback);
+
+    // Save payment option
+    @Headers("Content-Type: application/json")
+    @PUT("/service/v2/profile/me/payment")
+    void setDefaultPaymentOption(@Header("Authorization") String header, @Body TypedString body, Callback<CitrusResponse> callback);
+    /**
+     * Reset Password API -- UM implementation
+     * @param header signup token
+     * @param username email ID of user
+     * @param resetPasswordResponseCallback
+     */
+    @FormUrlEncoded
+    @POST("/service/um/user/reset/password")
+    void resetUMPassword(@Header("Authorization") String header, @Field("username") String username, Callback<CitrusUMResponse> resetPasswordResponseCallback);
+
+
+    @FormUrlEncoded
+    @POST("/service/um/user/signup")
+    void signUpUser(@Header("Authorization") String header,@Field("email") String email, @Field("mobile") String mobile, @Field("password") String password, @Field("firstName") String firstName, @Field("lastName") String lastName, @Field("sourceType") String sourceType, @Field("markMobileVerified") String markMobileVerified, @Field("markEmailVerified") String markEmailVerified, Callback<CitrusUMResponse> responseCallback);
+
+    @FormUrlEncoded
+    @PUT("/service/um/user/change/password")
+    void changePassword(@Header("Authorization") String header,@Field("old") String oldPassword, @Field("new") String newPassword, Callback<CitrusUMResponse> changePasswordResponseCallback);
+
+    @Headers("Content-Type: application/json")
+    @PUT("/service/um/profile/update")
+    void updateUserProfileDetails(@Header("Authorization") String header, @Body TypedString body, Callback<CitrusUMResponse> responseCallback);
+
+
+    @Headers("Content-Type: application/json")
+    @POST("/service/um/otp/generate")
+    void sendOneTimePassword(@Body TypedString body, Callback<CitrusUMResponse> responseCallback);
+
+
+    @GET("/binservice/v2/bin/{first6Digits}")
+    void getCardType(@Path("first6Digits") String first6Digits, Callback<JsonElement> cardBinDetailsCallback);
 
     @GET("/binservice/v2/bin/{first6Digits}")
     void getBinInfo(@Path("first6Digits") String first6Digits, Callback<Response> callback);

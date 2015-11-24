@@ -19,7 +19,8 @@ ext {
     // it doesn't apply the artifact-id properly for the pom file.
     // The alternative is maven-publish, but that doesn't publish dependencies,
     // which is a bad idea imho. Also, from Components.java does not work for aars atm.
-    //com.citrus.sdk:payment-sdk:3.0.29
+    //com.citrus:cube-payment-sdk:1.1
+    //com.citrus:payment-sdk:3.1
     // bare minimum params for uploading to bintray
     bintray_repo = 'maven'
     package_name = 'com.citrus.sdk'
@@ -95,7 +96,9 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
-
+    lintOptions {
+        abortOnError false
+    }
     // To enable larger heap size
     dexOptions {
         javaMaxHeapSize "4g"

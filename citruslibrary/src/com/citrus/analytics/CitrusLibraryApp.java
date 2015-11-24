@@ -52,6 +52,7 @@ public class CitrusLibraryApp  {
             }
 
             CitrusClient citrusClient = CitrusClient.getInstance(context);
+
             Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(Config.getAnalyticsID()):null;
             mTrackers.put(trackerId, t);
         }
