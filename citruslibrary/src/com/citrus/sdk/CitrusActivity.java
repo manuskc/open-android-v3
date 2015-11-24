@@ -285,12 +285,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             fetchBinRequestData((CardOption) mPaymentOption);
         }
 
-        if (mCitrusClient.isShowDummyScreenWhilePayments()) {
-            setTitle(Html.fromHtml("<font color=\"" + mTextColorPrimary + "\">" + mActivityTitle + "</font>"));
-        }
-
-        setActionBarBackground();
-
         /*
          * Validations and Process payments
          */
@@ -485,11 +479,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         TransactionResponse transactionResponse = null;
         if (!android.text.TextUtils.isEmpty(response)) {
             if (useNewAPI) {
-
                 // Loading html directly
-                Logger.d("Loading new make payment page :: " + response);
                 mPaymentWebview.loadDataWithBaseURL(mCitrusClient.getEnvironment().getBaseCitrusUrl(), response, "text/html", "utf-8", null);
-
             } else {
                 try {
                     JSONObject redirect = new JSONObject(response);
@@ -684,7 +675,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void onBackPressed() {
-
         handleCancelTransaction();
     }
 
@@ -702,7 +692,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
                 if (useNewAPI) {
                     String vanity = mCitrusClient.getVanity();
                     String postData = Utils.getURLEncodedParamsForCancelTransaction(mCitrusUser, mPaymentBill, mPaymentOption, dynamicPricingResponse, vanity);
-                    Logger.d("PostData :: " + postData);
                     Environment environment = mCitrusClient.getEnvironment();
                     mPaymentWebview.postUrl(environment.getCancelUrl(vanity), postData.getBytes());
 
@@ -837,17 +826,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
     @Override
     public void onProcessTransactionClicked(String otp) {
-
-//        if (mOTPPopupView.isOtpDetectedStatus()) {
-//            // Otp is detected so Load the js to process the transaction.
-//            String js = String.format(netBankForOTP.getTransactionJS(), otp);
-//            mPaymentWebview.loadUrl(js);
-//
-//            transactionProcessed = true;
-
-//        } else {
-        // Otp is not detected, user entered manually
-
         // Set OTP on bank's page.
         mPaymentWebview.loadUrl(netBankForOTP.getSetOTPJS(otp));
 
@@ -855,7 +833,6 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         mPaymentWebview.loadUrl(js);
 
         transactionProcessed = true;
-//        }
 
         // Hide the popup since proceeding with transaction.
         dismissOtpPopup();
@@ -1016,7 +993,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
 
             public void onClick(DialogInterface dialog, int whichButton) {
                 String password = input.getText().toString();
-                input.setInputType(TYPE_TEXT_VARIATION_PASSWORD);
+                input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
                 if (!TextUtils.isEmpty(password)) {
                     mPaymentWebview.loadUrl("javascript:(function() { " +

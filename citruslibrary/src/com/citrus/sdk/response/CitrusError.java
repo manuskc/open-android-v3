@@ -30,14 +30,15 @@ public class CitrusError extends CitrusResponse {
 
     public CitrusError(String message, Status status, TransactionResponse transactionResponse) {
         super(message, status);
+        this.transactionResponse = transactionResponse;
+    }
 
+    public CitrusError(String message, String rawResponse, Status status, TransactionResponse transactionResponse) {
+        super(message, rawResponse, status);
         this.transactionResponse = transactionResponse;
     }
 
     public TransactionResponse getTransactionResponse() {
         return transactionResponse;
-    }
-    public CitrusError(String message, String transactionResponse, Status status) {
-        super(message, transactionResponse, status);
     }
 }
