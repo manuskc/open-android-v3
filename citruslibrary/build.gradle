@@ -25,7 +25,7 @@ ext {
     package_name = 'com.citrus.sdk'
     group_id = 'com.citrus.sdk'
     artifact_id = project.name
-    artifact_version = '3.0.31'
+    artifact_version = '3.0.32'
     all_licenses = ["Apache-2.0"] // mandatory
     git_url = 'https://github.com/citruspay/open-android-v3.git'
     site_url = 'https://github.com/citruspay/open-android-v3'
