@@ -2472,7 +2472,7 @@ public class CitrusClient {
      */
     public void getBINDetails(CardOption cardOption, final Callback<BinServiceResponse> callback) {
 
-        if (cardOption != null && !TextUtils.isEmpty(cardOption.getCardNumber())) {
+        if (cardOption != null) {
             String cardNumber = cardOption.getCardNumber();
             String first6Digits = "";
             String token = "";
@@ -2504,7 +2504,7 @@ public class CitrusClient {
 
             // If card is new card use bin service api, else use token api
             if (!TextUtils.isEmpty(first6Digits)) {
-                API binServiceClient = RetroFitClient.getClientWithUrl("https://citrusapi.citruspay.com");
+                API binServiceClient = RetroFitClient.getClientWithUrl(environment.getBinServiceURL());
                 binServiceClient.getBinInfo(first6Digits, responseCallback);
             } else if (!TextUtils.isEmpty(token)) {
                 retrofitClient.getBinInfoUsingToken(token, responseCallback);
