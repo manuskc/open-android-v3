@@ -1,6 +1,14 @@
 # open-android-v3
 
-Welcome to the open-source Android SDK Documentation of Citrus Payments Solution!
+## Release notes.
+#### v3.0.33
+___
+* Auto OTP reading on 3D Secure pages.
+* Bug fixes and performance improvements.
+
+_____________
+
+<h6> Welcome to the open-source Android SDK Documentation of Citrus Payments Solution!
 
 <h5>Introduction</h5>
 ___
