@@ -24,9 +24,9 @@ public class CitrusResponse implements Parcelable {
         this.status = status;
     }
 
-    public CitrusResponse(String message, String transactionResponse, Status status) {
+    public CitrusResponse(String message, String rawResponse, Status status) {
         this.message = message;
-        this.rawResponse = transactionResponse;
+        this.rawResponse = rawResponse;
         this.status = status;
     }
     public String getMessage() {

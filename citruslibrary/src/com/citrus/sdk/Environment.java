@@ -19,6 +19,7 @@ public enum Environment {
         public String getDynamicPricingBaseUrl() {
             return "https://sandboxmars1.citruspay.com/dynamic-pricing/";
         }
+
         @Override
         public String getBinServiceURL() {
             return "https://citrusapi.citruspay.com";
@@ -28,7 +29,10 @@ public enum Environment {
             return "UA-33514461-4";
         }
 
-
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
+        }
         @Override
         public String toString() {
             return "SANDBOX";
@@ -57,6 +61,11 @@ public enum Environment {
 
         public String getAnalyticsID() {
             return "UA-33514461-5";
+        }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
         }
 
 
@@ -89,6 +98,10 @@ public enum Environment {
             return "UA-33514461-4";
         }
 
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
+        }
 
         @Override
         public String toString() {
@@ -119,6 +132,11 @@ public enum Environment {
 
         public String getAnalyticsID() {
             return "UA-33514461-4";
+        }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
         }
 
         @Override
@@ -154,6 +172,11 @@ public enum Environment {
         public String getBinServiceURL() {
             return "https://citrusapi.citruspay.com";
         }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
+        }
     }, NONE {
         @Override
         public String getBaseUrl() {
@@ -183,15 +206,17 @@ public enum Environment {
         public String getAnalyticsID() {
             return null;
         }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return null;
+        }
     };
 
     public abstract String getBaseUrl();
-
     public abstract String getBaseCitrusUrl();
-
     public abstract String getBinServiceURL();
     public abstract String getDynamicPricingBaseUrl();
-
     public abstract String getAnalyticsID();
-
+    public abstract String getCancelUrl(String vanity);
 }

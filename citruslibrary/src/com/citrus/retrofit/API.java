@@ -123,6 +123,12 @@ public interface API {
     @Headers("Content-Type: application/json")
     @POST("/service/moto/authorize/struct/payment")
     void getPaymentResponse(@Body TypedString body, Callback<StructResponsePOJO> structResponseCallback);
+
+    //return url from citrus
+    @Headers("Content-Type: application/json")
+    @POST("/moto/makePayment")
+    void makePayment(@Body TypedString body, Callback<Response> callback);
+
     @Headers("Content-Type: application/json")
     @POST("/service/um/mobileverification/sendCode")
     void updateMobile(@Header("Authorization") String accessToken, @Body TypedString body, Callback<UpdateMobileResponse> callback);
@@ -214,6 +220,7 @@ public interface API {
 
     @GET("/service/um/profile/profileInfo")
     void getProfileInfo(@Header("Authorization") String token, Callback<JsonElement> callback);
+
     // Save payment option
     @Headers("Content-Type: application/json")
     @PUT("/service/v2/profile/me/payment")
@@ -249,4 +256,11 @@ public interface API {
 
     @GET("/binservice/v2/bin/{first6Digits}")
     void getCardType(@Path("first6Digits") String first6Digits, Callback<JsonElement> cardBinDetailsCallback);
+
+    @GET("/binservice/v2/bin/{first6Digits}")
+    void getBinInfo(@Path("first6Digits") String first6Digits, Callback<Response> callback);
+
+    @GET("/cards/metadata/{token}")
+    void getBinInfoUsingToken(@Path("token") String token, Callback<Response> callback);
+
 }

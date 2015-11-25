@@ -23,9 +23,13 @@ public interface Constants {
 
     int SDK_VERSION_CODE = 3;
 
+    int SMS_RECEIVER_PRIORITY = 999;
+
     String INTENT_EXTRA_TRANSACTION_RESPONSE = "INTENT_EXTRA_TRANSACTION_RESPONSE";
 
     String INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE = "INTENT_EXTRA_DYNAMIC_PRICING_RESPONSE";
+
+    String INTENT_EXTRA_USE_NEW_API = "INTENT_EXTRA_USE_NEW_API";
 
     /**
      * Use this constant to pass the payment type. {@link com.citrus.sdk.payment.PaymentType}
@@ -64,6 +68,10 @@ public interface Constants {
 
     String PREPAID_VANITY = "prepaid";
     String SIGNUP_SUCCESS_CODE = "R-201-00";
+    
+    String ACTION_SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    String ACTION_AUTO_READ_OTP = "com.citrus.sdk.otp.AUTO_READ_OTP";
+    String INTENT_EXTRA_AUTO_OTP = "INTENT_EXTRA_AUTO_OTP";
 }
 
 
