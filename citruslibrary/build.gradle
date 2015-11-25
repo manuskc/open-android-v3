@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 ext {
     // Bintray credentials
     Properties properties = new Properties()
-    properties.load(project.rootProject.file('bintray.auth').newDataInputStream())
+    properties.load(project.rootProject.file('citruslibrary/bintray.auth').newDataInputStream())
     bintray_userid = properties.getProperty("bintray.userid")
     bintray_apikey = properties.getProperty("bintray.apikey")
     bintray_gpgkey = properties.getProperty("bintray.gpgkey")
