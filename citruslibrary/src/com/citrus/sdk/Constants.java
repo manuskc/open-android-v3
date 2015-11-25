@@ -19,8 +19,7 @@ package com.citrus.sdk;
  * Created by salil on 24/4/15.
  */
 public interface Constants {
-    String SDK_VERSION = "3.1.0";
-
+    String SDK_VERSION = "3.0.33";
     int SDK_VERSION_CODE = 3;
 
     int SMS_RECEIVER_PRIORITY = 999;
