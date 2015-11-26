@@ -90,6 +90,7 @@ android {
     }
 
     publishNonDefault true
+    defaultPublishConfig "retrofitoldDebug"
 
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
