@@ -56,32 +56,69 @@ version = artifact_version
 project.archivesBaseName = artifact_id
 
 dependencies {
+//    compile fileTree(include: '*.jar', dir: 'libs')
+//    compile 'com.google.android.gms:play-services-analytics:8.1.0'
+//    compile 'com.android.support:appcompat-v7:22.0.0'
+//    // Retrofit 1.9
+//    demoCompile 'com.squareup.retrofit:retrofit:1.9.0'
+//
+//    // Retrofit 2.0
+//    fullCompile('com.squareup.retrofit:retrofit:2.0.0-beta2') {
+//        // exclude Retrofit’s OkHttp peer-dependency module and define your own module import
+//        exclude module: 'okhttp'
+//    }
+//    fullCompile 'com.squareup.okhttp:okhttp:2.5.0'
+//    fullCompile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+//
+//    // Other retrofit dependencies.
+//    compile 'com.squareup.okhttp:okhttp:2.3.0'
+//    compile 'com.squareup.okhttp:okhttp-urlconnection:2.3.0'
+//    compile 'com.squareup.okio:okio:1.3.0'
+//
+//    compile 'com.orhanobut:logger:1.8' // For logging purpose
+//    compile 'de.greenrobot:eventbus:2.4.0' // EventBus for messaging purpose.
+
     compile fileTree(include: '*.jar', dir: 'libs')
     compile 'com.google.android.gms:play-services-analytics:8.1.0'
     compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.okhttp:okhttp-urlconnection:2.3.0'
+    // Retrofit 1.9
+//    compile 'com.squareup.retrofit:retrofit:1.9.0'
+
+    // Other retrofit dependencies.
     compile 'com.squareup.okhttp:okhttp:2.3.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.3.0'
     compile 'com.squareup.okio:okio:1.3.0'
-    compile 'com.orhanobut:logger:1.8'
-    compile 'de.greenrobot:eventbus:2.4.0'
+
+    compile 'com.orhanobut:logger:1.8' // For logging purpose
+    compile 'de.greenrobot:eventbus:2.4.0' // EventBus for messaging purpose.
 }
 
 android {
+    lintOptions {
+        abortOnError false
+    }
+    // To enable larger heap size
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    publishNonDefault true
+
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
-
-        useLibrary 'org.apache.http.legacy'
+    useLibrary 'org.apache.http.legacy' // Required for android version 23.
 
     sourceSets {
         main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
+            java.srcDirs = ['src/main/java']
+        }
+
+        demo {
+            java.srcDirs = ['src/main/java', 'src/demo/java']
+        }
+
+        full {
+            java.srcDirs = ['src/main/java', 'src/full/java']
         }
 
         // Move the tests to tests/java, tests/res, etc...
@@ -96,12 +133,27 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
-    lintOptions {
-        abortOnError false
+
+    productFlavors {
+        demo {
+//            applicationId "com.example.salil.testretrofit.demo"
+        }
+        full {
+//            applicationId "com.example.salil.testretrofit.full"
+        }
     }
-    // To enable larger heap size
-    dexOptions {
-        javaMaxHeapSize "4g"
+
+    dependencies {
+        // Retrofit 1.9
+        demoCompile 'com.squareup.retrofit:retrofit:1.9.0'
+
+        // Retrofit 2.0
+        fullCompile('com.squareup.retrofit:retrofit:2.0.0-beta2') {
+            // exclude Retrofit’s OkHttp peer-dependency module and define your own module import
+            exclude module: 'okhttp'
+        }
+        fullCompile 'com.squareup.okhttp:okhttp:2.5.0'
+        fullCompile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     }
 }
 
