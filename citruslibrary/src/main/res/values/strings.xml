@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Citruslibrary</string>
+    <string name="title_activity_citrus">CitrusActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+
+    <!--Auto OTP-->
+    <string name="otp_options_header_text">Please select an option to continue with the transaction</string>
+    <string name="otp_options_enter_pass_text">Enter Password</string>
+    <string name="otp_options_send_otp_text">Send OTP</string>
+    <string name="otp_cancel_transaction_text"><u>Cancel Transaction</u></string>
+    <string name="otp_autodetect_header_text">We are trying to auto detect your OTP</string>
+    <string name="otp_autodetect_resend_btn_text">Resend</string>
+    <string name="otp_autodetect_enter_otp_hint_text">Enter OTP</string>
+    <string name="otp_autodetect_confirm_btn_text">Confirm</string>
+    <string name="otp_secured_text">Secured</string>
+    <string name="otp_detection_success_text">Your OTP was successfully detected</string>
+    <string name="otp_detection_failed_text">We were unable to detect your OTP,\nPlease check your SMS and enter manually to proceed</string>
+
+</resources>

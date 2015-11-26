@@ -1,0 +1,29 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="citrus_activity_horizontal_margin">16dp</dimen>
+    <dimen name="citrus_activity_vertical_margin">16dp</dimen>
+    <dimen name="otp_bottom_bar_top_margin">20dp</dimen>
+    <dimen name="otp_bottom_bar_secured_image_top_margin">10dp</dimen>
+    <dimen name="otp_bottom_bar_secured_text_size">13sp</dimen>
+    <dimen name="otp_bottom_bar_layout_top_margin">20dp</dimen>
+    <dimen name="otp_bottom_bar_bank_logo_margin">10dp</dimen>
+    <dimen name="otp_bottom_bar_cancel_txn_textsize">14sp</dimen>
+    <dimen name="otp_options_header_textsize">14sp</dimen>
+    <dimen name="otp_options_header_top_margin">20dp</dimen>
+    <dimen name="otp_options_layout_top_margin">20dp</dimen>
+    <dimen name="otp_options_enter_pass_layout_right_margin">10dp</dimen>
+    <dimen name="otp_options_enter_pass_textsize">20dp</dimen>
+    <dimen name="otp_options_send_otp_layout_margin_left">10dp</dimen>
+    <dimen name="otp_options_send_otp_textsize">10dp</dimen>
+    <dimen name="otp_auto_detect_header_textsize">14sp</dimen>
+    <dimen name="otp_auto_detect_header_margin">20dp</dimen>
+    <dimen name="otp_auto_detect_progress_bar_top_margin">10dp</dimen>
+    <dimen name="otp_auto_detect_enter_otp_layout_left_margin">20dp</dimen>
+    <dimen name="otp_auto_detect_enter_otp_layout_right_margin">20dp</dimen>
+    <dimen name="otp_auto_detect_enter_otp_edtxt_left_padding">20dp</dimen>
+    <dimen name="otp_auto_detect_enter_otp_edtxt_right_padding">20dp</dimen>
+    <dimen name="otp_auto_detect_resend_btn_width">70dp</dimen>
+    <dimen name="otp_auto_detect_resend_btn_height">30dp</dimen>
+    <dimen name="otp_auto_detect_resend_btn_right_margin">15dp</dimen>
+    <dimen name="otp_auto_detect_confirm_btn_top_margin">10dp</dimen>
+</resources>
