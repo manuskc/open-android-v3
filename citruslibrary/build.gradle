@@ -26,7 +26,7 @@ ext {
     package_name = 'com.citrus.sdk'
     group_id = 'com.citrus.sdk'
     artifact_id = project.name
-    artifact_version = '3.0.33'
+    artifact_version = '3.0.34'
     all_licenses = ["Apache-2.0"] // mandatory
     git_url = 'https://github.com/citruspay/open-android-v3.git'
     site_url = 'https://github.com/citruspay/open-android-v3'
@@ -49,6 +49,14 @@ ext {
     android_build_tools_version = "22.0.1"
     android_build_minsdk_version = 9
     android_build_targetsdk_version = 22
+
+    if (JavaVersion.current().isJava8Compatible()) {
+        allprojects {
+            tasks.withType(Javadoc) {
+                options.addStringOption('Xdoclint:none', '-quiet')
+            }
+        }
+    }
 }
 
 group = group_id
@@ -56,33 +64,10 @@ version = artifact_version
 project.archivesBaseName = artifact_id
 
 dependencies {
-//    compile fileTree(include: '*.jar', dir: 'libs')
-//    compile 'com.google.android.gms:play-services-analytics:8.1.0'
-//    compile 'com.android.support:appcompat-v7:22.0.0'
-//    // Retrofit 1.9
-//    demoCompile 'com.squareup.retrofit:retrofit:1.9.0'
-//
-//    // Retrofit 2.0
-//    fullCompile('com.squareup.retrofit:retrofit:2.0.0-beta2') {
-//        // exclude Retrofit’s OkHttp peer-dependency module and define your own module import
-//        exclude module: 'okhttp'
-//    }
-//    fullCompile 'com.squareup.okhttp:okhttp:2.5.0'
-//    fullCompile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
-//
-//    // Other retrofit dependencies.
-//    compile 'com.squareup.okhttp:okhttp:2.3.0'
-//    compile 'com.squareup.okhttp:okhttp-urlconnection:2.3.0'
-//    compile 'com.squareup.okio:okio:1.3.0'
-//
-//    compile 'com.orhanobut:logger:1.8' // For logging purpose
-//    compile 'de.greenrobot:eventbus:2.4.0' // EventBus for messaging purpose.
 
     compile fileTree(include: '*.jar', dir: 'libs')
     compile 'com.google.android.gms:play-services-analytics:8.1.0'
     compile 'com.android.support:appcompat-v7:22.0.0'
-    // Retrofit 1.9
-//    compile 'com.squareup.retrofit:retrofit:1.9.0'
 
     // Other retrofit dependencies.
     compile 'com.squareup.okhttp:okhttp:2.3.0'
@@ -92,6 +77,8 @@ dependencies {
     compile 'com.orhanobut:logger:1.8' // For logging purpose
     compile 'de.greenrobot:eventbus:2.4.0' // EventBus for messaging purpose.
 }
+
+
 
 android {
     lintOptions {
@@ -113,12 +100,12 @@ android {
             java.srcDirs = ['src/main/java']
         }
 
-        demo {
-            java.srcDirs = ['src/main/java', 'src/demo/java']
+        retrofitold {
+            java.srcDirs = ['src/main/java', 'src/retrofitold/java']
         }
 
-        full {
-            java.srcDirs = ['src/main/java', 'src/full/java']
+        retrofitnew {
+            java.srcDirs = ['src/main/java', 'src/retrofitnew/java']
         }
 
         // Move the tests to tests/java, tests/res, etc...
@@ -135,25 +122,27 @@ android {
     }
 
     productFlavors {
-        demo {
+        // For retrofit 1.9
+        retrofitold {
 //            applicationId "com.example.salil.testretrofit.demo"
         }
-        full {
+        // For retrofit 2.0
+        retrofitnew {
 //            applicationId "com.example.salil.testretrofit.full"
         }
     }
 
     dependencies {
         // Retrofit 1.9
-        demoCompile 'com.squareup.retrofit:retrofit:1.9.0'
+        retrofitoldCompile 'com.squareup.retrofit:retrofit:1.9.0'
 
         // Retrofit 2.0
-        fullCompile('com.squareup.retrofit:retrofit:2.0.0-beta2') {
+        retrofitnewCompile('com.squareup.retrofit:retrofit:2.0.0-beta2') {
             // exclude Retrofit’s OkHttp peer-dependency module and define your own module import
             exclude module: 'okhttp'
         }
-        fullCompile 'com.squareup.okhttp:okhttp:2.5.0'
-        fullCompile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+        retrofitnewCompile 'com.squareup.okhttp:okhttp:2.5.0'
+        retrofitnewCompile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     }
 }
 
