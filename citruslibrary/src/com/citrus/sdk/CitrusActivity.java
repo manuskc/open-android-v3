@@ -137,6 +137,7 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     private boolean mMultipartEnterPasswordJS = false;
     private boolean useNewAPI = false;
     private boolean otpPopupDismissed = false;
+    private boolean autoReadOTP = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -601,6 +602,10 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
     }
 
     private void autoOtpReceived(Intent intent) {
+
+        unregisterSMSReceivers();
+        autoReadOTP = true;
+
         otp = intent.getStringExtra(Constants.INTENT_EXTRA_AUTO_OTP);
         otpProcessTransactionJS = String.format(netBankForOTP.getTransactionJS(), otp);
 
@@ -845,6 +850,8 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
         // Register sms receivers
         registerSMSReceivers();
         startOtpReadTimer();
+
+        autoReadOTP = false;
     }
 
     @Override
@@ -857,7 +864,9 @@ public class CitrusActivity extends ActionBarActivity implements OTPViewListener
             public void run() {
 
                 unregisterSMSReceivers();
-                mOTPPopupView.otpReadTimeout();
+                if (!autoReadOTP) {
+                    mOTPPopupView.otpReadTimeout();
+                }
             }
         }, OTP_READ_TIMEOUT);
     }
