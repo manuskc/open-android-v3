@@ -17,6 +17,6 @@
     <string name="otp_autodetect_confirm_btn_text">Confirm</string>
     <string name="otp_secured_text">Secured</string>
     <string name="otp_detection_success_text">Your OTP was successfully detected</string>
-    <string name="otp_detection_failed_text">We were unable to detect your OTP,\nPlease check your SMS and enter manually to proceed</string>
+    <string name="otp_detection_failed_text">We were unable to detect your OTP,\nPlease check your SMS and enter manually to proceed. Click on Resend if you have not received SMS.</string>
 
 </resources>
