@@ -33,6 +33,7 @@ public enum Environment {
         public String getCancelUrl(String vanity) {
             return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
         }
+
         @Override
         public String toString() {
             return "SANDBOX";
@@ -143,7 +144,7 @@ public enum Environment {
         public String toString() {
             return "STG5";
         }
-    },STG3 {
+    }, STG3 {
         @Override
         public String getBaseUrl() {
             return "https://stg3admin.citruspay.com/";
@@ -168,6 +169,7 @@ public enum Environment {
         public String toString() {
             return "STG5";
         }
+
         @Override
         public String getBinServiceURL() {
             return "https://citrusapi.citruspay.com";
@@ -177,7 +179,45 @@ public enum Environment {
         public String getCancelUrl(String vanity) {
             return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
         }
-    }, NONE {
+    },
+    STG31 {
+        @Override
+        public String getBaseUrl() {
+            return "https://stgadmin31.citruspay.com";
+        }
+
+        @Override
+        public String getBaseCitrusUrl() {
+            return "https://stgadmin31.citruspay.com/";
+        }
+
+        @Override
+        public String getDynamicPricingBaseUrl() {
+            return "https://stgadmin31.citruspay.com/dynamic-pricing/";
+        }
+
+        public String getAnalyticsID() {
+            return "UA-33514461-4";
+        }
+
+
+        @Override
+        public String toString() {
+            return "STG31";
+        }
+
+        @Override
+        public String getBinServiceURL() {
+            return "https://citrusapi.citruspay.com";
+        }
+
+        @Override
+        public String getCancelUrl(String vanity) {
+            return String.format(getBaseCitrusUrl() + "/sslperf/%s/cancel", vanity);
+        }
+    },
+
+    NONE {
         @Override
         public String getBaseUrl() {
             return null;
@@ -192,6 +232,7 @@ public enum Environment {
         public String getBaseCitrusUrl() {
             return null;
         }
+
         @Override
         public String getBinServiceURL() {
             return null;
@@ -214,9 +255,14 @@ public enum Environment {
     };
 
     public abstract String getBaseUrl();
+
     public abstract String getBaseCitrusUrl();
+
     public abstract String getBinServiceURL();
+
     public abstract String getDynamicPricingBaseUrl();
+
     public abstract String getAnalyticsID();
+
     public abstract String getCancelUrl(String vanity);
 }

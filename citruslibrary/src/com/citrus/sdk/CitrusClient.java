@@ -1433,7 +1433,7 @@ public class CitrusClient {
      *
      * @param callback
      */
-    private synchronized void activatePrepaidUser(final Callback<Amount> callback) {
+    public synchronized void activatePrepaidUser(final Callback<Amount> callback) {
         if (validate()) {
             oauthToken.getPrepaidToken(new Callback<AccessToken>() {
                 @Override
