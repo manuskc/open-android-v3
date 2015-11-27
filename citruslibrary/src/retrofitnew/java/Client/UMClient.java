@@ -1,7 +1,7 @@
-package retrofitnew.java;
+package Client;
 
 /**
  * Created by salil on 26/11/15.
  */
-public class Test {
+public class UMClient {
 }
